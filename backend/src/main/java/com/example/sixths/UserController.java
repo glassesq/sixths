@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.List;
 
@@ -42,5 +43,17 @@ public class UserController {
             return ResponseEntity.ok().body(JWTUtils.genUserToken(user));
         }
         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("more than one user");
+    }
+
+    @PostMapping(path = "/signed_greeting")
+    public @ResponseBody String signed_greeting(HttpServletRequest req) {
+        String name = req.getAttribute(LoginInterceptor.NAME_KEY).toString();
+        Integer id = Integer.valueOf(req.getAttribute(LoginInterceptor.ID_KEY).toString());
+        User user = userRepository.findById(id).isPresent() ? userRepository.findById(id).get() : null;
+        if( user != null ) {
+            String email = user.getEmail();
+            return String.format("hi %s! your email is %s .\n", name, email);
+        }
+        return "wrong!"; // TODO
     }
 }

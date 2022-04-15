@@ -3,6 +3,7 @@ package com.example.sixths;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.apache.commons.codec.cli.Digest;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -16,22 +17,26 @@ public class JWTUtils {
         Calendar currentTime = Calendar.getInstance();
         System.out.println(currentTime);
 
-        return JWT.create().withAudience(user.getUserId())
+        return JWT.create().withAudience(user.getOpenid())
                 .withIssuedAt(new Date())
                 .withClaim("name", user.getName())
                 .withClaim("id", user.getId())
-                .sign(Algorithm.HMAC256(user.getUserId()));
+                .sign(Algorithm.HMAC256(user.getOpenid()));
     }
 
-    public static boolean verifyUserToken(String token, String secret_userid) {
+    public static boolean verifyUserToken(String token, String secret_openid) {
         DecodedJWT jwt = null;
         try {
-            JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secret_userid)).build();
+            JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secret_openid)).build();
             jwt = verifier.verify(token);
             System.out.println(jwt.getAudience());
             return true;
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public static Claim getClaim(String token, String key) {
+        return JWT.decode(token).getClaim(key);
     }
 }

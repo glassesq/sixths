@@ -1,8 +1,10 @@
 package com.example.sixths;
 
-import org.springframework.data.repository.CrudRepository;
-import com.example.sixths.User;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends CrudRepository<User, Integer> {
+import java.util.List;
 
+public interface UserRepository extends JpaRepository<User, Integer> {
+
+    List<User> findByName(String name);
 }

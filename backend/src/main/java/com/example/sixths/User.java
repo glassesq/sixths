@@ -1,9 +1,9 @@
 package com.example.sixths;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import org.apache.commons.codec.digest.DigestUtils;
+
+import javax.persistence.*;
+import java.util.Arrays;
 
 /* ref: https://spring.io/guides/gs/accessing-data-mysql/ */
 @Entity
@@ -17,8 +17,15 @@ public class User {
 
     private String email;
 
+    public User() {
+    }
+
     public Integer getId() {
         return id;
+    }
+
+    public String getUserId() {
+        return DigestUtils.sha256Hex("string-user-id" + id.toString()).substring(32);
     }
 
     public String getName() {

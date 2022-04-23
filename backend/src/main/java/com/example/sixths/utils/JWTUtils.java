@@ -1,12 +1,11 @@
-package com.example.sixths;
+package com.example.sixths.utils;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import org.apache.commons.codec.cli.Digest;
-import org.apache.commons.codec.digest.DigestUtils;
+import com.example.sixths.model.User;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -16,6 +15,7 @@ public class JWTUtils {
     public static String genUserToken(User user) {
         Calendar currentTime = Calendar.getInstance();
         System.out.println(currentTime);
+        // TODO: only generate token once a day.
 
         return JWT.create().withAudience(user.getOpenid())
                 .withIssuedAt(new Date())

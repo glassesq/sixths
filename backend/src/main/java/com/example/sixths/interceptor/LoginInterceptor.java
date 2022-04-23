@@ -1,15 +1,12 @@
-package com.example.sixths;
+package com.example.sixths.interceptor;
 
-import jdk.nashorn.internal.runtime.regexp.joni.exception.ValueException;
-import org.apache.catalina.filters.ExpiresFilter;
-import org.springframework.http.HttpStatus;
+import com.example.sixths.utils.JWTUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.io.PrintWriter;
 
 @Component

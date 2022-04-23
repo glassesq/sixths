@@ -1,23 +1,19 @@
-package com.example.sixths;
+package com.example.sixths.model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 import javax.persistence.*;
 import java.nio.charset.StandardCharsets;
-import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.Base64;
 
 
 @Entity
 public class Article {
 
-    // generate articleid to user: secret-key: Arti-Sec, algorithm: DES
+    /** generate articleid to user: secret-key: Arti-Sec, algorithm: DES **/
     @JsonIgnore
     static final SecretKeySpec sks = new SecretKeySpec("Arti-Sec".getBytes(), "DES");
 
@@ -25,9 +21,17 @@ public class Article {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @ManyToOne // ? fetchType
+    @JoinColumn(name = "author_id")
+    private User author; // the author of the post
+
     public String articleid;
 
     public String content;
+
+    public User getAuthor() {
+        return author;
+    }
 
     public Article() {
         content = "";
@@ -39,7 +43,7 @@ public class Article {
     }
 
     public String getArticleid() {
-        if( articleid == null ) articleid = encryptId();
+        if (articleid == null) articleid = encryptId();
         return articleid;
     }
 
@@ -49,6 +53,10 @@ public class Article {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
     }
 
     private String encryptId() {

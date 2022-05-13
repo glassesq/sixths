@@ -23,13 +23,13 @@ public class ArticleController {
 
     @PostMapping(path = "")
     public ResponseEntity<String> addArticle(@RequestParam String content) {
-        String ret = articleService.addArticle(content);
-        return ResponseEntity.ok().body(ret);
+        int ret = articleService.addArticle(content);
+        return ResponseEntity.ok().body(String.valueOf(ret));
     }
 
     @GetMapping(path = "")
-    public ResponseEntity<Article> getArticle(@RequestParam String articleid) throws Exception {
-        Article article = articleService.findByArticleid(articleid);
+    public ResponseEntity<Article> getArticle(@RequestParam String id) throws Exception {
+        Article article = articleService.findById(Integer.parseInt(id));
         if (article != null) {
             return ResponseEntity.ok().body(article);
         }

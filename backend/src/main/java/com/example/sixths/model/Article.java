@@ -25,8 +25,6 @@ public class Article {
     @JoinColumn(name = "author_id")
     private User author; // the author of the post
 
-    public String articleid;
-
     public String content;
 
     public User getAuthor() {
@@ -42,11 +40,6 @@ public class Article {
         return id;
     }
 
-    public String getArticleid() {
-        if (articleid == null) articleid = encryptId();
-        return articleid;
-    }
-
     public String getContent() {
         return content;
     }
@@ -59,7 +52,7 @@ public class Article {
         this.author = author;
     }
 
-    private String encryptId() {
+/*    private String encryptId() {
         try {
             Cipher cipher = Cipher.getInstance("DES");
             String str_id = Integer.toHexString(id);
@@ -84,5 +77,5 @@ public class Article {
             e.printStackTrace();
             return -1;
         }
-    }
+    } */
 }

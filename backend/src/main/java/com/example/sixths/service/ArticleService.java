@@ -16,17 +16,16 @@ public class ArticleService {
     @Autowired
     public UserRepository userRepository;
 
-    public String addArticle(String content) {
+    public int addArticle(String content) {
         Article article = new Article();
         article.setContent(content);
         article.setAuthor(userRepository.getById(1));
         articleRepository.save(article);
-        return article.getArticleid();
+        return article.getId();
     }
 
-    public Article findByArticleid(String articleid) {
-        int real_id = Article.decryptId(articleid);
-        Optional<Article> article = articleRepository.findById(real_id); // use .get() in case of lazy fetch
+    public Article findById(int id) {
+        Optional<Article> article = articleRepository.findById(id); // use .get() in case of lazy fetch
         return article.orElse(null);
     }
 

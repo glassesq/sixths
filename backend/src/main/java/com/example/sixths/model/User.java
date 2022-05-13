@@ -1,12 +1,11 @@
 package com.example.sixths.model;
 
 
-import com.example.sixths.model.Article;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.apache.commons.codec.digest.DigestUtils;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 /* ref: https://spring.io/guides/gs/accessing-data-mysql/ */
 @Entity
@@ -21,12 +20,12 @@ public class User {
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY) // TODO: cascade
     private List<Article> articles;
 
-    @ManyToMany(fetch = FetchType.LAZY) // TODO: cascade
+    @ManyToMany() // TODO: cascade
     /*    @JoinTable(joinColumns = {@JoinColumn(name = "blocked_by_id")}, inverseJoinColumns = {@JoinColumn(name = "block_user_id")}) */
-    private List<User> block_users;
+    private Set<User> blockTarget;
 
-    @ManyToMany(mappedBy = "block_users") // TODO: cascade
-    private List<User> blocked_by;
+    @ManyToMany(mappedBy = "blockTarget", fetch = FetchType.LAZY) // TODO: cascade
+    private Set<User> blockBy;
 
     private String email;
 
@@ -58,15 +57,11 @@ public class User {
         return email;
     }
 
-    public boolean addBlock(User block_user) {
-        try {
-            if (block_user == null || block_user.getId().equals(this.getId())) return false;
-//     //   User check = this.block_users.stream().filter(t -> t.getId() == block_id).findFirst().orElse(null);
-            // if (this.block_users.contains(block_user)) return false;
-            this.block_users.add(block_user);
-            return true;
-        }catch (Exception e) {
-            return false;
-        }
+    public Set<User> getBlockTarget() {
+        return blockTarget;
+    }
+
+    public Set<User> getBlockBy() {
+        return blockBy;
     }
 }

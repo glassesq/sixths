@@ -66,4 +66,15 @@ public class UserController {
             return ResponseEntity.ok().body(ret);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ret);
     }
+
+
+    @PostMapping(path = "/unblock")
+    public ResponseEntity<String> unblockUser(HttpServletRequest req) {
+        int block_id = Integer.parseInt(req.getParameter("block_id"));
+        int id = Integer.parseInt(req.getAttribute(LoginInterceptor.ID_KEY).toString());
+        String ret = userService.unblockUser(id, block_id);
+        if (ret.equals("success"))
+            return ResponseEntity.ok().body(ret);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ret);
+    }
 }

@@ -21,6 +21,8 @@ public class UserService {
     public UserRepository userRepository;
 
     public Pair<String, String> addUser(String name, String email) {
+        if( userRepository.findByEmail(email).size() > 0 )
+            return new Pair<>("failed", "repeated email");
         User user = new User();
         user.setName(name);
         user.setEmail(email);
@@ -51,10 +53,23 @@ public class UserService {
     }
 
     public String blockUser(int userid, int block_id) {
+        if(userid == block_id) return "cannot block yourself";
         User user = getUserById(userid);
         if (user == null) return "invalid userid";
         User block_user = getUserById(block_id);
-        if( user.addBlock(block_user) ) return "success";
-        return "fail";
+        if (block_user == null) return "invalid block id";
+        user.getBlockTarget().add(block_user);
+        userRepository.save(user);
+        return "success";
+    }
+
+    public String unblockUser(int userid, int block_id) {
+        User user = getUserById(userid);
+        if (user == null) return "invalid userid";
+        User block_user = getUserById(block_id);
+        if (block_user == null) return "invalid block id";
+        user.getBlockTarget().remove(block_user);
+        userRepository.save(user);
+        return "success";
     }
 }

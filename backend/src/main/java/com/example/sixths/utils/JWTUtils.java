@@ -14,25 +14,34 @@ import java.util.Date;
 public class JWTUtils {
     public static String genUserToken(User user) {
         Calendar currentTime = Calendar.getInstance();
+        System.out.print("gen user token: ");
         System.out.println(currentTime);
         // TODO: only generate token once a day.
-
-        return JWT.create().withAudience(user.getOpenid())
+        return JWT.create().withAudience(user.getId().toString())
                 .withIssuedAt(new Date())
                 .withClaim("name", user.getName())
-                .withClaim("id", user.getId())
-                .sign(Algorithm.HMAC256(user.getOpenid()));
+                .sign(Algorithm.HMAC256("big-secret"));
     }
 
-    public static boolean verifyUserToken(String token, String secret_openid) {
+    public static boolean verifyUserToken(String token) {
         DecodedJWT jwt = null;
         try {
-            JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secret_openid)).build();
+            JWTVerifier verifier = JWT.require(Algorithm.HMAC256("big-secret")).build();
             jwt = verifier.verify(token);
-            System.out.println(jwt.getAudience());
             return true;
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    public static int getId(String token) {
+        try {
+            DecodedJWT jwt = null;
+            JWTVerifier verifier = JWT.require(Algorithm.HMAC256("big-secret")).build();
+            jwt = verifier.verify(token);
+            return Integer.parseInt(jwt.getAudience().get(0));
+        } catch (Exception e) {
+            return -1;
         }
     }
 

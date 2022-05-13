@@ -34,7 +34,6 @@ public class UserController {
         return userService.getAllUser();
     }
 
-    // TODO: annotation
     @PostMapping(path = "/login")
     public ResponseEntity<String> login(@RequestParam String name) {
         Pair<String, String> ret = userService.login(name);
@@ -45,14 +44,26 @@ public class UserController {
     }
 
     @PostMapping(path = "/signed_greeting")
-    public @ResponseBody String signed_greeting(HttpServletRequest req) {
+    public @ResponseBody
+    String signed_greeting(HttpServletRequest req) {
         String name = req.getAttribute(LoginInterceptor.NAME_KEY).toString();
         int id = Integer.parseInt(req.getAttribute(LoginInterceptor.ID_KEY).toString());
         User user = userService.getUserById(id);
-        if( user != null ) {
+        if (user != null) {
             String email = user.getEmail();
             return String.format("hi %s! your email is %s .\n", name, email);
         }
         return "wrong!"; // TODO
+    }
+
+
+    @PostMapping(path = "/block")
+    public ResponseEntity<String> blockUser(HttpServletRequest req) {
+        int block_id = Integer.parseInt(req.getParameter("block_id"));
+        int id = Integer.parseInt(req.getAttribute(LoginInterceptor.ID_KEY).toString());
+        String ret = userService.blockUser(id, block_id);
+        if (ret.equals("success"))
+            return ResponseEntity.ok().body(ret);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ret);
     }
 }

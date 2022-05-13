@@ -29,4 +29,17 @@ public class ArticleService {
         Optional<Article> article = articleRepository.findById(real_id); // use .get() in case of lazy fetch
         return article.orElse(null);
     }
+
+
+    public String getArticleList(int userid, int start, int num/* 是否为关注列表 */) {
+        // 找到userid的
+
+        return "";
+//        int real_id = Article.decryptId(articleid);
+//        Optional<Article> article = articleRepository.findById(real_id); // use .get() in case of lazy fetch
+//        return article.orElse(null);
+    }
+
+    // TODO: getArticleListForOneUser()
+
 }

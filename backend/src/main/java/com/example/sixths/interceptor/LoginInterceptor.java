@@ -23,18 +23,16 @@ public class LoginInterceptor implements HandlerInterceptor {
         }
 
         String token = request.getHeader("token");
-        String openid = request.getParameter("openid");
-
-        if (openid == null || token == null) {
+        if (token == null) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.setHeader("content-type", "text/html;charset=UTF-8");
             PrintWriter out = response.getWriter();
-            out.write("do not have one openid or token");
+            out.write("do not have token");
             out.flush();
             out.close();
             return false;
         }
-        if (!JWTUtils.verifyUserToken(token, openid)) {
+        if (!JWTUtils.verifyUserToken(token)) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             response.setHeader("content-type", "text/html;charset=UTF-8");
             PrintWriter out = response.getWriter();
@@ -43,8 +41,9 @@ public class LoginInterceptor implements HandlerInterceptor {
             out.close();
             return false;
         }
-        Integer id = JWTUtils.getClaim(token, "id").asInt();
+        Integer id = JWTUtils.getId(token);
         String name = JWTUtils.getClaim(token, "name").asString();
+
         request.setAttribute(NAME_KEY, name);
         request.setAttribute(ID_KEY, id);
         return true;

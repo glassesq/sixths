@@ -14,6 +14,10 @@ public class LoginInterceptorConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(loginInterceptor).addPathPatterns("/user/signed_greeting");
+        registry.addInterceptor(loginInterceptor)
+                .addPathPatterns("/article/**")
+                .addPathPatterns("/user/**")
+                .excludePathPatterns("/user/register")
+                .excludePathPatterns("/user/login");
     }
 }

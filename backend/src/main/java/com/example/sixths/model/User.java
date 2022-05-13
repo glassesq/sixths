@@ -17,6 +17,11 @@ public class User {
 
     private String name;
 
+    private String nickname;
+
+    @JsonIgnore
+    private String password;
+
     @JsonIgnore
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY) // TODO: cascade
     private List<Article> articles;
@@ -34,6 +39,7 @@ public class User {
     private String email;
 
     public User() {
+        this.nickname = "杜甫";
     }
 
     @JsonIgnore
@@ -51,6 +57,22 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
     public void setEmail(String email) {

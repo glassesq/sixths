@@ -37,7 +37,6 @@ public class Article {
         content = "";
     }
 
-    @JsonIgnore
     public Integer getId() {
         return id;
     }

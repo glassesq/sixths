@@ -34,9 +34,19 @@ public class UserController {
         return userService.getAllUser();
     }
 
+    // TODO: to remove
+    @PostMapping(path = "/test_login")
+    public ResponseEntity<String> test_login(@RequestParam String name) {
+        Pair<String, String> ret = userService.test_login(name);
+        if (ret.getValue0().equals("success")) {
+            return ResponseEntity.ok().body(ret.getValue1());
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ret.getValue1());
+    }
+
     @PostMapping(path = "/login")
-    public ResponseEntity<String> login(@RequestParam String name) {
-        Pair<String, String> ret = userService.login(name);
+    public ResponseEntity<String> login(@RequestParam String email, @RequestParam String password) {
+        Pair<String, String> ret = userService.login(email, password);
         if (ret.getValue0().equals("success")) {
             return ResponseEntity.ok().body(ret.getValue1());
         }
@@ -75,6 +85,19 @@ public class UserController {
         String ret = userService.unblockUser(id, block_id);
         if (ret.equals("success"))
             return ResponseEntity.ok().body(ret);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ret);
+    }
+
+
+    @PostMapping(path = "/set_info")
+    public ResponseEntity<String> set_info(HttpServletRequest req) {
+        int id = Integer.parseInt(req.getAttribute(LoginInterceptor.ID_KEY).toString());
+        String nickname = req.getParameter("nickname");
+        String password = req.getParameter("password");
+        String ret = userService.setInfo(id, nickname, password);
+        if (ret.equals("success")) {
+            return ResponseEntity.ok().body(ret);
+        }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ret);
     }
 }

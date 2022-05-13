@@ -21,7 +21,7 @@ public class UserService {
     public UserRepository userRepository;
 
     public Pair<String, String> addUser(String name, String email) {
-        if( userRepository.findByEmail(email).size() > 0 )
+        if (userRepository.findByEmail(email).size() > 0)
             return new Pair<>("failed", "repeated email");
         User user = new User();
         user.setName(name);
@@ -36,7 +36,7 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public Pair<String, String> login(String name) {
+    public Pair<String, String> test_login(String name) {
         List<User> userList = userRepository.findByName(name);
         if (userList.size() == 0) {
             return new Pair<>("fail", "not exist");
@@ -47,13 +47,25 @@ public class UserService {
         return new Pair<>("success", token);
     }
 
+
+    public Pair<String, String> login(String email, String password) {
+        User user = userRepository.findByEmail(email).
+                stream().findFirst().orElse(null);
+        if( user == null ) return new Pair<>("fail", "invalid email");
+        if( password.equals(user.getPassword()) ) {
+            String token = JWTUtils.genUserToken(user);
+            return new Pair<>("success", token);
+        }
+        return new Pair<>("fail", "unmatched password");
+    }
+
     public User getUserById(int id) {
         Optional<User> user = userRepository.findById(id);
         return user.orElse(null);
     }
 
     public String blockUser(int userid, int block_id) {
-        if(userid == block_id) return "cannot block yourself";
+        if (userid == block_id) return "cannot block yourself";
         User user = getUserById(userid);
         if (user == null) return "invalid userid";
         User block_user = getUserById(block_id);
@@ -69,6 +81,15 @@ public class UserService {
         User block_user = getUserById(block_id);
         if (block_user == null) return "invalid block id";
         user.getBlockTarget().remove(block_user);
+        userRepository.save(user);
+        return "success";
+    }
+
+    public String setInfo(int userid, String nickname, String password) {
+        User user = getUserById(userid);
+        if (user == null) return "invalid userid";
+        if (nickname != null) user.setNickname(nickname);
+        if (password != null) user.setPassword(password);
         userRepository.save(user);
         return "success";
     }

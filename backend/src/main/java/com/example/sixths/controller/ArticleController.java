@@ -21,7 +21,6 @@ public class ArticleController {
     @Autowired
     private ArticleService articleService;
 
-
     @PostMapping(path = "")
     public ResponseEntity<String> addArticle(@RequestParam String content) {
         int ret = articleService.addArticle(content);
@@ -39,10 +38,16 @@ public class ArticleController {
 
     /* 根据用户,偏好和分页，返回一个列表 */
     @GetMapping(path = "/get_list")
-    public @ResponseBody List<Article> getArticleList(HttpServletRequest req) {
-        int userid = Integer.parseInt(req.getAttribute(LoginInterceptor.ID_KEY).toString());
-        List<Article> ret = articleService.getArticleList(userid, 0, 10,
-                null, false, true);
-        return ret;
+    public @ResponseBody
+    List<Article> getArticleList(HttpServletRequest req) {
+        try {
+            int userid = Integer.parseInt(req.getAttribute(LoginInterceptor.ID_KEY).toString());
+            int start = Integer.parseInt(req.getParameter("start"));
+            int num = Integer.parseInt(req.getParameter("num"));
+            return articleService.getArticleList(userid, start, num,
+                    null, false, true);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

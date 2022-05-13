@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-
+<!-- 浏览一系列post的view，不带下方切换栏，带头部 -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"

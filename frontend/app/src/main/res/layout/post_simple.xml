@@ -16,6 +16,7 @@
         app:layout_constraintHorizontal_bias="0.05"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/default_profile"
         tools:srcCompat="@drawable/default_profile" />
 
     <LinearLayout

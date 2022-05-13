@@ -1,12 +1,14 @@
 package com.example.sixths.service;
 
 import com.example.sixths.model.Article;
+import com.example.sixths.model.User;
 import com.example.sixths.repository.ArticleRepository;
 import com.example.sixths.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ArticleService {
@@ -30,13 +32,26 @@ public class ArticleService {
     }
 
 
-    public String getArticleList(int userid, int start, int num/* 是否为关注列表 */) {
-        // 找到userid的
+    public List<Article> getArticleList(int userid, int start, int num, List<String> targets_id, boolean enable_target, boolean enable_block/* 是否为关注列表 */) {
+        User user = userRepository.findById(userid).orElse(null);
+        if (user == null) return new ArrayList<Article>();
+        HashSet<Integer> targets = new HashSet<Integer>();
+        if (enable_target) {
+            for (String target : targets_id)
+                targets.add(Integer.parseInt(target));
+        }
 
-        return "";
-//        int real_id = Article.decryptId(articleid);
-//        Optional<Article> article = articleRepository.findById(real_id); // use .get() in case of lazy fetch
-//        return article.orElse(null);
+        Set<User> blockers = user.getBlockTarget();
+
+        List<Article> ret_list = articleRepository.findAll().stream()
+                .filter(
+                        t -> ((!enable_target || targets.contains(t.getAuthor().getId()) // only show targets
+                                && (!enable_block || !blockers.contains(t.getAuthor())) // filter those blocker
+                        ))).collect(Collectors.toList());
+
+        int real_num = Math.min( ret_list.size() - start, num);
+        if( real_num < 0 ) return new ArrayList<Article>();
+        return ret_list.subList(start, start + real_num);
     }
 
     // TODO: getArticleListForOneUser()

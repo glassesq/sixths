@@ -17,16 +17,20 @@ public class User {
 
     private String name;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY) // TODO: cascade
     private List<Article> articles;
 
     @ManyToMany() // TODO: cascade
     /*    @JoinTable(joinColumns = {@JoinColumn(name = "blocked_by_id")}, inverseJoinColumns = {@JoinColumn(name = "block_user_id")}) */
+    @JsonIgnore
     private Set<User> blockTarget;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "blockTarget", fetch = FetchType.LAZY) // TODO: cascade
     private Set<User> blockBy;
 
+    @JsonIgnore
     private String email;
 
     public User() {

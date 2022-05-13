@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @Controller
 @RequestMapping(path = "/article")
@@ -38,10 +39,10 @@ public class ArticleController {
 
     /* 根据用户,偏好和分页，返回一个列表 */
     @GetMapping(path = "/get_list")
-    public @ResponseBody
-    ResponseEntity<String> getArticleList(HttpServletRequest req) {
-        String name = req.getAttribute(LoginInterceptor.NAME_KEY).toString();
-        int id = Integer.parseInt(req.getAttribute(LoginInterceptor.ID_KEY).toString());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(" ");
+    public @ResponseBody List<Article> getArticleList(HttpServletRequest req) {
+        int userid = Integer.parseInt(req.getAttribute(LoginInterceptor.ID_KEY).toString());
+        List<Article> ret = articleService.getArticleList(userid, 0, 10,
+                null, false, true);
+        return ret;
     }
 }

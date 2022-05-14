@@ -42,8 +42,8 @@
         android:layout_height="wrap_content"
         android:textStyle="bold"
         android:textSize="15sp"
-        android:onClick="signUp"
-        android:text="注册帐号" />
+        android:onClick="register"
+        android:text="创建帐号" />
 
     <LinearLayout
         android:layout_width="match_parent"

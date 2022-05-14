@@ -35,7 +35,7 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/textView5"
+                android:id="@+id/post_nickname"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="5dp"
@@ -45,17 +45,23 @@
                 tools:text="李白" />
 
             <TextView
-                android:id="@+id/textView9"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/noto_sans"
-                android:text="TextView"
-                tools:text="\@LiBai" />
+                android:text="\@" />
+
+            <TextView
+                android:id="@+id/post_username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/noto_sans"
+                android:text="LiBai"
+                />
 
         </LinearLayout>
 
         <TextView
-            android:id="@+id/textView6"
+            android:id="@+id/post_content"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="TextView"

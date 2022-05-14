@@ -52,10 +52,22 @@
         android:layout_marginHorizontal="40dp"
         android:layout_marginVertical="20dp"
         android:fontFamily="@font/noto_sans"
-        android:text="登录您的帐号"
+        android:text="创建您的帐号"
         android:textColor="@color/black"
         android:textSize="24sp"
         android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/login_username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="40dp"
+        android:layout_marginVertical="20dp"
+        android:autofillHints="email"
+        android:hint="用户名"
+        android:singleLine="true"
+        android:textSize="18sp"
+        tools:ignore="TouchTargetSizeCheck" />
 
     <EditText
         android:id="@+id/login_email"
@@ -65,6 +77,7 @@
         android:layout_marginVertical="20dp"
         android:autofillHints="email"
         android:hint="邮箱"
+        android:inputType="textEmailAddress"
         android:singleLine="true"
         android:textSize="18sp"
         tools:ignore="TouchTargetSizeCheck" />
@@ -77,6 +90,8 @@
         android:layout_marginVertical="20dp"
         android:autofillHints="password"
         android:hint="密码"
+        android:inputType="textPassword|textWebPassword"
+        android:password="true"
         android:singleLine="true"
         android:textSize="18sp"
         tools:ignore="TouchTargetSizeCheck" />
@@ -104,8 +119,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:clickable="true"
-        android:onClick="signIn"
+        android:onClick="register"
         tools:ignore="TouchTargetSizeCheck" />
 
 
 </LinearLayout>
+

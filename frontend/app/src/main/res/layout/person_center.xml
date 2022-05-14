@@ -19,6 +19,7 @@
                 android:id="@+id/view3"
                 android:layout_width="wrap_content"
                 android:layout_height="150dp"
+
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -42,7 +43,7 @@
                 app:layout_constraintStart_toStartOf="@+id/view3"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.92"
-                tools:srcCompat="@drawable/default_profile" />
+                app:srcCompat="@drawable/default_profile" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -57,9 +58,9 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/noto_sans"
                 android:paddingStart="20dp"
-                android:text="TextView"
                 android:textSize="16sp"
-                tools:text="\@LiBai" />
+                android:text="\@LiBai" />
+
 
             <View
                 android:layout_width="match_parent"
@@ -79,19 +80,17 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="30dp"
                     android:fontFamily="@font/noto_sans"
-                    android:text="TextView"
                     android:textColor="@color/black"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    tools:text="昵称" />
+                    android:text="昵称" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="TextView"
                     android:textSize="16sp"
-                    tools:text="李白" />
+                    android:text="李白" />
             </LinearLayout>
 
             <View
@@ -111,19 +110,17 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="30dp"
                     android:fontFamily="@font/noto_sans"
-                    android:text="TextView"
                     android:textColor="@color/black"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    tools:text="简介" />
+                    android:text="简介" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="TextView"
                     android:textSize="16sp"
-                    tools:text="Add a bio to your profile.\n\n\n" />
+                    android:text="Add a bio to your profile.\n\n\n" />
             </LinearLayout>
 
             <View
@@ -143,19 +140,17 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="30dp"
                     android:fontFamily="@font/noto_sans"
-                    android:text="TextView"
                     android:textColor="@color/black"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    tools:text="位置" />
+                    android:text="位置" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="TextView"
                     android:textSize="16sp"
-                    tools:text="蜀道 桃花潭" />
+                    android:text="蜀道 桃花潭" />
             </LinearLayout>
 
             <View
@@ -177,11 +172,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="30dp"
                     android:fontFamily="@font/noto_sans"
-                    android:text="TextView"
                     android:textColor="@color/black"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    tools:text="修改用户名" />
+                    android:text="修改用户名" />
 
             </LinearLayout>
 
@@ -201,37 +195,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="30dp"
                     android:fontFamily="@font/noto_sans"
-                    android:text="TextView"
                     android:textColor="@color/black"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    tools:text="修改密码" />
-
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="?android:attr/listDivider"
-                android:backgroundTint="@color/grey" />
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="10dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="30dp"
-                    android:fontFamily="@font/noto_sans"
-                    android:text="TextView"
-                    android:textColor="@color/black"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    tools:text="草稿箱" />
+                    android:text="修改密码" />
 
             </LinearLayout>
 
@@ -253,11 +220,35 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="30dp"
                     android:fontFamily="@font/noto_sans"
-                    android:text="TextView"
                     android:textColor="@color/black"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    tools:text="通知中心" />
+                    android:text="草稿箱" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?android:attr/listDivider"
+                android:backgroundTint="@color/grey" />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="30dp"
+                    android:fontFamily="@font/noto_sans"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:text="通知中心" />
 
             </LinearLayout>
 

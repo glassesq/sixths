@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- 带footer切换栏的主页，切换到搜索页面，个人信息页面 -->
+<?xml version="1.0" encoding="utf-8"?><!-- 带footer切换栏的主页，切换到搜索页面，个人信息页面 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,19 +6,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingVertical="5dp">
+    >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <include
-            layout="@layout/allpost_view"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0"></include>
+        <FrameLayout
+            android:id="@+id/frame_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+        <!--        <include
+                    layout="@layout/allpost_view"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0"></include> -->
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
@@ -33,12 +37,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingTop="5dp">
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp">
 
         <ImageView
             android:layout_width="0dp"
             android:layout_height="25dp"
             android:layout_weight="1"
+            android:onClick="gotoMain"
             app:srcCompat="@drawable/ic_home" />
 
         <ImageView
@@ -51,9 +57,10 @@
             android:layout_width="0dp"
             android:layout_height="25dp"
             android:layout_weight="1"
+            android:onClick="gotoPerson"
             app:srcCompat="@drawable/ic_user" />
 
-   </LinearLayout>
+    </LinearLayout>
 
 
 </LinearLayout>

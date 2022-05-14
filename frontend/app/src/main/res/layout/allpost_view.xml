@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- 浏览一系列post的view，不带下方切换栏，带头部 -->
+<?xml version="1.0" encoding="utf-8"?><!-- 浏览一系列post的view，不带下方切换栏，带头部 -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -60,6 +59,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.tabs.TabLayout
+        android:id="@+id/main_tablayout"
         android:layout_width="match_parent"
         android:layout_height="30dp"
         app:tabIndicatorColor="@color/blue"
@@ -77,15 +77,11 @@
 
     </com.google.android.material.tabs.TabLayout>
 
-    <include layout="@layout/post_simple"></include>
-
-    <include layout="@layout/post_simple"></include>
-
-    <include layout="@layout/post_simple"></include>
+    <!-- <include layout="@layout/post_simple"></include> -->
 
     <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/main_pager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="invisible" />
+        android:layout_height="match_parent" />
 
 </LinearLayout>

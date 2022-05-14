@@ -6,22 +6,25 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.sixths.R;
 import com.example.sixths.adapter.PostListAdapter;
+import com.example.sixths.service.Service;
 
 public class PostListFragment extends Fragment {
 
-    private static final String LOG_TAG = PostListFragment.class.getSimpleName();
-//    private boolean if_test_manager = false;
-
-//    private final CardListAdapter.OnArticleCardClickListener card_listener;
+    public Service.POST_LIST_TYPE type;
+    //    private final CardListAdapter.OnArticleCardClickListener card_listener;
 
     public PostListFragment() {
+        /*card_listener = null;*/
+    }
+
+    public PostListFragment(Service.POST_LIST_TYPE type) {
+        this.type = type;
         /*card_listener = null;*/
     }
 
@@ -39,27 +42,29 @@ public class PostListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_post_list, container, false);
-        Log.d(LOG_TAG, "view got");
         RecyclerView recycler_view = view.findViewById(R.id.recycler_view);
-        PostListAdapter adapter;
-        adapter = new PostListAdapter(view.getContext());
-/*        if (if_test_manager) {
-            adapter = new CardListAdapter(view.getContext(), card_listener, MainActivity.test_manager);
-        } else {
-            adapter = new CardListAdapter(view.getContext(), card_listener);
-        } */
-        Log.d(LOG_TAG, "card list adapter");
+
+        /* 设计 recycle view 的 adapter */
+        PostListAdapter adapter = new PostListAdapter(view.getContext(), type);
         recycler_view.setAdapter(adapter);
         recycler_view.setLayoutManager(new LinearLayoutManager(view.getContext()));
+
+        /* 从后端获取信息 */
+        Service.fetchArticle(adapter.type);
         return view;
     }
 
-
+    @Override
+    public void onResume() {
+        super.onResume();
+//        Service.fetchArticle(type);
+//        System.out.println("resume");
+    }
 }

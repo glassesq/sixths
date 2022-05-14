@@ -1,26 +1,96 @@
 package com.example.sixths.service;
 
 import android.annotation.SuppressLint;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+
+import androidx.annotation.NonNull;
 
 import com.example.sixths.adapter.PostListAdapter;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 public class ArticleManager {
-    public int allowSize = 10;
+    public int allowSize = Service.START_ARTICLE_NUM;
     private ArrayList<Article> article_list = new ArrayList<Article>();
     private PostListAdapter adapter = null;
-    //        public void setAdapter(CardListAdapter adapter) {
-//            this.adapter = adapter;
-//        }
+
     //        @SuppressLint("NotifyDataSetChanged")
     public void setAdapter(PostListAdapter adapter) {
         this.adapter = adapter;
     }
 
+    @SuppressLint("HandlerLeak")
+    private final Handler handler = new Handler(Looper.getMainLooper()) {
+        @SuppressLint("NotifyDataSetChanged")
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            adapter.notifyDataSetChanged();
+        }
+    };
+
+    public void fetchArticle() {
+        System.out.println("fetch Article");
+        Thread thread = new Thread(() -> {
+            try {
+                String params = "start=" + URLEncoder.encode(String.valueOf(0), "UTF-8")
+                        + "&num=" + URLEncoder.encode(String.valueOf(allowSize), "UTF-8");
+                HttpURLConnection conn =
+                        Service.getConnectionWithToken("/article/get_list", "GET", params);
+                System.out.println("fetch Article conn established");
+
+                if (conn.getResponseCode() == 200) {
+                    InputStream in = conn.getInputStream();
+
+                    String result = Service.is2String(in);
+                    System.out.println(result);
+
+//                    JSONObject obj = new JSONObject(result);
+                    JSONArray arr = new JSONArray(result);
+                    for (int i = article_list.size(); i < arr.length(); i++) {
+                        JSONObject obj = arr.getJSONObject(i);
+                        Article article = new Article();
+                        article.author_nickname = obj.getJSONObject("author").getString("nickname");
+                        article.author_username = obj.getJSONObject("author").getString("name");
+                        article.content = obj.getString("content");
+                        System.out.println(article.author_nickname + " " + article.author_username + " " + article.content);
+                        article_list.add(article);
+                    }
+
+                    Message msg = new Message();
+                    msg.setTarget(handler);
+                    msg.sendToTarget();
+                } else {
+                    System.out.println("fetch failed");
+                    System.out.println(conn.getResponseCode());
+                    InputStream in = conn.getErrorStream();
+
+                    String result = Service.is2String(in);
+                    System.out.println(result);
+
+                }
+                System.out.println("notify data set changed");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+
+    }
+
     @SuppressLint("NotifyDataSetChanged")
     public void showMoreArticle(int more) {
         allowSize += more;
+        fetchArticle();
         if (adapter != null) {
             adapter.notifyDataSetChanged(); // TODO
 //                adapter.setIfMore(allowSize < article_list.size());

@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.example.sixths.fragment.PostListFragment;
+import com.example.sixths.service.Service;
 
 public class PostPagerAdapter extends FragmentStateAdapter {
     // private final CardListAdapter.OnArticleCardClickListener card_listener;
@@ -18,7 +19,11 @@ public class PostPagerAdapter extends FragmentStateAdapter {
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        return new PostListFragment();
+//        return new PostListFragment();
+        if( position == 0 ) return new PostListFragment(Service.POST_LIST_TYPE.ALL);
+        if( position == 1 ) return new PostListFragment(Service.POST_LIST_TYPE.FOLLOW);
+        System.out.println("should not go here");
+        return null;
 //        if (position == 0) return new PostListFragment(card_listener, true);
 //        return new ArticleListFragment(card_listener);
     }

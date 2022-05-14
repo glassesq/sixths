@@ -24,8 +24,11 @@ public class Service {
     private static Handler login_handler = null;
     private static Handler register_handler = null;
 
-    private static ArticleManager all_manager;
-    private static ArticleManager follow_manager;
+    public static final int START_ARTICLE_NUM = 100;
+    public static final int MORE_ARTICLE_NUM = 100;
+
+    private static final ArticleManager all_manager = new ArticleManager();
+    private static final ArticleManager follow_manager = new ArticleManager();
 
     private static String token = null;
 
@@ -64,10 +67,9 @@ public class Service {
         }
     }
 
-
     /* 网络工具 */
 
-    private static String is2String(InputStream is) throws Exception {
+    public static String is2String(InputStream is) throws Exception {
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 
         String line;
@@ -83,15 +85,54 @@ public class Service {
         return builder.toString();
     }
 
-    private static HttpURLConnection getConnection(String _url, String params) throws Exception {
-        HttpURLConnection conn = (HttpURLConnection) new URL(_url).openConnection();
-        conn.setRequestMethod("POST");
+    public static HttpURLConnection getConnection(String path, String method, String params) throws Exception {
+        if( method.equals("GET") ) {
+            HttpURLConnection conn = (HttpURLConnection) new URL(url + path + "?" + params).openConnection();
+            conn.setRequestMethod(method);
+            conn.setReadTimeout(5000);
+            conn.setConnectTimeout(5000);
+            conn.setDoInput(true);
+            conn.setUseCaches(false);
+            return conn;
+        }
+        HttpURLConnection conn = (HttpURLConnection) new URL(url + path).openConnection();
+        conn.setRequestMethod(method);
         conn.setReadTimeout(5000);
         conn.setConnectTimeout(5000);
         conn.setDoInput(true);
         conn.setDoOutput(true);
         conn.setUseCaches(false);
 
+
+        OutputStream out = conn.getOutputStream();
+        out.write(params.getBytes());
+        out.flush();
+        conn.connect();
+
+        return conn;
+    }
+
+
+    public static HttpURLConnection getConnectionWithToken(String path, String method, String params) throws Exception {
+
+        if( method.equals("GET") ) {
+            HttpURLConnection conn = (HttpURLConnection) new URL(url + path + "?" + params).openConnection();
+            conn.setRequestMethod(method);
+            conn.setReadTimeout(5000);
+            conn.setConnectTimeout(5000);
+            conn.setRequestProperty("token", token);
+            conn.setDoInput(true);
+            conn.setUseCaches(false);
+            return conn;
+        }
+        HttpURLConnection conn = (HttpURLConnection) new URL(url + path).openConnection();
+        conn.setRequestMethod(method);
+        conn.setReadTimeout(5000);
+        conn.setConnectTimeout(5000);
+        conn.setRequestProperty("token", token);
+        conn.setDoInput(true);
+        conn.setDoOutput(true);
+        conn.setUseCaches(false);
 
         OutputStream out = conn.getOutputStream();
         out.write(params.getBytes());
@@ -121,7 +162,7 @@ public class Service {
 
                 String params = "password=" + URLEncoder.encode(encryptPassword(password), "UTF-8")
                         + "&email=" + URLEncoder.encode(email, "UTF-8");
-                HttpURLConnection conn = getConnection(url + "/user/login", params);
+                HttpURLConnection conn = getConnection("/user/login", "POST", params);
 
                 if (conn.getResponseCode() == 200) {
                     InputStream in = conn.getInputStream();
@@ -158,7 +199,7 @@ public class Service {
                 String params = "password=" + URLEncoder.encode(encryptPassword(password), "UTF-8")
                         + "&email=" + URLEncoder.encode(email, "UTF-8")
                         + "&name=" + URLEncoder.encode(username, "UTF-8");
-                HttpURLConnection conn = getConnection(url + "/user/register", params);
+                HttpURLConnection conn = getConnection("/user/register", "POST", params);
 
                 if (conn.getResponseCode() == 200) {
                     InputStream in = conn.getInputStream();
@@ -187,9 +228,26 @@ public class Service {
         thread.start();
     }
 
-    /* post */
-    class ArticleManager() {
+    /* article */
+    public static Article getArticle(int index, POST_LIST_TYPE type) {
+        if (type == POST_LIST_TYPE.FOLLOW) {
+            return follow_manager.getByIndex(index);
+        }
+        return all_manager.getByIndex(index);
+    }
 
+    public static int getArticleCount(POST_LIST_TYPE type) {
+        if (type == POST_LIST_TYPE.FOLLOW) {
+            return follow_manager.count();
+        }
+        return all_manager.count();
+    }
+
+    public static void fetchArticle(POST_LIST_TYPE type) {
+        if (type == POST_LIST_TYPE.FOLLOW) {
+            follow_manager.fetchArticle();
+        }
+        all_manager.fetchArticle();
     }
 
 }

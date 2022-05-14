@@ -1,36 +1,45 @@
-package com.example.sixths;
+package com.example.sixths.service;
 
-import android.annotation.SuppressLint;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
-import com.google.common.base.Strings;
+import com.example.sixths.adapter.PostListAdapter;
+import com.example.sixths.activity.RegisterActivity;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
 public class Service {
 
+    public enum POST_LIST_TYPE {ALL, FOLLOW}
+
     private static Handler login_handler = null;
     private static Handler register_handler = null;
+
+    private static ArticleManager all_manager;
+    private static ArticleManager follow_manager;
 
     private static String token = null;
 
     private static final String url = "http://10.0.2.2:8080";
+
+    public static void setToken(String _token) {
+        /* check 是否 存在token && token有效 */
+        // TODO
+        token = _token;
+    }
+
+    public static String getToken() {
+        return token;
+    }
 
     public static boolean checkToken() {
         /* check 是否 存在token && token有效 */
@@ -46,6 +55,17 @@ public class Service {
         register_handler = handler;
     }
 
+    public static void setArticleAdapter(PostListAdapter adapter, POST_LIST_TYPE type) {
+        if (type == POST_LIST_TYPE.ALL) {
+            all_manager.setAdapter(adapter);
+        }
+        if (type == POST_LIST_TYPE.FOLLOW) {
+            follow_manager.setAdapter(adapter);
+        }
+    }
+
+
+    /* 网络工具 */
 
     private static String is2String(InputStream is) throws Exception {
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
@@ -81,6 +101,8 @@ public class Service {
         return conn;
     }
 
+    /* 用户 */
+
     private static String encryptPassword(String password) throws Exception {
         MessageDigest messageDigest;
         messageDigest = MessageDigest.getInstance("SHA-256");
@@ -89,7 +111,6 @@ public class Service {
         System.out.println(encrypt_password);
         return encrypt_password;
     }
-
 
     public static void signIn(String email, String password) {
         Thread thread = new Thread(() -> {
@@ -165,4 +186,10 @@ public class Service {
         });
         thread.start();
     }
+
+    /* post */
+    class ArticleManager() {
+
+    }
+
 }

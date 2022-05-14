@@ -1,9 +1,11 @@
-package com.example.sixths;
+package com.example.sixths.adapter;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
+
+import com.example.sixths.fragment.PostListFragment;
 
 public class PostPagerAdapter extends FragmentStateAdapter {
     // private final CardListAdapter.OnArticleCardClickListener card_listener;

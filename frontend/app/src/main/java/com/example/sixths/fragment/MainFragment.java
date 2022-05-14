@@ -1,4 +1,4 @@
-package com.example.sixths;
+package com.example.sixths.fragment;
 
 import android.os.Bundle;
 
@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.sixths.R;
+import com.example.sixths.adapter.PostPagerAdapter;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 

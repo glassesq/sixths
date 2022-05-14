@@ -1,4 +1,4 @@
-package com.example.sixths;
+package com.example.sixths.adapter;
 
 import android.content.Context;
 import android.util.Log;
@@ -8,8 +8,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.sixths.R;
 
 
 public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostViewHolder> {

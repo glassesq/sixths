@@ -1,13 +1,12 @@
-package com.example.sixths;
+package com.example.sixths.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.view.View;
-import android.widget.Toast;
+
+import com.example.sixths.R;
 
 public class WelcomeActivity extends AppCompatActivity {
 

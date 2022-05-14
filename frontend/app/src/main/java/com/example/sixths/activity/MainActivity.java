@@ -1,4 +1,4 @@
-package com.example.sixths;
+package com.example.sixths.activity;
 
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -6,12 +6,22 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
+
+import com.example.sixths.fragment.MainFragment;
+import com.example.sixths.fragment.PersonFragment;
+import com.example.sixths.R;
+import com.example.sixths.service.Service;
 
 public class MainActivity extends AppCompatActivity {
 
     private enum FragName {MAIN, PERSON, SEARCH}
+
+    private SharedPreferences preferences;
+    public static final String TOKEN_PREF = "token";
+    private final String sharedPrefFile = "com.example.sixths.tokenprefs";
 
     private FragmentTransaction transaction;
     private Fragment main_frag = null;
@@ -20,6 +30,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        /* 从sharedPreference中获取token */
+        updateTokenFromPref();
 
         /* 跳转欢迎页逻辑 */
         if (!Service.checkToken()) {
@@ -34,6 +47,24 @@ public class MainActivity extends AppCompatActivity {
         /* 准备fragment内容并跳转至主页 */
         initFragment();
         selectTab(FragName.MAIN);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        saveTokenToPref();
+    }
+
+    public void updateTokenFromPref() {
+        preferences = getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
+        String token = preferences.getString(TOKEN_PREF, null);
+        if( token != null ) Service.setToken(token);
+    }
+
+    public void saveTokenToPref() {
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(TOKEN_PREF, Service.getToken());
+        editor.apply();
     }
 
     public void initFragment() {
@@ -70,5 +101,7 @@ public class MainActivity extends AppCompatActivity {
         }
         transaction.commit();
     }
+
+
 
 }

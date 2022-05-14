@@ -1,4 +1,4 @@
-package com.example.sixths;
+package com.example.sixths.fragment;
 
 import android.os.Bundle;
 
@@ -10,6 +10,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.example.sixths.R;
+import com.example.sixths.adapter.PostListAdapter;
 
 public class PostListFragment extends Fragment {
 

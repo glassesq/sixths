@@ -1,4 +1,4 @@
-package com.example.sixths;
+package com.example.sixths.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,54 +13,61 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class LoginActivity extends AppCompatActivity {
+import com.example.sixths.R;
+import com.example.sixths.service.Service;
 
+public class RegisterActivity extends AppCompatActivity {
+
+    public static final int REG_FAIL = 0;
+    public static final int REG_SUCCESS = 1;
+
+    private TextView login_username = null;
     private TextView login_email = null;
     private TextView login_password = null;
-
 
     @SuppressLint("HandlerLeak")
     private final Handler handler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
-            if (msg.what == 0) {
-                successSignIn();
-            } else if (msg.what == 1) {
-                failSignIn();
+            if (msg.what == REG_SUCCESS) {
+                successRegister();
+            } else if (msg.what == REG_FAIL) {
+                failRegister();
             }
-
         }
     };
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_register);
+
+        login_username = findViewById(R.id.login_username);
         login_email = findViewById(R.id.login_email);
         login_password = findViewById(R.id.login_password);
-        Service.setLoginHandler(handler);
+
+        Service.setRegisterHandler(handler);
     }
 
-    public void signIn(View view) {
+    public void register(View view) {
         /* 此处应该获取帐号密码 */
+//        String username = login_em
+        String username = login_username.getText().toString();
         String email = login_email.getText().toString();
         String password = login_password.getText().toString();
-        System.out.println(email + " " + password);
-        Service.signIn(email, password);
+        Service.register(username, email, password);
     }
 
-    private void successSignIn() {
-        Intent main_intent = new Intent(LoginActivity.this, MainActivity.class);
+    private void successRegister() {
+        Intent main_intent = new Intent(RegisterActivity.this, MainActivity.class);
         main_intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(main_intent);
-
     }
 
-    private void failSignIn() {
+    private void failRegister() {
         /* jump to fail page */
-        Toast.makeText(LoginActivity.this, "登录失败", Toast.LENGTH_SHORT).show();
+        Toast.makeText(RegisterActivity.this, "注册失败", Toast.LENGTH_SHORT).show();
     }
 
     public void cancel(View view) {

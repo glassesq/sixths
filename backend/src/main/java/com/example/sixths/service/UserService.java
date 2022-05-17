@@ -20,12 +20,15 @@ public class UserService {
     @Autowired
     public UserRepository userRepository;
 
-    public Pair<String, String> addUser(String name, String email) {
+    public Pair<String, String> addUser(String name, String email, String password) {
         if (userRepository.findByEmail(email).size() > 0)
             return new Pair<>("failed", "repeated email");
+        if (userRepository.findByName(name).size() > 0)
+            return new Pair<>("failed", "repeated name");
         User user = new User();
         user.setName(name);
         user.setEmail(email);
+        user.setPassword(password);
         // TODO: check emails
         userRepository.save(user);
         String token = JWTUtils.genUserToken(user);

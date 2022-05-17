@@ -1,32 +1,40 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- 新增or修改post，带下方，带头部 -->
+<?xml version="1.0" encoding="utf-8"?><!-- 新增or修改post，带下方，带头部 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingVertical="5dp">
+    android:orientation="vertical" >
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp">
 
         <TextView
-            android:layout_width="0dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1.5"
             android:paddingStart="25dp"
-            android:paddingEnd="0dp"
+            android:paddingEnd="25dp"
+            android:onClick="cancel"
             android:text="取消"
             android:textColor="@color/black"
             android:textSize="16sp"
-            android:textStyle="bold"
-            tools:text="取消" />
+            android:textStyle="bold" />
 
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
 
         <TextView
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingHorizontal="10dp"
@@ -43,12 +51,12 @@
             android:layout_marginHorizontal="10dp"
             android:layout_weight="0.5"
             android:background="@drawable/blue_corner"
-            android:text="Button"
+            android:text="发送"
+            android:onClick="makePost"
             android:textColor="@color/white"
             android:textSize="16sp"
             android:textStyle="bold"
-            tools:ignore="TouchTargetSizeCheck"
-            tools:text="发送" />
+            tools:ignore="TouchTargetSizeCheck" />
     </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -80,10 +88,10 @@
             tools:layout_editor_absoluteY="5dp">
 
             <EditText
-                android:id="@+id/textView6"
+                android:id="@+id/content_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TextView"
+                android:hint="写点什么——"
                 android:textColor="@color/black"
                 tools:text="朝辞白帝彩云间，朝辞白帝彩云间,朝辞白帝彩云间,朝辞白帝彩云间,千里江陵一日还。\n两岸猿声啼不住\n轻舟已过万重山。" />
 
@@ -172,3 +180,4 @@
 
 
 </LinearLayout>
+

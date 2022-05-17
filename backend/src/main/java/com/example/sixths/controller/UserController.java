@@ -20,8 +20,8 @@ public class UserController {
     private UserService userService;
 
     @PostMapping(path = "/register")
-    public ResponseEntity<String> registerUser(@RequestParam String name, @RequestParam String email) {
-        Pair<String, String> ret = userService.addUser(name, email);
+    public ResponseEntity<String> registerUser(@RequestParam String name, @RequestParam String email, @RequestParam String password) {
+        Pair<String, String> ret = userService.addUser(name, email, password);
         if (ret.getValue0().equals("success")) {
             return ResponseEntity.ok().body(ret.getValue1());
         }

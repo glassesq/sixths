@@ -1,5 +1,6 @@
 package com.example.sixths.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -11,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.sixths.R;
+import com.example.sixths.activity.MainActivity;
+import com.example.sixths.activity.WelcomeActivity;
 import com.example.sixths.adapter.PostPagerAdapter;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -31,6 +34,8 @@ public class MainFragment extends Fragment {
     //   public MainFragment(CardListAdapter.OnArticleCardClickListener listener) {
     //       card_listener = listener;
     //   }
+
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

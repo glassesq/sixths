@@ -1,15 +1,25 @@
 package com.example.sixths.service;
 
+import android.annotation.SuppressLint;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
+import com.example.sixths.activity.MainActivity;
 import com.example.sixths.adapter.PostListAdapter;
 import com.example.sixths.activity.RegisterActivity;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -23,6 +33,7 @@ public class Service {
 
     private static Handler login_handler = null;
     private static Handler register_handler = null;
+    private static Handler main_handler = null;
 
     public static final int START_ARTICLE_NUM = 100;
     public static final int MORE_ARTICLE_NUM = 100;
@@ -33,6 +44,7 @@ public class Service {
     private static String token = null;
 
     private static final String url = "http://10.0.2.2:8080";
+
 
     public static void setToken(String _token) {
         /* check 是否 存在token && token有效 */
@@ -52,6 +64,10 @@ public class Service {
 
     public static void setLoginHandler(Handler handler) {
         login_handler = handler;
+    }
+
+    public static void setMainHandler(Handler handler) {
+        main_handler = handler;
     }
 
     public static void setRegisterHandler(Handler handler) {
@@ -86,7 +102,7 @@ public class Service {
     }
 
     public static HttpURLConnection getConnection(String path, String method, String params) throws Exception {
-        if( method.equals("GET") ) {
+        if (method.equals("GET")) {
             HttpURLConnection conn = (HttpURLConnection) new URL(url + path + "?" + params).openConnection();
             conn.setRequestMethod(method);
             conn.setReadTimeout(5000);
@@ -115,7 +131,7 @@ public class Service {
 
     public static HttpURLConnection getConnectionWithToken(String path, String method, String params) throws Exception {
 
-        if( method.equals("GET") ) {
+        if (method.equals("GET")) {
             HttpURLConnection conn = (HttpURLConnection) new URL(url + path + "?" + params).openConnection();
             conn.setRequestMethod(method);
             conn.setReadTimeout(5000);
@@ -248,6 +264,34 @@ public class Service {
             follow_manager.fetchArticle();
         }
         all_manager.fetchArticle();
+    }
+
+    public static void makeArticle(String content) {
+        System.out.println("start make article");
+        Thread thread = new Thread(() -> {
+            try {
+                String params = "content=" + URLEncoder.encode(content, "UTF-8");
+                System.out.println(params);
+                HttpURLConnection conn = getConnectionWithToken("/article", "POST", params);
+                System.out.println("make article conn established");
+
+                if (conn.getResponseCode() == 200) {
+                    Message msg = new Message();
+                    msg.what = MainActivity.NEW_SUCCESS;
+                    msg.setTarget(main_handler);
+                    msg.sendToTarget();
+                } else {
+                    Message msg = new Message();
+                    msg.what = MainActivity.NEW_FAIL;
+                    msg.setTarget(main_handler);
+                    msg.sendToTarget();
+                }
+                System.out.println("make article finished");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
     }
 
 }

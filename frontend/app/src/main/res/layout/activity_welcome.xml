@@ -9,7 +9,7 @@
     tools:context=".activity.WelcomeActivity">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/profile_view"
         android:layout_marginVertical="5dp"
         android:layout_gravity="center_horizontal"
         android:layout_width="40dp"

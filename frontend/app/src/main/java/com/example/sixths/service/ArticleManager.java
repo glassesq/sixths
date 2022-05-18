@@ -19,9 +19,16 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 
 public class ArticleManager {
+
+    private int person_userid = -1;
+
     public int allowSize = Service.START_ARTICLE_NUM;
     private ArrayList<Article> article_list = new ArrayList<Article>();
     private PostListAdapter adapter = null;
+
+    public void setPerson(int id) {
+        person_userid = id;
+    }
 
     //        @SuppressLint("NotifyDataSetChanged")
     public void setAdapter(PostListAdapter adapter) {
@@ -44,6 +51,11 @@ public class ArticleManager {
             try {
                 String params = "start=" + URLEncoder.encode(String.valueOf(0), "UTF-8")
                         + "&num=" + URLEncoder.encode(String.valueOf(allowSize), "UTF-8");
+                System.out.println("person userid");
+                System.out.println(person_userid);
+                if (person_userid >= 0) {
+                    params = params.concat("&userid=" + URLEncoder.encode(String.valueOf(person_userid), "UTF-8"));
+                }
                 HttpURLConnection conn =
                         Service.getConnectionWithToken("/article/get_list", "GET", params);
                 System.out.println("fetch Article conn established");
@@ -55,15 +67,14 @@ public class ArticleManager {
                     System.out.println(result);
 
 //                    JSONObject obj = new JSONObject(result);
+                    article_list.clear(); // TODO: more efficient way
                     JSONArray arr = new JSONArray(result);
                     for (int i = article_list.size(); i < arr.length(); i++) {
-                        JSONObject obj = arr.getJSONObject(i);
-                        Article article = new Article();
-                        article.author_nickname = obj.getJSONObject("author").getString("nickname");
-                        article.author_username = obj.getJSONObject("author").getString("name");
-                        article.content = obj.getString("content");
-                        System.out.println(article.author_nickname + " " + article.author_username + " " + article.content);
-                        article_list.add(article);
+                        Article article = Service.decodeArticle(arr.getJSONObject(i));
+                        if (article != null) {
+                            System.out.println(article.author_nickname + " " + article.author_username + " " + article.content);
+                            article_list.add(article);
+                        }
                     }
 
                     Message msg = new Message();

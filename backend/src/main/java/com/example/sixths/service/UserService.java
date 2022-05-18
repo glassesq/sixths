@@ -8,8 +8,7 @@ import org.javatuples.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -54,8 +53,8 @@ public class UserService {
     public Pair<String, String> login(String email, String password) {
         User user = userRepository.findByEmail(email).
                 stream().findFirst().orElse(null);
-        if( user == null ) return new Pair<>("fail", "invalid email");
-        if( password.equals(user.getPassword()) ) {
+        if (user == null) return new Pair<>("fail", "invalid email");
+        if (password.equals(user.getPassword())) {
             String token = JWTUtils.genUserToken(user);
             return new Pair<>("success", token);
         }
@@ -88,12 +87,45 @@ public class UserService {
         return "success";
     }
 
-    public String setInfo(int userid, String nickname, String password) {
+    public String setInfo(int userid, String nickname, String password, String bio) {
         User user = getUserById(userid);
         if (user == null) return "invalid userid";
         if (nickname != null) user.setNickname(nickname);
         if (password != null) user.setPassword(password);
+        if (bio != null) user.setBio(bio);
         userRepository.save(user);
         return "success";
+    }
+
+
+    public String followUser(int userid, int follow_id) {
+        User user = getUserById(userid);
+        if (user == null) return "invalid userid";
+        User follow_user = getUserById(follow_id);
+        if (follow_user == null) return "invalid follow id";
+        user.getFollowing().add(follow_user);
+        userRepository.save(user);
+        return "success";
+    }
+
+    public String unfollowUser(int userid, int follow_id) {
+        User user = getUserById(userid);
+        if (user == null) return "invalid userid";
+        User follow_user = getUserById(follow_id);
+        if (follow_user == null) return "invalid follow id";
+        user.getFollowing().remove(follow_user);
+        userRepository.save(user);
+        return "success";
+    }
+
+    public List<Integer> getFollowing(int userid) {
+        User user = getUserById(userid);
+        if (user == null) return null;
+        Set<User> users = user.getFollowing();
+        List<Integer> ret = new ArrayList<>();
+        for(User _user: users) {
+            ret.add(_user.getId());
+        }
+        return ret;
     }
 }

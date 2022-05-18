@@ -1,10 +1,10 @@
 package com.example.sixths.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,6 +16,13 @@ import com.example.sixths.service.Service;
 
 
 public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostViewHolder> {
+
+    public interface postListener {
+        void gotoUserPage(int userid);
+    }
+
+    private postListener listener;
+
     private static final String LOG_TAG = PostListAdapter.class.getSimpleName();
 
     public static final int TYPE_FOOTER = 0;
@@ -28,14 +35,23 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
     private final LayoutInflater inflater;
 //    private final OnArticleCardClickListener card_listener;
 
-    public PostListAdapter(Context context/*, OnArticleCardClickListener _card_listener*/) {
+    public PostListAdapter(Context context) {
         inflater = LayoutInflater.from(context);
+        this.listener = null;
         setType(null);
 //        card_listener = _card_listener;
     }
 
-    public PostListAdapter(Context context, /*OnArticleCardClickListener _card_listener,*/ Service.POST_LIST_TYPE type) {
+    public PostListAdapter(Context context, postListener listener) {
         inflater = LayoutInflater.from(context);
+        this.listener = listener;
+        setType(null);
+//        card_listener = _card_listener;
+    }
+
+    public PostListAdapter(Context context, postListener listener, Service.POST_LIST_TYPE type) {
+        inflater = LayoutInflater.from(context);
+        this.listener = listener;
         setType(type);
 //        card_listener = _card_listener;
     }
@@ -44,14 +60,6 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
         if (type != null) this.type = type;
         Service.setArticleAdapter(this, this.type);
     }
-
-/*    public PostListAdapter(Context context, OnArticleCardClickListener _card_listener, ArticleManager manager) {
-        inflater = LayoutInflater.from(context);
-        card_listener = _card_listener;
-        this.manager = manager;
-        this.manager.setAdapter(this);
-        Log.d(LOG_TAG, "hi card list adapter");
-    } */
 
     @Override
     public int getItemViewType(int position) {
@@ -79,7 +87,17 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
     class PostViewHolder extends RecyclerView.ViewHolder {
         public TextView content_view;
         public TextView nickname_view;
+        public TextView time_view;
         public TextView username_view;
+        public TextView likes_view;
+        public TextView comments_view;
+        public TextView position_text;
+
+        public TextView follow_tag;
+
+        public ImageView image_view;
+        public ImageView profile_view;
+        public ImageView position_icon;
 
         //        public TextView title_view;
         //        public CardView card_view;
@@ -91,15 +109,25 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
             this.view_type = view_type;
             adapter = _adapter;
             if (this.view_type == PostListAdapter.TYPE_CLASSIC) {
+
                 content_view = item_view.findViewById(R.id.post_content);
+
                 nickname_view = item_view.findViewById(R.id.post_nickname);
-                username_view = item_view.findViewById(R.id.post_username);
+                username_view = item_view.findViewById(R.id.center_username_view);
+
+                time_view = item_view.findViewById(R.id.time_view);
+
+                image_view = item_view.findViewById(R.id.image_view);
+                profile_view = item_view.findViewById(R.id.profile_view);
+
+                position_text = item_view.findViewById(R.id.position_text);
+                position_icon = item_view.findViewById(R.id.position_icon);
+
+                likes_view = item_view.findViewById(R.id.likes_view);
+                comments_view = item_view.findViewById(R.id.comments_view);
+
+                follow_tag = item_view.findViewById(R.id.follow_tag);
             }
-/*            } else {
-//                footer_view = item_view.findViewById(R.id.view_more);
-                adapter = _adapter;
-                Log.d(LOG_TAG, "hi view holder - footer");
-            } */
         }
 
     }
@@ -119,12 +147,36 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
 
     @Override
     public void onBindViewHolder(@NonNull PostListAdapter.PostViewHolder holder, int position) {
-        if( getItemViewType(position) == TYPE_CLASSIC ) {
+        if (getItemViewType(position) == TYPE_CLASSIC) {
             Article article = Service.getArticle(position, type);
-            if( article == null ) return;
+            if (article == null) return;
             holder.nickname_view.setText(article.author_nickname);
             holder.username_view.setText(article.author_username);
             holder.content_view.setText(article.content);
+            holder.time_view.setText(article.time);
+
+            if( article.position != null ) {
+                holder.position_text.setText(article.position);
+                holder.position_text.setVisibility(View.VISIBLE);
+                holder.position_icon.setVisibility(View.VISIBLE);
+            } else {
+                holder.position_text.setVisibility(View.INVISIBLE);
+                holder.position_icon.setVisibility(View.INVISIBLE);
+            }
+
+            if( Service.isFollow(article.author_id) ) {
+                holder.follow_tag.setVisibility(View.VISIBLE);
+            } else {
+                holder.follow_tag.setVisibility(View.GONE);
+            }
+
+            holder.likes_view.setText(Service.wrapInt(article.likes));
+            holder.comments_view.setText(Service.wrapInt(article.comments));
+
+            if (article.images.size() == 0) holder.image_view.setVisibility(View.GONE);
+            // TODO: else
+            if (listener != null)
+                holder.profile_view.setOnClickListener(view -> listener.gotoUserPage(article.author_id));
         }
 //        if (position != getItemCount() - 1) {
 //            String title = manager.getByIndex(position).getTitle();

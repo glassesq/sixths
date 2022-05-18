@@ -9,13 +9,19 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import javax.persistence.*;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.Base64;
+import java.util.Date;
+import java.util.Set;
+import java.util.TimeZone;
 
 
 @Entity
 public class Article {
 
-    /** generate articleid to user: secret-key: Arti-Sec, algorithm: DES **/
+    /**
+     * generate articleid to user: secret-key: Arti-Sec, algorithm: DES
+     **/
     @JsonIgnore
     static final SecretKeySpec sks = new SecretKeySpec("Arti-Sec".getBytes(), "DES");
 
@@ -27,7 +33,15 @@ public class Article {
     @JoinColumn(name = "author_id")
     private User author; // the author of the post
 
+    @JsonIgnore
+    @ManyToMany(mappedBy = "likeArticles", fetch = FetchType.LAZY)
+    private Set<User> liker;
+
+    public Date time;
+
     public String content;
+
+    public String position;
 
     public User getAuthor() {
         return author;
@@ -41,8 +55,30 @@ public class Article {
         return id;
     }
 
+    public int getLikes() {
+        return liker.size();
+    }
+
     public String getContent() {
         return content;
+    }
+
+    public String getPosition() {
+        return position;
+    }
+
+    public void setPosition(String position) {
+        this.position = position;
+    }
+
+    public void setTime(Date time) {
+        this.time = time;
+    }
+
+    public String getTime() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        sdf.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
+        return sdf.format(time);
     }
 
     public void setContent(String content) {

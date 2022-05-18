@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingVertical="5dp">
+    android:paddingTop="5dp">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/profile_view"
         android:layout_width="65dp"
         android:layout_height="65dp"
         android:background="@drawable/circle"
@@ -26,7 +26,7 @@
         android:orientation="vertical"
         android:paddingEnd="10dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintStart_toEndOf="@+id/profile_view"
         tools:layout_editor_absoluteY="5dp">
 
         <LinearLayout
@@ -51,12 +51,22 @@
                 android:text="\@" />
 
             <TextView
-                android:id="@+id/post_username"
+                android:id="@+id/center_username_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/noto_sans"
-                android:text="LiBai"
-                />
+                android:text="LiBai" />
+
+            <TextView
+                android:id="@+id/follow_tag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/noto_sans"
+                android:text=" 已关注"
+                android:textColor="@color/blue"
+                android:textSize="12sp"
+                android:textStyle="bold" />
 
         </LinearLayout>
 
@@ -66,6 +76,7 @@
             android:layout_height="wrap_content"
             android:text="TextView"
             android:textColor="@color/black"
+            android:textSize="16sp"
             tools:text="朝辞白帝彩云间，朝辞白帝彩云间,朝辞白帝彩云间,朝辞白帝彩云间,千里江陵一日还。\n两岸猿声啼不住\n轻舟已过万重山。" />
 
 
@@ -80,6 +91,7 @@
             app:cardCornerRadius="8dp">
 
             <ImageView
+                android:id="@+id/image_view"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:scaleType="centerCrop"
@@ -94,44 +106,58 @@
             android:paddingVertical="3dp">
 
             <ImageView
-                android:id="@+id/imageView2"
+                android:id="@+id/position_icon"
                 android:layout_width="20dp"
                 android:layout_height="match_parent"
                 android:layout_marginVertical="1dp"
                 app:srcCompat="@drawable/ic_location" />
 
             <TextView
-                android:id="@+id/textView4"
-                android:layout_width="wrap_content"
+                android:id="@+id/position_text"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:ellipsize="end"
                 android:fontFamily="@font/noto_sans"
-                android:text="TextView"
+                android:maxLines="2"
+                android:minLines="1"
+                android:text="位置"
+                android:textSize="12sp"
                 tools:text="蜀地 桃花潭" />
+
+            <TextView
+                android:id="@+id/time_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:text="2022-05-17 19:03:45"
+                android:textSize="12sp" />
+
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="5dp"
-            android:layout_marginBottom="10dp"
+            android:layout_marginBottom="5dp"
             android:orientation="horizontal"
             android:paddingHorizontal="10dp">
 
             <ImageView
-                android:layout_height="match_parent"
                 android:layout_width="0dp"
+                android:layout_height="match_parent"
                 android:layout_marginVertical="1dp"
                 android:layout_weight="0.5"
                 app:srcCompat="@drawable/ic_like" />
 
             <TextView
-                android:layout_height="wrap_content"
+                android:id="@+id/likes_view"
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1.5"
-                android:text="TextView"
+                android:text="99+"
                 android:textSize="16sp"
-                tools:text="2" />
+                tools:text="99+" />
 
 
             <ImageView
@@ -142,13 +168,13 @@
                 app:srcCompat="@drawable/ic_comment" />
 
             <TextView
-                android:id="@+id/textView12"
+                android:id="@+id/comments_view"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.5"
-                android:text="TextView"
+                android:text="99+"
                 android:textSize="16sp"
-                tools:text="18" />
+                tools:text="99+" />
 
 
             <ImageView

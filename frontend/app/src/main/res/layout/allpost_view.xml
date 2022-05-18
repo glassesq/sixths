@@ -15,7 +15,7 @@
 
 
         <ImageView
-            android:id="@+id/imageView"
+            android:id="@+id/profile_view"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="@drawable/circle"
@@ -53,6 +53,18 @@
             app:layout_constraintTop_toTopOf="parent"
             android:onClick="gotoNew"
             app:srcCompat="@drawable/ic_plus" />
+        <!--TODO setting filter-->
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:padding="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.803"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_setting" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

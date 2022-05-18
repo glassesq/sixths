@@ -19,8 +19,14 @@ public class PostListFragment extends Fragment {
     public Service.POST_LIST_TYPE type;
     //    private final CardListAdapter.OnArticleCardClickListener card_listener;
 
+    public PostListAdapter.postListener listener;
+
     public PostListFragment() {
         /*card_listener = null;*/
+    }
+
+    public void setListner(PostListAdapter.postListener listener) {
+        this.listener = listener;
     }
 
     public PostListFragment(Service.POST_LIST_TYPE type) {
@@ -52,7 +58,7 @@ public class PostListFragment extends Fragment {
         RecyclerView recycler_view = view.findViewById(R.id.recycler_view);
 
         /* 设计 recycle view 的 adapter */
-        PostListAdapter adapter = new PostListAdapter(view.getContext(), type);
+        PostListAdapter adapter = new PostListAdapter(view.getContext(), listener, type);
         recycler_view.setAdapter(adapter);
         recycler_view.setLayoutManager(new LinearLayoutManager(view.getContext()));
 

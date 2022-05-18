@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import com.example.sixths.R;
 import com.example.sixths.activity.MainActivity;
 import com.example.sixths.activity.WelcomeActivity;
+import com.example.sixths.adapter.PostListAdapter;
 import com.example.sixths.adapter.PostPagerAdapter;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -25,6 +26,12 @@ public class MainFragment extends Fragment {
     private TabLayout tablayout;
     private ViewPager2 pager;
 
+    private PostListAdapter.postListener listener;
+
+    public void setListener(PostListAdapter.postListener listener) {
+        this.listener = listener;
+    }
+
 //    private final CardListAdapter.OnArticleCardClickListener card_listener;
 
     public MainFragment() {
@@ -34,7 +41,6 @@ public class MainFragment extends Fragment {
     //   public MainFragment(CardListAdapter.OnArticleCardClickListener listener) {
     //       card_listener = listener;
     //   }
-
 
 
     @Override
@@ -50,6 +56,7 @@ public class MainFragment extends Fragment {
         pager = view.findViewById(R.id.main_pager);
         if (this.getActivity() != null) {
             PostPagerAdapter pager_adapter = new PostPagerAdapter(this.getActivity());
+            pager_adapter.setListener(listener);
             pager.setAdapter(pager_adapter);
             TabLayoutMediator mediator = new TabLayoutMediator(tablayout, pager,
                     (tab, position) -> {

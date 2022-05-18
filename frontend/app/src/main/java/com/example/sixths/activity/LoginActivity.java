@@ -21,15 +21,18 @@ public class LoginActivity extends AppCompatActivity {
     private TextView login_email = null;
     private TextView login_password = null;
 
+    public static int LOGIN_FAIL = 0;
+    public static int LOGIN_SUCCESS = 1;
+
 
     @SuppressLint("HandlerLeak")
     private final Handler handler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
-            if (msg.what == 0) {
+            if (msg.what == LOGIN_SUCCESS) {
                 successSignIn();
-            } else if (msg.what == 1) {
+            } else if (msg.what == LOGIN_FAIL) {
                 failSignIn();
             }
 
@@ -55,10 +58,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void successSignIn() {
+        System.out.println("prepare jump to main: "+ Service.getToken());
         Intent main_intent = new Intent(LoginActivity.this, MainActivity.class);
         main_intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(main_intent);
-
     }
 
     private void failSignIn() {

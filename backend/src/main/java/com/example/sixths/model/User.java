@@ -35,8 +35,23 @@ public class User {
     @ManyToMany(mappedBy = "blockTarget", fetch = FetchType.LAZY) // TODO: cascade
     private Set<User> blockBy;
 
+    @ManyToMany() // TODO: cascade
+    /*    @JoinTable(joinColumns = {@JoinColumn(name = "blocked_by_id")}, inverseJoinColumns = {@JoinColumn(name = "block_user_id")}) */
+    @JsonIgnore
+    private Set<User> following;
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "following", fetch = FetchType.LAZY) // TODO: cascade
+    private Set<User> follower;
+
+    @JsonIgnore
+    @ManyToMany()
+    private Set<Article> likeArticles;
+
     @JsonIgnore
     private String email;
+
+    private String bio = "";
 
     public User() {
         this.nickname = "杜甫";
@@ -58,6 +73,12 @@ public class User {
     public void setName(String name) {
         this.name = name;
     }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) { this.bio = bio; }
 
     public void setPassword(String password) {
         this.password = password;
@@ -85,6 +106,10 @@ public class User {
 
     public Set<User> getBlockTarget() {
         return blockTarget;
+    }
+
+    public Set<User> getFollowing() {
+        return following;
     }
 
     public Set<User> getBlockBy() {

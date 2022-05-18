@@ -11,6 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequestMapping(path = "/user") // after application path
@@ -94,10 +96,67 @@ public class UserController {
         int id = Integer.parseInt(req.getAttribute(LoginInterceptor.ID_KEY).toString());
         String nickname = req.getParameter("nickname");
         String password = req.getParameter("password");
-        String ret = userService.setInfo(id, nickname, password);
+        String bio = req.getParameter("bio");
+        String ret = userService.setInfo(id, nickname, password, bio);
         if (ret.equals("success")) {
             return ResponseEntity.ok().body(ret);
         }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ret);
+    }
+
+
+    @GetMapping(path = "/get_info")
+    public ResponseEntity<User> getUserInfo(HttpServletRequest req) {
+//        int id = Integer.parseInt(req.getAttribute(LoginInterceptor.ID_KEY).toString());
+        int id = Integer.parseInt(req.getParameter("userid"));
+        User ret = userService.getUserById(id);
+        if (ret != null) {
+            return ResponseEntity.ok().body(ret);
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+    }
+
+
+    @GetMapping(path = "/get_myself")
+    public ResponseEntity<User> getMyselfInfo(HttpServletRequest req) {
+        int id = Integer.parseInt(req.getAttribute(LoginInterceptor.ID_KEY).toString());
+        User ret = userService.getUserById(id);
+        if (ret != null) {
+            return ResponseEntity.ok().body(ret);
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+    }
+
+
+    @PostMapping(path = "/follow")
+    public ResponseEntity<String> followUser(HttpServletRequest req) {
+        int follow_id = Integer.parseInt(req.getParameter("follow_id"));
+        int id = Integer.parseInt(req.getAttribute(LoginInterceptor.ID_KEY).toString());
+        String ret = userService.followUser(id, follow_id);
+        if (ret.equals("success"))
+            return ResponseEntity.ok().body(ret);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ret);
+    }
+
+
+    @PostMapping(path = "/unfollow")
+    public ResponseEntity<String> unfollowUser(HttpServletRequest req) {
+        int follow_id = Integer.parseInt(req.getParameter("follow_id"));
+        int id = Integer.parseInt(req.getAttribute(LoginInterceptor.ID_KEY).toString());
+        String ret = userService.unfollowUser(id, follow_id);
+        if (ret.equals("success"))
+            return ResponseEntity.ok().body(ret);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ret);
+    }
+
+
+    @GetMapping(path = "/get_following")
+    public ResponseEntity<List<Integer>> getFollowing(HttpServletRequest req) {
+//        int follow_id = Integer.parseInt(req.getParameter("follow_id"));
+        int id = Integer.parseInt(req.getAttribute(LoginInterceptor.ID_KEY).toString());
+        List<Integer> ret = userService.getFollowing(id);
+        if (ret != null)
+            return ResponseEntity.ok().body(ret);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ret);
     }
 }

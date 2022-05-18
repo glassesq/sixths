@@ -20,6 +20,7 @@
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="5dp"
+                android:onClick="cancel"
                 android:text="取消"
                 android:textColor="@color/black"
                 android:textSize="14sp"
@@ -28,7 +29,7 @@
                 app:layout_constraintHorizontal_bias="0.06"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="取消" />
+                 />
 
 
             <TextView
@@ -36,7 +37,6 @@
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="5dp"
-                android:text="个人信息"
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 android:textStyle="bold"
@@ -44,7 +44,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="个人信息" />
+                android:text="个人信息" />
 
             <Button
                 android:id="@+id/button"
@@ -52,7 +52,6 @@
                 android:layout_height="30dp"
                 android:layout_marginHorizontal="10dp"
                 android:background="@drawable/blue_corner"
-                android:text="Button"
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 android:textStyle="bold"
@@ -62,7 +61,8 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:ignore="TouchTargetSizeCheck"
-                tools:text="保存" />
+                android:onClick="submit"
+                android:text="保存" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
@@ -89,20 +89,19 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="30dp"
                     android:fontFamily="@font/noto_sans"
-                    android:text="TextView"
                     android:textColor="@color/black"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    tools:text="昵称" />
+                    android:text="昵称" />
 
                 <EditText
+                    android:id="@+id/nickname_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="TextView"
+                    android:text="李白"
                     android:textSize="16sp"
-                    tools:ignore="TouchTargetSizeCheck"
-                    tools:text="李白" />
+                    tools:ignore="TouchTargetSizeCheck" />
             </LinearLayout>
 
             <View
@@ -123,52 +122,19 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="30dp"
                     android:fontFamily="@font/noto_sans"
-                    android:text="TextView"
+
                     android:textColor="@color/black"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    tools:text="简介" />
+                    android:text="简介" />
 
                 <EditText
+                    android:id="@+id/bio_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="TextView"
-                    android:textSize="16sp"
-                    tools:text="Add a bio to your profile.\n\n\n" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="?android:attr/listDivider"
-                android:backgroundTint="@color/grey" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="10dp"
-                android:orientation="horizontal"
-                android:paddingRight="20dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="30dp"
-                    android:fontFamily="@font/noto_sans"
-                    android:text="TextView"
-                    android:textColor="@color/black"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    tools:text="位置" />
-
-                <EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="TextView"
-                    android:textSize="16sp"
-                    tools:text="蜀道 桃花潭" />
+                    android:text="Add a bio to your profile.\n\n\n"
+                    android:textSize="16sp" />
             </LinearLayout>
 
 

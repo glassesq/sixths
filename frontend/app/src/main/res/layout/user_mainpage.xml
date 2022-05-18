@@ -29,19 +29,45 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <ImageView
-                android:id="@+id/profile_view"
+            <androidx.cardview.widget.CardView
+
                 android:layout_width="65dp"
                 android:layout_height="65dp"
-                android:background="@drawable/circle"
-                android:padding="5dp"
+                app:cardCornerRadius="33dp"
+                app:cardElevation="0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.05"
                 app:layout_constraintStart_toStartOf="@+id/view3"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.92"
-                tools:srcCompat="@drawable/default_profile" />
+                app:layout_constraintVertical_bias="0.92">
+
+                <androidx.cardview.widget.CardView
+
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center"
+                    app:cardCornerRadius="23dp"
+                    app:cardElevation="0dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.05"
+                    app:layout_constraintStart_toStartOf="@+id/view3"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.92">
+
+                    <ImageView
+                        android:id="@+id/profile_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+
+                        android:background="@drawable/circle"
+                        android:scaleType="centerCrop"
+                        app:srcCompat="@drawable/default_image"
+                        tools:srcCompat="@drawable/default_image" />
+                </androidx.cardview.widget.CardView>
+
+            </androidx.cardview.widget.CardView>
 
             <Button
                 android:id="@+id/followed_but"

@@ -4,6 +4,7 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_bell.xml" value="0.264" />
+        <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_setting.xml" value="0.145" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/white_corner.xml" value="0.1625" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/activity_login.xml" value="0.2" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/activity_main.xml" value="0.15520833333333334" />
@@ -16,13 +17,13 @@
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/new_post.xml" value="0.15520833333333334" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/notice_box.xml" value="0.15520833333333334" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/overall_page.xml" value="0.264" />
-        <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/person_center.xml" value="0.264" />
-        <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/post_simple.xml" value="0.264" />
+        <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/person_center.xml" value="0.4" />
+        <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/post_simple.xml" value="0.4" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/setting_info.xml" value="0.264" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/sign_in.xml" value="0.228125" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/single_draft.xml" value="0.15520833333333334" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/single_notice.xml" value="0.15520833333333334" />
-        <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/user_mainpage.xml" value="0.264" />
+        <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/user_mainpage.xml" value="0.4" />
       </map>
     </option>
   </component>

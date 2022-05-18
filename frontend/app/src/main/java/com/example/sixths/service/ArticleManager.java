@@ -17,10 +17,13 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ArticleManager {
 
     private int person_userid = -1;
+
+    private boolean follow = false;
 
     public int allowSize = Service.START_ARTICLE_NUM;
     private ArrayList<Article> article_list = new ArrayList<Article>();
@@ -30,9 +33,20 @@ public class ArticleManager {
         person_userid = id;
     }
 
+    public void setFollow() {
+        follow = true;
+    }
+
     //        @SuppressLint("NotifyDataSetChanged")
     public void setAdapter(PostListAdapter adapter) {
         this.adapter = adapter;
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void fresh() {
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+        }
     }
 
     @SuppressLint("HandlerLeak")
@@ -41,7 +55,7 @@ public class ArticleManager {
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
-            adapter.notifyDataSetChanged();
+            fresh();
         }
     };
 
@@ -55,6 +69,9 @@ public class ArticleManager {
                 System.out.println(person_userid);
                 if (person_userid >= 0) {
                     params = params.concat("&userid=" + URLEncoder.encode(String.valueOf(person_userid), "UTF-8"));
+                } else if (follow) {
+                    params = params.concat("&follow=true");
+                    System.out.println("follow");
                 }
                 HttpURLConnection conn =
                         Service.getConnectionWithToken("/article/get_list", "GET", params);
@@ -67,15 +84,17 @@ public class ArticleManager {
                     System.out.println(result);
 
 //                    JSONObject obj = new JSONObject(result);
-                    article_list.clear(); // TODO: more efficient way
+
+                    ArrayList<Article> list = new ArrayList<Article>();
                     JSONArray arr = new JSONArray(result);
-                    for (int i = article_list.size(); i < arr.length(); i++) {
+                    for (int i = 0; i < arr.length(); i++) {
                         Article article = Service.decodeArticle(arr.getJSONObject(i));
                         if (article != null) {
                             System.out.println(article.author_nickname + " " + article.author_username + " " + article.content);
-                            article_list.add(article);
+                            list.add(article);
                         }
                     }
+                    article_list = list;
 
                     Message msg = new Message();
                     msg.setTarget(handler);
@@ -87,7 +106,6 @@ public class ArticleManager {
 
                     String result = Service.is2String(in);
                     System.out.println(result);
-
                 }
                 System.out.println("notify data set changed");
             } catch (Exception e) {

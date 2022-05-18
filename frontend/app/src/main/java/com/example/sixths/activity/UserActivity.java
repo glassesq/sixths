@@ -28,6 +28,7 @@ import com.google.android.material.tabs.TabLayoutMediator;
 public class UserActivity extends AppCompatActivity {
 
     public static final int USER_FOLLOW = 1;
+    public static final int USER_UNFOLLOW = 4;
     public static final int USER_FAIL = 2;
     public static final int USER_SUCCESS = 3;
 
@@ -52,7 +53,9 @@ public class UserActivity extends AppCompatActivity {
             } else if (msg.what == USER_SUCCESS) {
                 successUserInfo(msg.getData().getString("info"));
             } else if (msg.what == USER_FOLLOW) {
-                freshFollow();
+                setFollow();
+            } else if (msg.what == USER_UNFOLLOW) {
+                setUnfollow();
             }
         }
     };
@@ -81,7 +84,6 @@ public class UserActivity extends AppCompatActivity {
         followed_but = findViewById(R.id.followed_but);
         follow_but = findViewById(R.id.follow_but);
 
-
         /* 设计 recycle view 的 adapter */
         PostListAdapter adapter = new PostListAdapter(this, null, Service.POST_LIST_TYPE.PERSON); // TODO
         recycler_view.setAdapter(adapter);
@@ -105,12 +107,21 @@ public class UserActivity extends AppCompatActivity {
 
     public void freshFollow() {
         if (Service.isFollow(user.id)) {
-            follow_but.setVisibility(View.GONE);
-            followed_but.setVisibility(View.VISIBLE);
+            setFollow();
         } else {
-            follow_but.setVisibility(View.VISIBLE);
-            followed_but.setVisibility(View.GONE);
+            setUnfollow();
         }
+    }
+
+    public void setFollow() {
+        follow_but.setVisibility(View.GONE);
+        followed_but.setVisibility(View.VISIBLE);
+    }
+
+    public void setUnfollow() {
+
+        follow_but.setVisibility(View.VISIBLE);
+        followed_but.setVisibility(View.GONE);
     }
 
     public void successUserInfo(String info_str) {

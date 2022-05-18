@@ -30,7 +30,9 @@ public class NewActivity extends AppCompatActivity {
     boolean enableLocation = false;
     boolean enableImage = false;
     String locationText = null;
+
     private TextView content_view;
+    private TextView title_view;
     private LinearLayout position_view;
     private TextView position_text;
     private ImageView image_view;
@@ -43,6 +45,9 @@ public class NewActivity extends AppCompatActivity {
         content_view = findViewById(R.id.content_view);
         position_view = findViewById(R.id.position_view);
         position_text = findViewById(R.id.position_text);
+
+        title_view = findViewById(R.id.title_view);
+
         image_view = findViewById(R.id.new_image_view);
 
         position_view.setVisibility(View.GONE);
@@ -51,8 +56,9 @@ public class NewActivity extends AppCompatActivity {
 
     public void makePost(View view) {
         String content = content_view.getText().toString();
+        String title = title_view.getText().toString();
         System.out.println(content);
-        Service.makeArticle(content, locationText);
+        Service.makeArticle(content, locationText, title);
         this.finish();
     }
 

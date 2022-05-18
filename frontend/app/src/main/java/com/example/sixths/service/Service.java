@@ -1,11 +1,15 @@
 package com.example.sixths.service;
 
 import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,13 +23,21 @@ import com.example.sixths.activity.RegisterActivity;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
+import java.util.Date;
+import java.util.List;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -35,6 +47,8 @@ import java.util.HashSet;
 public class Service {
 
     public enum POST_LIST_TYPE {ALL, FOLLOW, PERSON}
+
+    public static String publicPath = "";
 
     public static int myself_id = -1;
     public static User myself = new User();
@@ -47,6 +61,9 @@ public class Service {
     public static final int START_ARTICLE_NUM = 100;
     public static final int MORE_ARTICLE_NUM = 100;
 
+    public static final int DEEP_FRESH = 0;
+    public static final int FRESH = 1;
+
     private static final ArticleManager all_manager = new ArticleManager();
     private static final ArticleManager follow_manager = new ArticleManager();
     private static final ArticleManager person_manager = new ArticleManager();
@@ -56,6 +73,40 @@ public class Service {
     private static final String url = "http://10.0.2.2:8080";
 
     public static HashSet<Integer> following = new HashSet<>();
+
+    private static final Handler handler = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == DEEP_FRESH) {
+                deepfresh();
+            } else if (msg.what == FRESH) {
+                fresh();
+            }
+        }
+    };
+
+    public static void fresh() {
+        all_manager.fresh();
+        follow_manager.fresh();
+        person_manager.fresh();
+    }
+
+    public static void deepfresh() {
+        fetchArticle(POST_LIST_TYPE.ALL);
+        fetchArticle(POST_LIST_TYPE.FOLLOW);
+        fetchArticle(POST_LIST_TYPE.PERSON);
+    }
+
+    public static void initStorage(String path) {
+        publicPath = path.concat("/statics");
+        File dir = new File(publicPath);
+        dir.mkdirs();
+    }
+
+    public static void setFollow() {
+        follow_manager.setFollow();
+    }
 
     public static void setToken(String _token) {
         /* check 是否 存在token && token有效 */
@@ -110,6 +161,16 @@ public class Service {
     }
 
     /* 网络工具 */
+    public static String checkStr(JSONObject obj, String name) {
+        try {
+            if (obj.isNull(name)) return null;
+            return obj.getString(name);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static HashSet<Integer> decodeIntegerSet(String ret) {
         HashSet<Integer> h = new HashSet<>();
         try {
@@ -165,7 +226,6 @@ public class Service {
 
         return conn;
     }
-
 
     public static HttpURLConnection getConnectionWithToken(String path, String method, String params) throws Exception {
         System.out.println(path + "-token:" + token);
@@ -354,6 +414,11 @@ public class Service {
 
                     following = decodeIntegerSet(result);
                 }
+                Message msg = new Message();
+                msg.what = FRESH;
+                msg.setTarget(handler);
+                msg.sendToTarget();
+
                 System.out.println("get user following finished");
             } catch (Exception e) {
                 e.printStackTrace();
@@ -378,12 +443,16 @@ public class Service {
         }
     }
 
-
-    public static void setUserInfo(String nickname, String bio) {
+    public static void setUserInfo(String nickname, String bio, String profile) {
         Thread thread = new Thread(() -> {
             try {
                 String params = "nickname=" + URLEncoder.encode(nickname, "UTF-8")
                         + "&bio=" + URLEncoder.encode(bio, "UTF-8");
+                if (profile != null) {
+                    params = params.concat("&profile=" + URLEncoder.encode(profile, "UTF-8"));
+                }
+                System.out.println(profile);
+                System.out.println(params);
                 HttpURLConnection conn = getConnectionWithToken("/user/set_info", "POST", params);
                 System.out.println("set info conn established");
 
@@ -395,6 +464,10 @@ public class Service {
                     System.out.println(result);
                 }
                 getMyself();
+                Message msg = new Message();
+                msg.what = DEEP_FRESH;
+                msg.setTarget(handler);
+                msg.sendToTarget();
                 System.out.println("set user info finished");
             } catch (Exception e) {
                 e.printStackTrace();
@@ -413,20 +486,20 @@ public class Service {
                 String params = "follow_id=" + URLEncoder.encode(String.valueOf(userid), "UTF-8");
                 HttpURLConnection conn = getConnectionWithToken("/user/follow", "POST", params);
                 System.out.println("follow conn established");
-
                 System.out.println(conn.getResponseCode());
                 if (conn.getResponseCode() == 200) {
-                    // TODO: 在此处对follow更新
-                    following.add(userid);
+                    getMyself();
 
                     Message msg = new Message();
+                    msg.what = FRESH;
+                    msg.setTarget(handler);
+                    msg.sendToTarget();
+
+                    msg = new Message();
                     msg.what = UserActivity.USER_FOLLOW;
                     msg.setTarget(user_handler);
                     msg.sendToTarget();
                 }
-                getMyself();
-                fetchArticle(POST_LIST_TYPE.ALL);
-                fetchArticle(POST_LIST_TYPE.FOLLOW);
                 System.out.println("follow info finished");
             } catch (Exception e) {
                 e.printStackTrace();
@@ -442,20 +515,21 @@ public class Service {
                 String params = "follow_id=" + URLEncoder.encode(String.valueOf(userid), "UTF-8");
                 HttpURLConnection conn = getConnectionWithToken("/user/unfollow", "POST", params);
                 System.out.println("unfollow conn established");
-
                 System.out.println(conn.getResponseCode());
                 if (conn.getResponseCode() == 200) {
-                    // TODO: 在此处对follow更新
-                    following.remove(userid);
+                    getMyself();
 
                     Message msg = new Message();
-                    msg.what = UserActivity.USER_FOLLOW;
+                    msg.what = FRESH;
+                    msg.setTarget(handler);
+                    msg.sendToTarget();
+
+                    msg = new Message();
+                    msg.what = UserActivity.USER_UNFOLLOW;
                     msg.setTarget(user_handler);
                     msg.sendToTarget();
                 }
-                getMyself();
-                fetchArticle(POST_LIST_TYPE.ALL);
-                fetchArticle(POST_LIST_TYPE.FOLLOW);
+
                 System.out.println("unfollow info finished");
             } catch (Exception e) {
                 e.printStackTrace();
@@ -464,7 +538,6 @@ public class Service {
         thread.start();
 
     }
-
 
     /* article */
     public static Article decodeArticle(String str) {
@@ -483,24 +556,19 @@ public class Service {
             article.author_nickname = obj.getJSONObject("author").getString("nickname");
             article.author_username = obj.getJSONObject("author").getString("name");
             article.author_id = obj.getJSONObject("author").getInt("id");
+            article.title = checkStr(obj, "title");
             article.content = obj.getString("content");
             article.position = obj.getString("position");
+            article.author_profile = checkStr(obj.getJSONObject("author"), "profile");
+            fetchImage(article.author_profile, article);
             if (article.position.equals("null")) article.position = null;
             article.likes = obj.getInt("likes");
             article.time = obj.getString("time");
-            System.out.println(article.author_nickname + " " + article.author_username + " " + article.content);
             return article;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
-    }
-
-    @NonNull
-    public static String wrapInt(int num) {
-        System.out.println(num);
-        if (num < 100) return String.valueOf(num);
-        return "99+";
     }
 
     public static Article getArticle(int index, POST_LIST_TYPE type) {
@@ -533,13 +601,16 @@ public class Service {
         all_manager.fetchArticle();
     }
 
-    public static void makeArticle(String content, String location) {
+    public static void makeArticle(String content, String location, String title) {
         System.out.println("start make article");
         Thread thread = new Thread(() -> {
             try {
                 String params = "content=" + URLEncoder.encode(content, "UTF-8");
                 if (location != null) {
                     params = params.concat("&position=" + URLEncoder.encode(location, "UTF-8"));
+                }
+                if (title != null) {
+                    params = params.concat("&title=" + URLEncoder.encode(title, "UTF-8"));
                 }
                 System.out.println(params);
                 HttpURLConnection conn = getConnectionWithToken("/article", "POST", params);
@@ -564,4 +635,200 @@ public class Service {
         thread.start();
     }
 
+    /* Display Utils */
+
+    @NonNull
+    public static String wrapInt(int num) {
+        if (num < 100) return String.valueOf(num);
+        return "99+";
+    }
+
+    /* image */
+    public static String getEncoded64ImageStringFromBitmap(Bitmap bitmap) {
+        /* https://stackoverflow.com/questions/26114661/how-to-upload-image-in-base64-on-server */
+        System.out.println(bitmap.getByteCount());
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        byte[] byteFormat = stream.toByteArray();
+        // get the base 64 string
+        String imgString = Base64.getEncoder().encodeToString(byteFormat);
+        System.out.println(imgString.length());
+        return imgString;
+    }
+
+    public static Bitmap getBitmap(InputStream input) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        return BitmapFactory.decodeStream(input, null, options);
+    }
+
+    public static File is2File(InputStream input, String type, String format) {
+        try {
+            Date stamp = new Date();
+            String name = type + "_" + token.substring(0, 5) + String.valueOf(stamp.getTime()) + "." + format;
+
+            File file = new File(publicPath, name);
+            if (file.exists()) file.delete();
+            file.createNewFile();
+
+            FileOutputStream out = new FileOutputStream(file);
+            int read;
+            byte[] bytes = new byte[1024];
+            while ((read = input.read(bytes)) != -1) {
+                out.write(bytes, 0, read);
+            }
+            out.flush();
+            out.close();
+            return file;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    public static File is2File(InputStream input, String filepath) {
+        try {
+            String path = publicPath;
+            String[] paths = filepath.split("/");
+            File file;
+            for (int i = 0; i < paths.length - 1; i++) {
+                file = new File(path, paths[i]);
+                if (!file.exists()) {
+                    file.mkdirs();
+                }
+                path = path.concat("/" + paths[i]);
+            }
+            file = new File(path, paths[paths.length - 1]);
+
+            if (file.exists()) file.delete();
+            file.createNewFile();
+
+            System.out.println("create: " + file.getPath());
+            System.out.println("create ok");
+
+            FileOutputStream out = new FileOutputStream(file);
+            int read;
+            byte[] bytes = new byte[1024];
+            while ((read = input.read(bytes)) != -1) {
+                out.write(bytes, 0, read);
+            }
+            out.flush();
+            out.close();
+            input.close();
+            return file;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    public static boolean checkFile(String src) {
+        File file = new File(publicPath, src);
+        return file.isFile() && file.exists();
+    }
+
+    public static void fetchImage(String src, Article article) {
+        System.out.println("fetch image");
+        if (article.profile_fetched) return;
+        if (src == null || checkFile(src)) {
+            article.profile_fetched = true;
+            return;
+        }
+        Thread thread = new Thread(() -> {
+            try {
+                String webpath = url + "/res/" + src;
+                InputStream input = new URL(webpath).openConnection().getInputStream();
+                is2File(input, src);
+                System.out.println("inputstream: " + webpath);
+                article.profile_fetched = true;
+
+                Message msg = new Message();
+                msg.what = MainActivity.FRESH;
+                msg.setTarget(main_handler);
+                msg.sendToTarget();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+    }
+
+    public static Bitmap getImageBitmap(String src) {
+        try {
+            System.out.println("get image");
+            File file = new File(publicPath + "/" + src);
+            System.out.println(publicPath + "/" + src);
+            System.out.println(file.isFile());
+            System.out.println(file.exists());
+            InputStream is = new FileInputStream(file);
+            return getBitmap(is);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // /data/user/0/com.example.sixths/files/statics/images/image_1652884612878.jpeg
+        // /data/user/0/com.example.sixths/files/statics/image_1652884612878.jpeg
+        return null;
+    }
+
+    public static Uri getImageUri(String src) {
+        try {
+            File file = new File(publicPath + "/" + src);
+            return Uri.fromFile(file);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // /data/user/0/com.example.sixths/files/statics/images/image_1652884612878.jpeg
+        // /data/user/0/com.example.sixths/files/statics/image_1652884612878.jpeg
+        return null;
+    }
+
+
+    public static void uploadImage(int what, Handler handler, InputStream input, String type) {
+        String[] types = type.split("/");
+        uploadResource(what, handler, input, types[0], types[1]);
+    }
+
+    public static void uploadResource(int what, Handler handler, InputStream input,
+                                      String type, String format) {
+        Thread thread = new Thread(() -> {
+            try {
+                File file = null;
+
+                file = is2File(input, type, format);
+
+                if (file == null) return;
+
+                MultipartUtility multipart = new MultipartUtility(url + "/resource/upload", "UTF-8");
+
+                multipart.addFormField("type", type);
+                multipart.addFilePart(type, file);
+
+                List<String> response = multipart.finish();
+                String s = "";
+                for (String line : response) {
+                    String responseString = line;
+                    System.out.println(line);
+                    s = s.concat(line);
+                }
+
+                if (handler != null) {
+                    System.out.println("send message now");
+                    Message msg = new Message();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("data", s);
+                    msg.what = what;
+                    msg.setData(bundle);
+                    msg.setTarget(handler);
+                    msg.sendToTarget();
+                    System.out.println("send ok");
+                }
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+    }
 }

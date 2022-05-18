@@ -97,7 +97,8 @@ public class UserController {
         String nickname = req.getParameter("nickname");
         String password = req.getParameter("password");
         String bio = req.getParameter("bio");
-        String ret = userService.setInfo(id, nickname, password, bio);
+        String profile = req.getParameter("profile");
+        String ret = userService.setInfo(id, nickname, password, bio, profile);
         if (ret.equals("success")) {
             return ResponseEntity.ok().body(ret);
         }

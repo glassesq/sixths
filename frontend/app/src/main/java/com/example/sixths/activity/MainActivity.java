@@ -3,16 +3,22 @@ package com.example.sixths.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Toast;
 
@@ -26,6 +32,8 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
 
     private enum FragName {MAIN, PERSON, SEARCH}
 
+    private int PERMISSION_REQUEST = 999;
+
     private SharedPreferences preferences;
     public static final String TOKEN_PREF = "token";
     private final String sharedPrefFile = "com.example.sixths.tokenprefs";
@@ -36,6 +44,36 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
 
     public static final int NEW_FAIL = 0;
     public static final int NEW_SUCCESS = 1;
+    public static final int FRESH = 2;
+
+    String[] permissions = new String[]{Manifest.permission.CAMERA,
+            Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
+    public void checkPermissions() {
+        for( int i = 0; i < permissions.length; i++) {
+            int ret = ContextCompat.checkSelfPermission(this, permissions[i]);
+            if (ret != PackageManager.PERMISSION_GRANTED) {
+                startRequestPermission();
+                return;
+            }
+        }
+    }
+
+    private void startRequestPermission() {
+        ActivityCompat.requestPermissions(this, permissions, PERMISSION_REQUEST);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_REQUEST) {
+            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                Toast toast = Toast.makeText(this, "请前往设置界面获取权限", Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.CENTER, 0, 0);
+                toast.show();
+            }
+        }
+    }
 
 
     @SuppressLint("HandlerLeak")
@@ -47,6 +85,8 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
                 failNewPost();
             } else if (msg.what == NEW_SUCCESS) {
                 successNewPost();
+            } else if (msg.what == FRESH) {
+                fresh();
             }
         }
     };
@@ -56,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
         super.onCreate(savedInstanceState);
 
         /* 从sharedPreference中获取token */
-        if( Service.getToken() == null ) updateTokenFromPref();
+        if (Service.getToken() == null) updateTokenFromPref();
 
         /* 跳转欢迎页逻辑 */
         if (!Service.checkToken()) {
@@ -67,11 +107,15 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
         setContentView(R.layout.overall_page);
 
         Service.setMainHandler(handler);
+        Service.initStorage(this.getApplicationContext().getFilesDir().getPath());
         Service.getMyself();
+        Service.setFollow();
 
         /* 准备fragment内容并跳转至主页 */
         initFragment();
         selectTab(FragName.MAIN);
+
+        checkPermissions();
     }
 
     @Override
@@ -89,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
     public void updateTokenFromPref() {
         preferences = getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
         String token = preferences.getString(TOKEN_PREF, null);
-        if( token != null ) {
+        if (token != null) {
             System.out.print("update token:");
             System.out.println(token);
         }
@@ -150,6 +194,10 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
         Toast.makeText(MainActivity.this, "发送成功", Toast.LENGTH_SHORT).show();
         Service.fetchArticle(Service.POST_LIST_TYPE.ALL);
         Service.fetchArticle(Service.POST_LIST_TYPE.FOLLOW);
+    }
+
+    private void fresh() {
+        Service.fresh();
     }
 
     public void gotoNew(View view) {

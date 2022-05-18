@@ -30,19 +30,39 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <ImageView
-                android:id="@+id/profile_view"
+            <androidx.cardview.widget.CardView
                 android:layout_width="65dp"
                 android:layout_height="65dp"
                 android:background="@drawable/circle"
-                android:padding="5dp"
+                android:clipToPadding="false"
+                app:cardCornerRadius="33dp"
+                app:cardElevation="0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.05"
                 app:layout_constraintStart_toStartOf="@+id/view3"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.92"
-                app:srcCompat="@drawable/default_profile" />
+                app:layout_constraintVertical_bias="0.92">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center"
+                    app:cardCornerRadius="23dp"
+                    app:cardElevation="0dp">
+
+                    <ImageView
+                        android:id="@+id/profile_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+
+                        android:background="@drawable/circle"
+                        android:cropToPadding="false"
+                        android:scaleType="centerCrop"
+                        app:srcCompat="@drawable/default_image" />
+                </androidx.cardview.widget.CardView>
+
+            </androidx.cardview.widget.CardView>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -204,8 +224,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="30dp"
                     android:fontFamily="@font/noto_sans"
-                    android:text="设置简介"
                     android:onClick="gotoSetting"
+                    android:text="设置简介"
                     android:textColor="@color/black"
                     android:textSize="16sp"
                     android:textStyle="bold" />

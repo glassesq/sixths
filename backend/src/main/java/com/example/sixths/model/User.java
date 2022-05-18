@@ -51,6 +51,8 @@ public class User {
     @JsonIgnore
     private String email;
 
+    private String profile;
+
     private String bio = "";
 
     public User() {
@@ -79,6 +81,12 @@ public class User {
     }
 
     public void setBio(String bio) { this.bio = bio; }
+
+    public String getProfile() {
+        return profile;
+    }
+
+    public void setProfile(String profile) { this.profile = profile; }
 
     public void setPassword(String password) {
         this.password = password;

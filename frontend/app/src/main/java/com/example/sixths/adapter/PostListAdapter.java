@@ -1,6 +1,8 @@
 package com.example.sixths.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +15,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.sixths.R;
 import com.example.sixths.service.Article;
 import com.example.sixths.service.Service;
+
+import java.net.URI;
+import java.util.WeakHashMap;
 
 
 public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostViewHolder> {
@@ -92,6 +97,7 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
         public TextView likes_view;
         public TextView comments_view;
         public TextView position_text;
+        public TextView title_view;
 
         public TextView follow_tag;
 
@@ -127,6 +133,8 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
                 comments_view = item_view.findViewById(R.id.comments_view);
 
                 follow_tag = item_view.findViewById(R.id.follow_tag);
+
+                title_view = item_view.findViewById(R.id.post_title);
             }
         }
 
@@ -153,6 +161,7 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
             holder.nickname_view.setText(article.author_nickname);
             holder.username_view.setText(article.author_username);
             holder.content_view.setText(article.content);
+            holder.title_view.setText(article.title);
             holder.time_view.setText(article.time);
 
             if( article.position != null ) {
@@ -168,6 +177,15 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
                 holder.follow_tag.setVisibility(View.VISIBLE);
             } else {
                 holder.follow_tag.setVisibility(View.GONE);
+            }
+
+            if( article.author_profile != null && article.profile_fetched ) {
+//                Bitmap b = Service.getImageBitmap(article.author_profile);
+//                if( b != null) holder.profile_view.setImageBitmap(b);
+                Uri u = Service.getImageUri(article.author_profile);
+                if( u != null ) holder.profile_view.setImageURI(u);
+            } else {
+                holder.profile_view.setImageResource(R.drawable.default_profile);
             }
 
             holder.likes_view.setText(Service.wrapInt(article.likes));

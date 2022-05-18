@@ -87,12 +87,13 @@ public class UserService {
         return "success";
     }
 
-    public String setInfo(int userid, String nickname, String password, String bio) {
+    public String setInfo(int userid, String nickname, String password, String bio, String profile) {
         User user = getUserById(userid);
         if (user == null) return "invalid userid";
         if (nickname != null) user.setNickname(nickname);
         if (password != null) user.setPassword(password);
         if (bio != null) user.setBio(bio);
+        if (profile != null) user.setProfile(profile);
         userRepository.save(user);
         return "success";
     }
@@ -123,7 +124,7 @@ public class UserService {
         if (user == null) return null;
         Set<User> users = user.getFollowing();
         List<Integer> ret = new ArrayList<>();
-        for(User _user: users) {
+        for (User _user : users) {
             ret.add(_user.getId());
         }
         return ret;

@@ -5,6 +5,7 @@ import com.example.sixths.interceptor.LoginInterceptor;
 import com.example.sixths.model.Article;
 import com.example.sixths.model.User;
 import com.example.sixths.service.ArticleService;
+import com.example.sixths.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,13 +23,17 @@ public class ArticleController {
     @Autowired
     private ArticleService articleService;
 
+    @Autowired
+    private UserService userService;
+
     @PostMapping(path = "")
     public ResponseEntity<String> addArticle(HttpServletRequest req) {
         try {
             int userid = Integer.parseInt(req.getAttribute(LoginInterceptor.ID_KEY).toString());
             String content = req.getParameter("content");
             String position = req.getParameter("position");
-            int ret = articleService.addArticle(userid, content, position);
+            String title = req.getParameter("title");
+            int ret = articleService.addArticle(userid, content, position, title);
             return ResponseEntity.ok().body(String.valueOf(ret));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("fail");
@@ -55,6 +60,11 @@ public class ArticleController {
             if( req.getParameter("userid") != null ) {
                 ArrayList<Integer> list = new ArrayList<>();
                 list.add(Integer.parseInt(req.getParameter("userid")));
+                return articleService.getArticleList(userid, start, num,
+                        list, true, false);
+            }
+            if( req.getParameter("follow") != null ) {
+                List<Integer> list = userService.getFollowing(userid);
                 return articleService.getArticleList(userid, start, num,
                         list, true, false);
             }

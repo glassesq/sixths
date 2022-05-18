@@ -6,27 +6,40 @@
     android:layout_height="wrap_content"
     android:paddingTop="5dp">
 
-    <ImageView
-        android:id="@+id/profile_view"
-        android:layout_width="65dp"
-        android:layout_height="65dp"
-        android:background="@drawable/circle"
-        android:padding="5dp"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_view"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:paddingHorizontal="3dp"
+        app:cardCornerRadius="33dp"
+        app:cardElevation="0dp"
+        app:cardUseCompatPadding="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.05"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/default_profile"
-        tools:srcCompat="@drawable/default_profile" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/profile_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/circle"
+
+            android:scaleType="centerCrop"
+            app:srcCompat="@drawable/default_image" />
+    </androidx.cardview.widget.CardView>
+
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="14dp"
         android:orientation="vertical"
         android:paddingEnd="10dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/profile_view"
+        app:layout_constraintStart_toEndOf="@+id/card_view"
         tools:layout_editor_absoluteY="5dp">
 
         <LinearLayout
@@ -69,6 +82,19 @@
                 android:textStyle="bold" />
 
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/post_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:maxLength="15"
+            android:maxLines="1"
+            android:text="TextView"
+            android:textColor="@color/black"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            tools:text="朝辞白帝彩云间，朝辞白帝彩云间,朝辞白帝彩云间,朝辞白帝彩云间,千里江陵一日还。\n两岸猿声啼不住\n轻舟已过万重山。" />
 
         <TextView
             android:id="@+id/post_content"

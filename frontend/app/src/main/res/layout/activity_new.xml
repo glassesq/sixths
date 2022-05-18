@@ -88,12 +88,30 @@
             tools:layout_editor_absoluteY="5dp">
 
             <EditText
+                android:id="@+id/title_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="3dp"
+                android:hint="标题"
+                android:maxLength="15"
+                android:maxLines="1"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/divider3"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?android:attr/listDivider" />
+
+            <EditText
                 android:id="@+id/content_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="写点什么——"
-                android:textColor="@color/black"
-                tools:text="朝辞白帝彩云间，朝辞白帝彩云间,朝辞白帝彩云间,朝辞白帝彩云间,千里江陵一日还。\n两岸猿声啼不住\n轻舟已过万重山。" />
+                android:minLines="3"
+                android:textColor="@color/black" />
 
 
             <androidx.cardview.widget.CardView

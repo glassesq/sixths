@@ -39,6 +39,8 @@ public class Article {
 
     public Date time;
 
+    public String title;
+
     public String content;
 
     public String position;
@@ -69,6 +71,15 @@ public class Article {
 
     public void setPosition(String position) {
         this.position = position;
+    }
+
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        if( title != null ) this.title = title;
     }
 
     public void setTime(Date time) {

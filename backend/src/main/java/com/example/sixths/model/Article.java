@@ -41,6 +41,8 @@ public class Article {
 
     public String title;
 
+    public String image;
+
     public String content;
 
     public String position;
@@ -71,6 +73,15 @@ public class Article {
 
     public void setPosition(String position) {
         this.position = position;
+    }
+
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
 

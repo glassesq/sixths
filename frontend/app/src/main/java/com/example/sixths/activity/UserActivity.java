@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -16,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.sixths.R;
@@ -28,13 +30,16 @@ import com.google.android.material.tabs.TabLayoutMediator;
 public class UserActivity extends AppCompatActivity {
 
     public static final int USER_FOLLOW = 1;
-    public static final int USER_UNFOLLOW = 4;
     public static final int USER_FAIL = 2;
     public static final int USER_SUCCESS = 3;
+    public static final int USER_UNFOLLOW = 4;
+    public static final int USER_PHOTO = 5;
 
     private TextView nickname_view = null;
     private TextView username_view = null;
     private TextView bio_view = null;
+
+    private ImageView profile_view = null;
 
     private Button followed_but = null;
     private Button follow_but = null;
@@ -56,6 +61,8 @@ public class UserActivity extends AppCompatActivity {
                 setFollow();
             } else if (msg.what == USER_UNFOLLOW) {
                 setUnfollow();
+            } else if (msg.what == USER_PHOTO) {
+                freshProfile();
             }
         }
     };
@@ -79,6 +86,7 @@ public class UserActivity extends AppCompatActivity {
         nickname_view = findViewById(R.id.nickname_view);
         username_view = findViewById(R.id.username_view);
         recycler_view = findViewById(R.id.recycler_view);
+        profile_view = findViewById(R.id.profile_view);
         bio_view = findViewById(R.id.user_bio);
 
         followed_but = findViewById(R.id.followed_but);
@@ -99,6 +107,12 @@ public class UserActivity extends AppCompatActivity {
         } else {
             Service.unfollowUser(userid);
         }
+    }
+
+    public void freshProfile() {
+        System.out.println("profile fresh");
+        Uri u = Service.getImageUri(user.profile);
+        if(u != null )profile_view.setImageURI(u);
     }
 
     public void switchFollow(View view) {
@@ -130,7 +144,18 @@ public class UserActivity extends AppCompatActivity {
             username_view.setText(user.name);
             nickname_view.setText(user.nickname);
             bio_view.setText(user.bio);
+            if( user.profile_fetched ) {
+                System.out.println("the profile is here");
+                freshProfile();
+            }
+            else Service.fetchImage(user);
             freshFollow();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Service.setUserHandler(null);
     }
 }

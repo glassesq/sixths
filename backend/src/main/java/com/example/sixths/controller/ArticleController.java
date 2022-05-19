@@ -33,7 +33,8 @@ public class ArticleController {
             String content = req.getParameter("content");
             String position = req.getParameter("position");
             String title = req.getParameter("title");
-            int ret = articleService.addArticle(userid, content, position, title);
+            String image = req.getParameter("image");
+            int ret = articleService.addArticle(userid, content, position, title, image);
             return ResponseEntity.ok().body(String.valueOf(ret));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("fail");

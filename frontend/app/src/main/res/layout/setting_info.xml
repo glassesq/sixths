@@ -112,7 +112,8 @@
                         android:padding="0dp"
                         android:scaleType="centerCrop"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        tools:srcCompat="@drawable/default_image" />
+                        app:srcCompat="@drawable/default_profile"
+                        tools:srcCompat="@drawable/default_profile" />
                 </androidx.cardview.widget.CardView>
 
                 <Space

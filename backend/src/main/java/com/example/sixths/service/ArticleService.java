@@ -19,11 +19,12 @@ public class ArticleService {
     @Autowired
     public UserRepository userRepository;
 
-    public int addArticle(int userid, String content, String position, String title) {
+    public int addArticle(int userid, String content, String position, String title, String image) {
         Article article = new Article();
         article.setContent(content);
         article.setPosition(position);
         article.setTitle(title);
+        article.setImage(image);
         article.setAuthor(userRepository.getById(userid));
         article.setTime(new Date());
         articleRepository.save(article);

@@ -164,7 +164,7 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
             holder.title_view.setText(article.title);
             holder.time_view.setText(article.time);
 
-            if( article.position != null ) {
+            if (article.position != null) {
                 holder.position_text.setText(article.position);
                 holder.position_text.setVisibility(View.VISIBLE);
                 holder.position_icon.setVisibility(View.VISIBLE);
@@ -173,25 +173,34 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
                 holder.position_icon.setVisibility(View.INVISIBLE);
             }
 
-            if( Service.isFollow(article.author_id) ) {
+            if (Service.isFollow(article.author_id)) {
                 holder.follow_tag.setVisibility(View.VISIBLE);
             } else {
                 holder.follow_tag.setVisibility(View.GONE);
             }
 
-            if( article.author_profile != null && article.profile_fetched ) {
+            if (article.author_profile != null && article.profile_fetched) {
 //                Bitmap b = Service.getImageBitmap(article.author_profile);
 //                if( b != null) holder.profile_view.setImageBitmap(b);
                 Uri u = Service.getImageUri(article.author_profile);
-                if( u != null ) holder.profile_view.setImageURI(u);
+                if (u != null) holder.profile_view.setImageURI(u);
             } else {
                 holder.profile_view.setImageResource(R.drawable.default_profile);
+            }
+
+            if (article.image != null && article.image_fetched) {
+                Uri u = Service.getImageUri(article.image);
+                if (u != null) {
+                    holder.image_view.setImageURI(u);
+                    holder.image_view.setVisibility(View.VISIBLE);
+                }
+            } else {
+                holder.image_view.setVisibility(View.GONE);
             }
 
             holder.likes_view.setText(Service.wrapInt(article.likes));
             holder.comments_view.setText(Service.wrapInt(article.comments));
 
-            if (article.images.size() == 0) holder.image_view.setVisibility(View.GONE);
             // TODO: else
             if (listener != null)
                 holder.profile_view.setOnClickListener(view -> listener.gotoUserPage(article.author_id));

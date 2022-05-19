@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.FileProvider;
 
 import com.example.sixths.activity.LoginActivity;
 import com.example.sixths.activity.MainActivity;
@@ -436,6 +437,9 @@ public class Service {
             user.nickname = obj.getString("nickname");
             user.name = obj.getString("name");
             user.bio = obj.getString("bio");
+            user.profile = checkStr(obj, "profile");
+            fetchImage(user);
+            System.out.println("profile:" + user.profile);
             return user;
         } catch (Exception e) {
             e.printStackTrace();
@@ -468,6 +472,8 @@ public class Service {
                 msg.what = DEEP_FRESH;
                 msg.setTarget(handler);
                 msg.sendToTarget();
+
+
                 System.out.println("set user info finished");
             } catch (Exception e) {
                 e.printStackTrace();
@@ -491,7 +497,7 @@ public class Service {
                     getMyself();
 
                     Message msg = new Message();
-                    msg.what = FRESH;
+                    msg.what = DEEP_FRESH;
                     msg.setTarget(handler);
                     msg.sendToTarget();
 
@@ -520,7 +526,7 @@ public class Service {
                     getMyself();
 
                     Message msg = new Message();
-                    msg.what = FRESH;
+                    msg.what = DEEP_FRESH;
                     msg.setTarget(handler);
                     msg.sendToTarget();
 
@@ -557,10 +563,11 @@ public class Service {
             article.author_username = obj.getJSONObject("author").getString("name");
             article.author_id = obj.getJSONObject("author").getInt("id");
             article.title = checkStr(obj, "title");
+            article.image = checkStr(obj, "image");
             article.content = obj.getString("content");
             article.position = obj.getString("position");
             article.author_profile = checkStr(obj.getJSONObject("author"), "profile");
-            fetchImage(article.author_profile, article);
+            fetchImage(article);
             if (article.position.equals("null")) article.position = null;
             article.likes = obj.getInt("likes");
             article.time = obj.getString("time");
@@ -601,7 +608,7 @@ public class Service {
         all_manager.fetchArticle();
     }
 
-    public static void makeArticle(String content, String location, String title) {
+    public static void makeArticle(String content, String location, String title, String image) {
         System.out.println("start make article");
         Thread thread = new Thread(() -> {
             try {
@@ -611,6 +618,9 @@ public class Service {
                 }
                 if (title != null) {
                     params = params.concat("&title=" + URLEncoder.encode(title, "UTF-8"));
+                }
+                if (image != null) {
+                    params = params.concat("&image=" + URLEncoder.encode(image, "UTF-8"));
                 }
                 System.out.println(params);
                 HttpURLConnection conn = getConnectionWithToken("/article", "POST", params);
@@ -685,7 +695,6 @@ public class Service {
         return null;
     }
 
-
     public static File is2File(InputStream input, String filepath) {
         try {
             String path = publicPath;
@@ -722,26 +731,108 @@ public class Service {
         return null;
     }
 
+    public static File makeEmptyFile(String type, String format) {
+        try {
+            Date stamp = new Date();
+            String name = "empty_" + type + "_" + token.substring(0, 5) + String.valueOf(stamp.getTime()) + "." + format;
+
+            File file = new File(publicPath, name);
+            if (file.exists()) file.delete();
+
+            return file;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     public static boolean checkFile(String src) {
         File file = new File(publicPath, src);
         return file.isFile() && file.exists();
     }
 
-    public static void fetchImage(String src, Article article) {
-        System.out.println("fetch image");
-        if (article.profile_fetched) return;
-        if (src == null || checkFile(src)) {
-            article.profile_fetched = true;
-            return;
+    public static boolean fetchImageFromSrc(String src) {
+        try {
+            String webpath = url + "/res/" + src;
+            InputStream input = new URL(webpath).openConnection().getInputStream();
+            is2File(input, src);
+            System.out.println("inputstream: " + webpath);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return false;
+    }
+
+    public static void fetchImage(User user) {
+        System.out.println("fetch image");
+        if (user.profile_fetched) return;
+        if (user.profile == null || checkFile(user.profile)) {
+            user.profile_fetched = true;
+            Message msg;
+            if (user_handler != null) {
+                msg = new Message();
+                msg.what = UserActivity.USER_PHOTO;
+                msg.setTarget(user_handler);
+                msg.sendToTarget();
+            }
+            msg = new Message();
+            msg.what = MainActivity.FRESH_PROFILE;
+            msg.setTarget(main_handler);
+            msg.sendToTarget();
+
+        }
+        if (user.profile_fetched) return;
+
         Thread thread = new Thread(() -> {
             try {
-                String webpath = url + "/res/" + src;
-                InputStream input = new URL(webpath).openConnection().getInputStream();
-                is2File(input, src);
-                System.out.println("inputstream: " + webpath);
-                article.profile_fetched = true;
+                if (!user.profile_fetched) {
+                    if (fetchImageFromSrc(user.profile)) {
+                        user.profile_fetched = true;
+                    }
+                }
+                Message msg;
+                if (user_handler != null) {
+                    msg = new Message();
+                    msg.what = UserActivity.USER_PHOTO;
+                    msg.setTarget(user_handler);
+                    msg.sendToTarget();
+                }
+                msg = new Message();
+                msg.what = MainActivity.FRESH_PROFILE;
+                msg.setTarget(main_handler);
+                msg.sendToTarget();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+    }
+
+
+    public static void fetchImage(Article article) {
+        System.out.println("fetch image");
+        if (article.profile_fetched && article.image_fetched) return;
+        if (article.author_profile == null || checkFile(article.author_profile)) {
+            article.profile_fetched = true;
+        }
+        if (article.image == null || checkFile(article.image)) {
+            article.image_fetched = true;
+        }
+        if (article.profile_fetched && article.image_fetched) return;
+
+        Thread thread = new Thread(() -> {
+            try {
+                if (!article.profile_fetched) {
+                    if (fetchImageFromSrc(article.author_profile)) {
+                        article.profile_fetched = true;
+                    }
+                }
+                if (!article.image_fetched) {
+                    if (fetchImageFromSrc(article.image)) {
+                        article.image_fetched = true;
+                    }
+                }
 
                 Message msg = new Message();
                 msg.what = MainActivity.FRESH;
@@ -782,7 +873,6 @@ public class Service {
         // /data/user/0/com.example.sixths/files/statics/image_1652884612878.jpeg
         return null;
     }
-
 
     public static void uploadImage(int what, Handler handler, InputStream input, String type) {
         String[] types = type.split("/");
@@ -831,4 +921,5 @@ public class Service {
         });
         thread.start();
     }
+
 }

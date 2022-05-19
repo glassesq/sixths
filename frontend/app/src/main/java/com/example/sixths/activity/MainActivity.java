@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
     public static final int NEW_FAIL = 0;
     public static final int NEW_SUCCESS = 1;
     public static final int FRESH = 2;
+    public static final int FRESH_PROFILE = 3;
 
     String[] permissions = new String[]{Manifest.permission.CAMERA,
             Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
@@ -87,6 +88,9 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
                 successNewPost();
             } else if (msg.what == FRESH) {
                 fresh();
+            } else if (msg.what == FRESH_PROFILE) {
+                PersonFragment p  = (PersonFragment) person_frag;
+                p.freshProfile();
             }
         }
     };

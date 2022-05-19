@@ -1,17 +1,27 @@
 package com.example.sixths.activity;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.provider.Settings;
 import android.view.View;
 import android.widget.ImageView;
@@ -22,6 +32,8 @@ import android.widget.Toast;
 import com.example.sixths.R;
 import com.example.sixths.service.Service;
 
+import java.io.File;
+import java.io.InputStream;
 import java.util.List;
 
 public class NewActivity extends AppCompatActivity {
@@ -36,6 +48,35 @@ public class NewActivity extends AppCompatActivity {
     private LinearLayout position_view;
     private TextView position_text;
     private ImageView image_view;
+
+    private Uri photo_uri;
+    private String photo_src = null;
+
+    public static int PHOTO = 1;
+    public static int UPLOAD_PHOTO = 1;
+
+    ActivityResultLauncher<Uri> launcher;
+
+    private Bitmap bitmap;
+
+    @SuppressLint("HandlerLeak")
+    private final Handler handler = new Handler(Looper.getMainLooper()) {
+        @SuppressLint("NotifyDataSetChanged")
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == PHOTO) {
+                photo_src = msg.getData().getString("data");
+
+                // Uri u = Service.getImageUri(photo_src);
+                image_view.setImageURI(photo_uri);
+                image_view.setVisibility(View.VISIBLE);
+                // TODO: delete photo_uri
+                // image_view.setImageURI(photo_uri);
+                System.out.println("set ok");
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,13 +93,46 @@ public class NewActivity extends AppCompatActivity {
 
         position_view.setVisibility(View.GONE);
         image_view.setVisibility(View.GONE);
+
+
+        launcher = registerForActivityResult(
+                new ActivityResultContracts.TakePicture(),
+                new ActivityResultCallback<Boolean>() {
+                    @Override
+                    public void onActivityResult(Boolean result) {
+                        if (result) {
+                            System.out.println("picture taken");
+                            try {
+                                InputStream is = getContentResolver().openInputStream(photo_uri);
+                                Service.uploadImage(PHOTO, handler, is, getContentResolver().getType(photo_uri));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+
+        );
+    }
+
+    public void capturePhoto(View view) {
+        System.out.println("capture");
+        File file = Service.makeEmptyFile("image", "jpeg");
+        if (file == null) return;
+        System.out.println("capture: " + file.getName());
+        Uri uri = FileProvider.getUriForFile(this, this.getApplicationContext().getPackageName() + ".provider", file);
+        System.out.println("capture: " + uri);
+        launcher.launch(uri);
+        System.out.println("capture: " + uri);
+        photo_uri = uri;
     }
 
     public void makePost(View view) {
         String content = content_view.getText().toString();
         String title = title_view.getText().toString();
+        String image = photo_src;
         System.out.println(content);
-        Service.makeArticle(content, locationText, title);
+        Service.makeArticle(content, locationText, title, image);
         this.finish();
     }
 

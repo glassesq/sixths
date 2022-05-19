@@ -77,6 +77,8 @@
         android:layout_marginVertical="20dp"
         android:autofillHints="password"
         android:hint="密码"
+        android:inputType="textPassword"
+        android:password="true"
         android:singleLine="true"
         android:textSize="18sp"
         tools:ignore="TouchTargetSizeCheck" />

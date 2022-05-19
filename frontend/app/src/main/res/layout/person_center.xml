@@ -59,7 +59,7 @@
                         android:background="@drawable/circle"
                         android:cropToPadding="false"
                         android:scaleType="centerCrop"
-                        app:srcCompat="@drawable/default_image" />
+                        app:srcCompat="@drawable/default_profile" />
                 </androidx.cardview.widget.CardView>
 
             </androidx.cardview.widget.CardView>

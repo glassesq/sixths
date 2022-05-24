@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- draft box 带头部 不带下方 -->
+<?xml version="1.0" encoding="utf-8"?><!-- draft box 带头部 不带下方 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -21,6 +20,7 @@
             android:layout_weight="1.5"
             android:paddingStart="25dp"
             android:paddingEnd="0dp"
+            android:onClick="cancel"
             android:text="取消"
             android:textColor="@color/black"
             android:textSize="16sp"
@@ -50,14 +50,9 @@
 
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/draft_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone" />
-
-
-    <include layout="@layout/draft_simple"></include>
-    <include layout="@layout/draft_simple"></include>
-    <include layout="@layout/draft_simple"></include>
+        android:layout_height="match_parent" />
 
     <View
         android:id="@+id/divider2"
@@ -66,4 +61,5 @@
         android:background="?android:attr/listDivider" />
 
 </LinearLayout>
+
 

@@ -1,6 +1,7 @@
 package com.example.sixths.service;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -21,6 +22,7 @@ import com.example.sixths.R;
 import com.example.sixths.activity.ArticleActivity;
 import com.example.sixths.activity.LoginActivity;
 import com.example.sixths.activity.MainActivity;
+import com.example.sixths.activity.NewActivity;
 import com.example.sixths.activity.UserActivity;
 import com.example.sixths.adapter.CommentListAdapter;
 import com.example.sixths.adapter.PostListAdapter;
@@ -52,7 +54,7 @@ import java.util.HashSet;
 
 public class Service {
 
-    public enum POST_LIST_TYPE {ALL, FOLLOW, PERSON}
+    public enum POST_LIST_TYPE {ALL, FOLLOW, PERSON, DRAFT}
 
     public static String publicPath = "";
 
@@ -64,6 +66,7 @@ public class Service {
     private static Handler main_handler = null;
     private static Handler user_handler = null;
     private static Handler article_handler = null;
+    private static Handler new_handler = null;
 
     public static final int START_ARTICLE_NUM = 100;
     public static final int MORE_ARTICLE_NUM = 100;
@@ -82,6 +85,7 @@ public class Service {
     private static final ArticleManager all_manager = new ArticleManager();
     private static final ArticleManager follow_manager = new ArticleManager();
     private static final ArticleManager person_manager = new ArticleManager();
+    private static final ArticleManager draft_manager = new ArticleManager();
 
     private static final CommentManager comment_manager = new CommentManager();
 
@@ -92,7 +96,7 @@ public class Service {
     public static HashSet<Integer> following = new HashSet<>();
     public static HashSet<Integer> liking = new HashSet<>();
 
-    private static final Handler handler = new Handler(Looper.myLooper()) {
+    private static final Handler handler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
@@ -146,6 +150,10 @@ public class Service {
         follow_manager.setFollow();
     }
 
+    public static void setDraft() {
+        draft_manager.setDraft();
+    }
+
     public static void setToken(String _token) {
         /* check 是否 存在token && token有效 */
         // TODO
@@ -168,6 +176,10 @@ public class Service {
         /* check 是否 存在token && token有效 */
         // TODO
         return token != null;
+    }
+
+    public static void setNewHandler(Handler handler) {
+        new_handler = handler;
     }
 
     public static void setLoginHandler(Handler handler) {
@@ -469,6 +481,7 @@ public class Service {
 
                     myself = decodeUserInfo(result);
                     if (myself != null) myself_id = myself.id;
+                    fetchImage(myself);
                 }
                 System.out.println("get user finished");
 
@@ -677,6 +690,9 @@ public class Service {
         if (type == POST_LIST_TYPE.PERSON) {
             return person_manager.getByIndex(index);
         }
+        if (type == POST_LIST_TYPE.DRAFT) {
+            return draft_manager.getByIndex(index);
+        }
         return all_manager.getByIndex(index);
     }
 
@@ -686,6 +702,9 @@ public class Service {
         }
         if (type == POST_LIST_TYPE.PERSON) {
             return person_manager.count();
+        }
+        if (type == POST_LIST_TYPE.DRAFT) {
+            return draft_manager.count();
         }
         return all_manager.count();
     }
@@ -697,10 +716,13 @@ public class Service {
         if (type == POST_LIST_TYPE.PERSON) {
             person_manager.fetchArticle();
         }
+        if (type == POST_LIST_TYPE.DRAFT) {
+            draft_manager.fetchArticle();
+        }
         all_manager.fetchArticle();
     }
 
-    public static void makeArticle(String content, String location, String title, String image, String video, String audio) {
+    public static void makeArticle(int article_id, String content, String location, String title, String image, String video, String audio) {
         System.out.println("start make article");
         Thread thread = new Thread(() -> {
             try {
@@ -720,6 +742,10 @@ public class Service {
                 if (audio != null) {
                     params = params.concat("&audio=" + URLEncoder.encode(audio, "UTF-8"));
                 }
+                if (article_id >= 0) {
+                    params = params.concat("&article_id=" +
+                            URLEncoder.encode(String.valueOf(article_id), "UTF-8"));
+                }
                 System.out.println(params);
                 HttpURLConnection conn = getConnectionWithToken("/article", "POST", params);
                 System.out.println("make article conn established");
@@ -730,6 +756,47 @@ public class Service {
                     sendMessage(main_handler, MainActivity.NEW_FAIL);
                 }
                 System.out.println("make article finished");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+    }
+
+
+    public static void makeDraft(int article_id, String content, String location, String title, String image, String video, String audio) {
+        System.out.println("start make article draft");
+        Thread thread = new Thread(() -> {
+            try {
+                String params = "content=" + URLEncoder.encode(content, "UTF-8");
+                if (location != null) {
+                    params = params.concat("&position=" + URLEncoder.encode(location, "UTF-8"));
+                }
+                if (title != null) {
+                    params = params.concat("&title=" + URLEncoder.encode(title, "UTF-8"));
+                }
+                if (image != null) {
+                    params = params.concat("&image=" + URLEncoder.encode(image, "UTF-8"));
+                }
+                if (video != null) {
+                    params = params.concat("&video=" + URLEncoder.encode(video, "UTF-8"));
+                }
+                if (audio != null) {
+                    params = params.concat("&audio=" + URLEncoder.encode(audio, "UTF-8"));
+                }
+                if (article_id >= 0) {
+                    params = params.concat("&article_id=" +
+                            URLEncoder.encode(String.valueOf(article_id), "UTF-8"));
+                }
+                System.out.println(params);
+                HttpURLConnection conn = getConnectionWithToken("/article/draft", "POST", params);
+                System.out.println("make article draft conn established");
+
+                if (conn.getResponseCode() == 200) {
+                    System.out.println("draft save");
+                    sendMessage(main_handler, MainActivity.DRAFT);
+                }
+                System.out.println("make article draft finished");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -801,6 +868,7 @@ public class Service {
                     System.out.println(result);
 
                     sendMessage(article_handler, ArticleActivity.ARTICLE_SUCCESS, result);
+                    sendMessage(new_handler, NewActivity.ARTICLE_SUCCESS, result);
                 }
                 System.out.println("get article finished");
             } catch (Exception e) {
@@ -912,7 +980,7 @@ public class Service {
     }
 
     public static boolean checkFile(String src) {
-        if( src == null ) return true;
+        if (src == null) return true;
         File file = new File(publicPath, src);
         return file.isFile() && file.exists();
     }
@@ -968,6 +1036,7 @@ public class Service {
         }
         if (article.profile_fetched && article.image_fetched) {
             sendMessage(article_handler, ArticleActivity.ARTICLE_RESOURCE);
+            sendMessage(new_handler, NewActivity.ARTICLE_RESOURCE);
             sendMessage(main_handler, MainActivity.FRESH);
             return;
         }
@@ -984,6 +1053,7 @@ public class Service {
                     }
                 }
                 sendMessage(main_handler, MainActivity.FRESH);
+                sendMessage(new_handler, NewActivity.ARTICLE_RESOURCE);
                 sendMessage(article_handler, ArticleActivity.ARTICLE_RESOURCE);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -1045,6 +1115,7 @@ public class Service {
                         System.out.println("video got");
                     }
                 }
+                sendMessage(new_handler, NewActivity.ARTICLE_RESOURCE);
                 sendMessage(article_handler, ArticleActivity.ARTICLE_RESOURCE);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -1189,6 +1260,7 @@ public class Service {
 
                 if (conn.getResponseCode() == 200) {
                     sendMessage(handler, COMMENT_FRESH);
+                    sendMessage(handler, DEEP_FRESH);
                 }
                 System.out.println("make comment finished");
             } catch (Exception e) {

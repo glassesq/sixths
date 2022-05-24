@@ -25,6 +25,8 @@ public class ArticleManager {
 
     private boolean follow = false;
 
+    private boolean draft = false;
+
     public int allowSize = Service.START_ARTICLE_NUM;
     private ArrayList<Article> article_list = new ArrayList<Article>();
     private PostListAdapter adapter = null;
@@ -35,6 +37,10 @@ public class ArticleManager {
 
     public void setFollow() {
         follow = true;
+    }
+
+    public void setDraft() {
+        draft = true;
     }
 
     //        @SuppressLint("NotifyDataSetChanged")
@@ -72,6 +78,9 @@ public class ArticleManager {
                 } else if (follow) {
                     params = params.concat("&follow=true");
                     System.out.println("follow");
+                } else if (draft) {
+                    params = params.concat("&draft=true");
+                    System.out.println("draft");
                 }
 
                 HttpURLConnection conn =

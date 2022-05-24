@@ -31,7 +31,7 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
 
     private static final String LOG_TAG = PostListAdapter.class.getSimpleName();
 
-    public static final int TYPE_FOOTER = 0;
+    public static final int TYPE_DRAFT = 0;
     public static final int TYPE_CLASSIC = 1;
 
     public Service.POST_LIST_TYPE type = Service.POST_LIST_TYPE.ALL;
@@ -57,6 +57,7 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
         inflater = LayoutInflater.from(context);
         this.listener = listener;
         setType(type);
+        if( type == Service.POST_LIST_TYPE.DRAFT) System.out.println("draft set ok");
     }
 
     public void setType(Service.POST_LIST_TYPE type) {
@@ -66,26 +67,9 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
 
     @Override
     public int getItemViewType(int position) {
-        //if (position == getItemCount() - 1) {
-        //    return TYPE_FOOTER;
-        //}
+        if (type == Service.POST_LIST_TYPE.DRAFT) return TYPE_DRAFT;
         return TYPE_CLASSIC;
     }
-
-/*    public void setIfMore(boolean arg) {
-        if (if_more != arg) {
-            if_more = arg;
-            this.notifyItemChanged(getItemCount() - 1);
-        }
-    }*/
-
-    // public void showTenMoreArticle() {
-    //     manager.showTenMoreArticle();
-    // }
-
-    // public interface OnArticleCardClickListener {
-    //     void onCardClick(String id);
-    // }
 
     class PostViewHolder extends RecyclerView.ViewHolder {
         public TextView content_view;
@@ -98,6 +82,7 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
         public TextView title_view;
 
         public TextView follow_tag;
+        public TextView image_tag;
         public TextView audio_tag;
         public TextView video_tag;
 
@@ -145,9 +130,26 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
                 title_view = item_view.findViewById(R.id.post_title);
 
                 touch_area = item_view.findViewById(R.id.touch_area);
+            } else if (this.view_type == TYPE_DRAFT) {
+                content_view = item_view.findViewById(R.id.post_content);
+
+                time_view = item_view.findViewById(R.id.time_view);
+
+                image_view = item_view.findViewById(R.id.image_view);
+                profile_view = item_view.findViewById(R.id.user_profile_view);
+
+                position_text = item_view.findViewById(R.id.delete_tag);
+                position_icon = item_view.findViewById(R.id.position_icon);
+
+                image_tag = item_view.findViewById(R.id.image_tag);
+                audio_tag = item_view.findViewById(R.id.audio_tag);
+                video_tag = item_view.findViewById(R.id.video_tag);
+
+                title_view = item_view.findViewById(R.id.draft_post_title);
+
+                touch_area = item_view.findViewById(R.id.touch_area);
             }
         }
-
     }
 
     @NonNull
@@ -156,6 +158,9 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
         View item_view = null;
         if (viewType == TYPE_CLASSIC) {
             item_view = inflater.inflate(R.layout.post_simple, parent, false);
+        }
+        if (viewType == TYPE_DRAFT) {
+            item_view = inflater.inflate(R.layout.draft_simple, parent, false);
         }
         return new PostViewHolder(item_view, this, viewType);
     }
@@ -237,6 +242,44 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
                 holder.comments_view.setOnClickListener(view -> listener.gotoArticlePage(article.id));
                 holder.comment_icon.setOnClickListener(view -> listener.gotoArticlePage(article.id));
             }
+        } else if (getItemViewType(position) == TYPE_DRAFT) {
+            Article article = Service.getArticle(position, type);
+            if (article == null) return;
+            holder.content_view.setText(article.content);
+            holder.title_view.setText(article.title);
+            holder.time_view.setText(article.time);
+
+            if (article.position != null) {
+                holder.position_text.setText(article.position);
+                holder.position_text.setVisibility(View.VISIBLE);
+                holder.position_icon.setVisibility(View.VISIBLE);
+            } else {
+                holder.position_text.setVisibility(View.INVISIBLE);
+                holder.position_icon.setVisibility(View.INVISIBLE);
+            }
+
+            if (article.image != null) {
+                holder.image_tag.setVisibility(View.VISIBLE);
+            } else {
+                holder.image_tag.setVisibility(View.GONE);
+            }
+
+            if (article.audio != null) {
+                holder.audio_tag.setVisibility(View.VISIBLE);
+            } else {
+                holder.audio_tag.setVisibility(View.GONE);
+            }
+
+            if (article.video != null) {
+                holder.video_tag.setVisibility(View.VISIBLE);
+            } else {
+                holder.video_tag.setVisibility(View.GONE);
+            }
+
+            if (listener != null) {
+                holder.touch_area.setOnClickListener(view -> listener.gotoArticlePage(article.id));
+            }
+
         }
     }
 

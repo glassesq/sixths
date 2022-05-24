@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
     public static final int NEW_SUCCESS = 1;
     public static final int FRESH = 2;
     public static final int FRESH_PROFILE = 3;
+    public static final int DRAFT = 4;
 
     String[] permissions = new String[]{Manifest.permission.CAMERA,
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -92,7 +93,9 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
                 fresh();
             } else if (msg.what == FRESH_PROFILE) {
                 PersonFragment p = (PersonFragment) person_frag;
-                if (person_frag != null) p.freshProfile();
+                if (person_frag != null) p.fresh();
+            } else if (msg.what == DRAFT) {
+                successDraft();
             }
         }
     };
@@ -116,6 +119,7 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
         Service.initStorage(this.getApplicationContext().getFilesDir().getPath());
         Service.getMyself();
         Service.setFollow();
+        Service.setDraft();
 
         Service.initColor(this.getApplicationContext());
 
@@ -163,14 +167,20 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
     public void initFragment() {
         transaction = getSupportFragmentManager().beginTransaction();
         if (main_frag == null) {
-            MainFragment f = new MainFragment();
-            f.setListener(this);
-            main_frag = f;
-            transaction.add(R.id.frame_content, main_frag, "main_frag");
+            main_frag = getSupportFragmentManager().findFragmentByTag("main_frag");
+            if( main_frag == null ) {
+                MainFragment f = new MainFragment();
+                f.setListener(this);
+                main_frag = f;
+                transaction.add(R.id.frame_content, main_frag, "main_frag");
+            }
         }
         if (person_frag == null) {
-            person_frag = new PersonFragment();
-            transaction.add(R.id.frame_content, person_frag);
+            person_frag = getSupportFragmentManager().findFragmentByTag("person_frag");
+            if( person_frag == null ) {
+                person_frag = new PersonFragment();
+                transaction.add(R.id.frame_content, person_frag, "person_frag");
+            }
         }
         transaction.hide(main_frag);
         transaction.hide(person_frag);
@@ -217,6 +227,11 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
         startActivity(intent);
     }
 
+    public void gotoDraft(View view) {
+        Intent intent = new Intent(MainActivity.this, DraftActivity.class);
+        startActivity(intent);
+    }
+
     public void gotoWelcome() {
         Intent welcome_intent = new Intent(MainActivity.this, WelcomeActivity.class);
         welcome_intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -257,6 +272,10 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
     private void failUserInfo() {
         Toast.makeText(MainActivity.this, "查询失败", Toast.LENGTH_SHORT).show();
         // TODO: save to draft box.
+    }
+
+    private void successDraft() {
+        Toast.makeText(MainActivity.this, "草稿保存成功", Toast.LENGTH_SHORT).show();
     }
 
 }

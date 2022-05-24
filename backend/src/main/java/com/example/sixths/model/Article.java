@@ -34,6 +34,8 @@ public class Article {
     @ManyToMany(mappedBy = "liking", fetch = FetchType.LAZY)
     private Set<User> liker;
 
+    public boolean draft;
+
     public Date time;
 
     public String title;
@@ -55,6 +57,14 @@ public class Article {
     @JsonIgnore
     public List<Comment> getCommentList() {
         return comments;
+    }
+
+    public boolean getDraft() {
+        return draft;
+    }
+
+    public void setDraft(boolean d) {
+        this.draft = d;
     }
 
     public int getComment_num() {

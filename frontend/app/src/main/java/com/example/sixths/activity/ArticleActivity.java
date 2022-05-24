@@ -10,6 +10,7 @@ import com.example.sixths.view.StretchVideoView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -34,7 +35,7 @@ public class ArticleActivity extends AppCompatActivity {
     public Article article;
     public int article_id;
 
-    public ScrollView scroll_view;
+    public NestedScrollView scroll_view;
 
     public TextView content_view;
     public TextView nickname_view;

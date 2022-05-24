@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 单个草稿的预览页面 -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="14dp"
+        android:orientation="vertical"
+        android:paddingEnd="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/card_view"
+        tools:layout_editor_absoluteY="5dp">
+
+        <LinearLayout
+            android:id="@+id/touch_area"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/draft_post_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:maxLength="15"
+                android:maxLines="1"
+                android:text="TextView"
+                android:textColor="@color/black"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                tools:text="朝辞白帝彩云间，朝辞白帝彩云间,朝辞白帝彩云间,朝辞白帝彩云间,千里江陵一日还。\n两岸猿声啼不住\n轻舟已过万重山。" />
+
+            <TextView
+                android:id="@+id/post_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="2"
+                android:text="TextView"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                tools:text="朝辞白帝彩云间，朝辞白帝彩云间,朝辞白帝彩云间,朝辞白帝彩云间,千里江陵一日还。\n两岸猿声啼不住\n轻舟已过万重山。" />
+
+            <TextView
+                android:id="@+id/image_tag"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="2dp"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:fontFamily="@font/noto_sans"
+                android:maxLines="2"
+                android:minLines="1"
+                android:text="该动态包括图片，请在详情页查看"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/video_tag"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="2dp"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:fontFamily="@font/noto_sans"
+                android:maxLines="2"
+                android:minLines="1"
+                android:text="该动态包括视频，请在详情页查看"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/audio_tag"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="2dp"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:fontFamily="@font/noto_sans"
+                android:maxLines="2"
+                android:minLines="1"
+                android:text="该动态包括音频，请在详情页查看"
+                android:textSize="12sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:paddingVertical="3dp">
+
+                <ImageView
+                    android:id="@+id/position_icon"
+                    android:layout_width="20dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginVertical="1dp"
+                    app:srcCompat="@drawable/ic_location" />
+
+                <TextView
+                    android:id="@+id/delete_tag"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:fontFamily="@font/noto_sans"
+                    android:maxLines="2"
+                    android:minLines="1"
+                    android:text="位置"
+                    android:textSize="12sp"
+                    tools:text="蜀地 桃花潭" />
+
+                <TextView
+                    android:id="@+id/time_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
+                    android:text="2022-05-17 19:03:45"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_weight="1"
+        android:background="?android:attr/listDivider" />
+
+</LinearLayout>

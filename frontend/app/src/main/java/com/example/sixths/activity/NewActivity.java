@@ -1,5 +1,6 @@
 package com.example.sixths.activity;
 
+import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -10,6 +11,7 @@ import androidx.core.content.FileProvider;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -36,6 +38,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sixths.R;
+import com.example.sixths.service.Article;
 import com.example.sixths.service.Service;
 import com.example.sixths.view.AutoMediaController;
 import com.example.sixths.view.StretchVideoView;
@@ -47,6 +50,12 @@ import java.util.List;
 
 public class NewActivity extends AppCompatActivity {
     // 新建post的activity
+
+    public int article_id = -1;
+    public boolean media_init = false;
+    public Article article = null;
+
+    public boolean post_made = false;
 
     boolean enableLocation = false;
     String locationText = null;
@@ -83,6 +92,8 @@ public class NewActivity extends AppCompatActivity {
     public static int PHOTO = 1;
     public static int VIDEO = 2;
     public static int AUDIO = 3;
+    public static int ARTICLE_SUCCESS = 4;
+    public static int ARTICLE_RESOURCE = 5;
 
     private LocationManager locationManager;
 
@@ -93,8 +104,6 @@ public class NewActivity extends AppCompatActivity {
 
     AutoMediaController video_controller;
     AutoMediaController audio_controller;
-
-    private Bitmap bitmap;
 
     @SuppressLint("HandlerLeak")
     private final Handler handler = new Handler(Looper.getMainLooper()) {
@@ -108,6 +117,10 @@ public class NewActivity extends AppCompatActivity {
                 successVideo(msg.getData().getString("data"));
             } else if (msg.what == AUDIO) {
                 successAudio(msg.getData().getString("data"));
+            } else if (msg.what == ARTICLE_SUCCESS) {
+                loadArticle(msg.getData().getString("data"));
+            } else if (msg.what == ARTICLE_RESOURCE) {
+                loadArticleResource();
             }
         }
     };
@@ -145,12 +158,16 @@ public class NewActivity extends AppCompatActivity {
         }
     };
 
+    private ActivityResultLauncher<Intent> draft_launcher;
+
 
     @SuppressLint("MissingPermission")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new);
+
+        Service.setNewHandler(handler);
 
         title_view = findViewById(R.id.title_view);
         content_view = findViewById(R.id.content_view);
@@ -247,6 +264,23 @@ public class NewActivity extends AppCompatActivity {
 
         locationManager = (LocationManager) this.getApplicationContext().getSystemService(LOCATION_SERVICE);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+
+        draft_launcher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        System.out.println("hello activity result");
+                        System.out.println(result.getResultCode());
+                        if (result.getResultCode() == Activity.RESULT_OK) {
+                            System.out.println("hello activity result");
+                            Intent data = result.getData();
+                            if (data == null) return;
+                            article_id = data.getIntExtra("article_id", -1);
+                            if (article_id != -1) Service.getArticleInfo(article_id);
+                        }
+                    }
+                });
     }
 
     public boolean checkVideo() {
@@ -378,6 +412,7 @@ public class NewActivity extends AppCompatActivity {
     }
 
     public void makePost(View view) {
+        post_made = true;
         String content = content_view.getText().toString();
         String title = title_view.getText().toString();
         String image = photo_src;
@@ -386,7 +421,20 @@ public class NewActivity extends AppCompatActivity {
         String audio = audio_src;
 
         System.out.println(content);
-        Service.makeArticle(content, locationText, title, image, video, audio);
+        Service.makeArticle(article_id, content, locationText, title, image, video, audio);
+        this.finish();
+    }
+
+    public void makeDraft(View view) {
+        String content = content_view.getText().toString();
+        String title = title_view.getText().toString();
+        String image = photo_src;
+
+        String video = video_src;
+        String audio = audio_src;
+
+        System.out.println(content);
+        Service.makeDraft(article_id, content, locationText, title, image, video, audio);
         this.finish();
     }
 
@@ -535,7 +583,126 @@ public class NewActivity extends AppCompatActivity {
         audio_view.pause();
     }
 
+    public void gotoDraft(View view) {
+        Intent intent = new Intent(NewActivity.this, DraftActivity.class);
+        draft_launcher.launch(intent);
+// You can do the assignment inside onAttach or onCreate, i.e, before the activity is displayed
+    }
+
+    public void loadArticle(String str) {
+        article = Service.decodeArticle(str);
+        media_init = false;
+        Service.fetchImage(article);
+        Service.fetchMedia(article);
+
+        if (article == null) return;
+
+        title_view.setText(article.title);
+        content_view.setText(article.content);
+
+        if (article.position != null) {
+            position_view.setVisibility(View.VISIBLE);
+            position_text.setText(article.position);
+            enableLocation = true;
+            location_button.setImageResource(R.drawable.ic_location_blue);
+        }
+    }
+
+    public void loadArticleResource() {
+        try {
+            if (article == null) return;
+
+            System.out.print("media_init:");
+            System.out.println(media_init);
+            if (media_init) return;
+            if (article.image_fetched && article.video_fetched && article.audio_fetched)
+                media_init = true;
+            else {
+                Service.fetchImage(article);
+                Service.fetchMedia(article);
+                return;
+            }
+
+            /* image */
+            System.out.println(article.image);
+            if (article.image != null && article.image_fetched) {
+                Uri u = Service.getResourceUri(article.image);
+                if (u != null) {
+                    photo_uri = u;
+                    successPhoto(article.image);
+                }
+            } else {
+                camera_button.setImageResource(R.drawable.ic_camera_grey);
+                image_view.setVisibility(View.GONE);
+            }
+
+
+            /* audio */
+            System.out.println("resource fetched");
+            System.out.println(article.audio);
+            System.out.println(article.audio_fetched);
+            if (article.audio != null && article.audio_fetched) {
+                Uri u = Service.getResourceUri(article.audio);
+                System.out.println("audio fetched");
+                if (u != null) {
+                    audio_uri = u;
+                    successAudio(article.audio);
+                }
+            } else {
+                record_button.setImageResource(R.drawable.ic_record_grey);
+                audio_view.setVisibility(View.GONE);
+            }
+
+            /* video */
+            System.out.println(article.video);
+            System.out.println(article.video_fetched);
+            if (article.video != null && article.video_fetched) {
+                Uri u = Service.getResourceUri(article.video);
+                if (u != null) {
+                    video_uri = u;
+                    successVideo(article.video);
+                }
+            } else {
+                video_button.setImageResource(R.drawable.ic_video_grey);
+                video_view.setVisibility(View.GONE);
+            }
+
+            System.out.print("media_init done:");
+            System.out.println(media_init);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void cancel(View view) {
         this.finish();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Service.setNewHandler(null);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Service.setNewHandler(handler);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Service.setNewHandler(handler);
+        if (!post_made) {
+            if (photo_src != null || audio_src != null || video_src != null ||  enableLocation) {
+                makeDraft(null);
+            } else if (title_view.getText().toString().length() > 0 || content_view.getText().toString().length() > 0) {
+                System.out.println("#" + title_view.getText().toString().length() + "#");
+                System.out.println("#" + content_view.getText().toString().length() + "#");
+                makeDraft(null);
+            }
+        }
     }
 }

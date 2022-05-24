@@ -248,6 +248,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:onClick="gotoDraft"
                     android:layout_marginVertical="10dp"
                     android:orientation="horizontal">
 

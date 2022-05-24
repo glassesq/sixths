@@ -37,7 +37,36 @@ public class ArticleController {
             String image = req.getParameter("image");
             String video = req.getParameter("video");
             String audio = req.getParameter("audio");
-            int ret = articleService.addArticle(userid, content, position, title, image, video, audio);
+            int ret;
+            if( req.getParameter("article_id") == null ) {
+                ret = articleService.addArticle(userid, content, position, title, image, video, audio, false);
+            } else {
+                int article_id = Integer.parseInt(req.getParameter("article_id"));
+                ret = articleService.modifyArticle(article_id, content, position, title, image, video, audio, false);
+            }
+            return ResponseEntity.ok().body(String.valueOf(ret));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("fail");
+        }
+    }
+
+    @PostMapping(path = "/draft")
+    public ResponseEntity<String> addDraft(HttpServletRequest req) {
+        try {
+            int userid = Integer.parseInt(req.getAttribute(LoginInterceptor.ID_KEY).toString());
+            String content = req.getParameter("content");
+            String position = req.getParameter("position");
+            String title = req.getParameter("title");
+            String image = req.getParameter("image");
+            String video = req.getParameter("video");
+            String audio = req.getParameter("audio");
+            int ret;
+            if( req.getParameter("article_id") == null ) {
+                ret = articleService.addArticle(userid, content, position, title, image, video, audio, true);
+            } else {
+                int article_id = Integer.parseInt(req.getParameter("article_id"));
+                ret = articleService.modifyArticle(article_id, content, position, title, image, video, audio, true);
+            }
             return ResponseEntity.ok().body(String.valueOf(ret));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("fail");
@@ -65,15 +94,21 @@ public class ArticleController {
                 ArrayList<Integer> list = new ArrayList<>();
                 list.add(Integer.parseInt(req.getParameter("userid")));
                 return articleService.getArticleList(userid, start, num,
-                        list, true, false);
+                        list, true, false, false);
             }
             if (req.getParameter("follow") != null) {
                 List<Integer> list = userService.getFollowing(userid);
                 return articleService.getArticleList(userid, start, num,
-                        list, true, false);
+                        list, true, false, false);
+            }
+            if (req.getParameter("draft") != null) {
+                ArrayList<Integer> list = new ArrayList<>();
+                list.add(userid);
+                return articleService.getArticleList(userid, start, num,
+                        list, true, false, true);
             }
             return articleService.getArticleList(userid, start, num,
-                    null, false, true);
+                    null, false, true, false);
         } catch (Exception e) {
             return null;
         }

@@ -28,7 +28,7 @@ public class ArticleService {
     @Autowired
     CommentRepository commentRepository;
 
-    public int addArticle(int userid, String content, String position, String title, String image, String video, String audio) {
+    public int addArticle(int userid, String content, String position, String title, String image, String video, String audio, boolean draft) {
         Article article = new Article();
         article.setContent(content);
         article.setPosition(position);
@@ -36,7 +36,24 @@ public class ArticleService {
         article.setImage(image);
         article.setVideo(video);
         article.setAudio(audio);
+        article.setDraft(draft);
         article.setAuthor(userRepository.getById(userid));
+        article.setTime(new Date());
+        articleRepository.save(article);
+        return article.getId();
+    }
+
+
+    public int modifyArticle(int article_id, String content, String position, String title, String image, String video, String audio, boolean draft) {
+        Article article = findById(article_id);
+        if (article == null) return -1;
+        article.setContent(content);
+        article.setPosition(position);
+        article.setTitle(title);
+        article.setImage(image);
+        article.setVideo(video);
+        article.setAudio(audio);
+        article.setDraft(draft);
         article.setTime(new Date());
         articleRepository.save(article);
         return article.getId();
@@ -48,7 +65,8 @@ public class ArticleService {
     }
 
 
-    public List<Article> getArticleList(int userid, int start, int num, List<Integer> targets, boolean enable_target, boolean enable_block/* 是否为关注列表 */) {
+    public List<Article> getArticleList(int userid, int start, int num, List<Integer> targets,
+                                        boolean enable_target, boolean enable_block, boolean draft) {
         User user = userRepository.findById(userid).orElse(null);
         if (user == null) return new ArrayList<Article>();
 
@@ -58,9 +76,12 @@ public class ArticleService {
 
         List<Article> ret_list = all_list.stream()
                 .filter(
-                        t -> ((!enable_target || targets.contains(t.getAuthor().getId()) // only show targets
+                        t -> (
+                                (!enable_target || targets.contains(t.getAuthor().getId())) // only show targets
                                 && (!enable_block || !blockers.contains(t.getAuthor())) // filter those blocker
-                        ))).collect(Collectors.toList());
+                                && (t.getDraft() == draft) // not showing draft
+                        )
+                ).collect(Collectors.toList());
 
         int real_num = Math.min(ret_list.size() - start, num);
         if (real_num < 0) return new ArrayList<Article>();

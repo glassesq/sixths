@@ -48,10 +48,11 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
     public static final int FRESH_PROFILE = 3;
 
     String[] permissions = new String[]{Manifest.permission.CAMERA,
-            Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.RECORD_AUDIO};
 
     public void checkPermissions() {
-        for( int i = 0; i < permissions.length; i++) {
+        for (int i = 0; i < permissions.length; i++) {
             int ret = ContextCompat.checkSelfPermission(this, permissions[i]);
             if (ret != PackageManager.PERMISSION_GRANTED) {
                 startRequestPermission();
@@ -89,8 +90,8 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
             } else if (msg.what == FRESH) {
                 fresh();
             } else if (msg.what == FRESH_PROFILE) {
-                PersonFragment p  = (PersonFragment) person_frag;
-                p.freshProfile();
+                PersonFragment p = (PersonFragment) person_frag;
+                if (person_frag != null) p.freshProfile();
             }
         }
     };
@@ -115,6 +116,8 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
         Service.getMyself();
         Service.setFollow();
 
+        Service.initColor(this.getApplicationContext());
+
         /* 准备fragment内容并跳转至主页 */
         initFragment();
         selectTab(FragName.MAIN);
@@ -125,12 +128,15 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
     @Override
     protected void onResume() {
         super.onResume();
+        Service.setMainHandler(handler);
         updateTokenFromPref();
+        fresh();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        Service.setMainHandler(null);
         saveTokenToPref();
     }
 
@@ -221,17 +227,30 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
         // 登出成功
     }
 
+    /* post list listener */
+
     public void gotoUserPage(int userid) {
         Intent intent = new Intent(this, UserActivity.class);
         intent.putExtra("id", userid);
         startActivity(intent);
     }
 
+    public void switchLike(int article_id) {
+        Service.switchLike(article_id);
+    }
+
+    public void gotoArticlePage(int article_id) {
+        Intent intent = new Intent(this, ArticleActivity.class);
+        intent.putExtra("article_id", article_id);
+        startActivity(intent);
+    }
+
+    /* setting */
+
     public void gotoSetting(View view) {
         Intent intent = new Intent(this, SettingActivity.class);
         startActivity(intent);
     }
-
 
     private void failUserInfo() {
         Toast.makeText(MainActivity.this, "查询失败", Toast.LENGTH_SHORT).show();

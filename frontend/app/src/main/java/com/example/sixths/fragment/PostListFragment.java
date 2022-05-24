@@ -17,12 +17,10 @@ import com.example.sixths.service.Service;
 public class PostListFragment extends Fragment {
 
     public Service.POST_LIST_TYPE type;
-    //    private final CardListAdapter.OnArticleCardClickListener card_listener;
 
     public PostListAdapter.postListener listener;
 
     public PostListFragment() {
-        /*card_listener = null;*/
     }
 
     public void setListner(PostListAdapter.postListener listener) {
@@ -31,19 +29,7 @@ public class PostListFragment extends Fragment {
 
     public PostListFragment(Service.POST_LIST_TYPE type) {
         this.type = type;
-        /*card_listener = null;*/
     }
-
-/*    public PostListFragment(CardListAdapter.OnArticleCardClickListener card_listener) {
-        this.card_listener = card_listener;
-        Log.d(LOG_TAG, "start article list fragment");
-    }
-
-    public PostListFragment(CardListAdapter.OnArticleCardClickListener card_listener, boolean test_manager) {
-        this.card_listener = card_listener;
-        this.if_test_manager = test_manager;
-        Log.d(LOG_TAG, "start article list fragment");
-    } */
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,7 +56,5 @@ public class PostListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-//        Service.fetchArticle(type);
-//        System.out.println("resume");
     }
 }

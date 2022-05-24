@@ -71,7 +71,7 @@ public class SettingActivity extends AppCompatActivity {
         setContentView(R.layout.setting_info);
         image_view = findViewById(R.id.setting_profile_view);
 
-        Uri u = Service.getImageUri(Service.myself.profile);
+        Uri u = Service.getResourceUri(Service.myself.profile);
         if (u != null) image_view.setImageURI(u);
 
         launcher = registerForActivityResult(

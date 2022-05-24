@@ -49,6 +49,25 @@ public class UserActivity extends AppCompatActivity {
     public int userid = 0;
     public User user;
 
+    private final PostListAdapter.postListener listener = new PostListAdapter.postListener() {
+        @Override
+        public void gotoUserPage(int userid) {
+            return;
+        }
+
+        @Override
+        public void switchLike(int article_id) {
+            Service.switchLike(article_id);
+        }
+
+        @Override
+        public void gotoArticlePage(int article_id) {
+            Intent intent = new Intent(UserActivity.this, ArticleActivity.class);
+            intent.putExtra("article_id", article_id);
+            startActivity(intent);
+        }
+    };
+
     @SuppressLint("HandlerLeak")
     private final Handler handler = new Handler(Looper.getMainLooper()) {
         @Override
@@ -72,6 +91,7 @@ public class UserActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         super.setContentView(R.layout.user_mainpage);
 
+
         Service.setUserHandler(handler);
 
         /* 获取userid */
@@ -93,7 +113,7 @@ public class UserActivity extends AppCompatActivity {
         follow_but = findViewById(R.id.follow_but);
 
         /* 设计 recycle view 的 adapter */
-        PostListAdapter adapter = new PostListAdapter(this, null, Service.POST_LIST_TYPE.PERSON); // TODO
+        PostListAdapter adapter = new PostListAdapter(this, listener, Service.POST_LIST_TYPE.PERSON); // TODO
         recycler_view.setAdapter(adapter);
         recycler_view.setLayoutManager(new LinearLayoutManager(this));
 
@@ -111,8 +131,9 @@ public class UserActivity extends AppCompatActivity {
 
     public void freshProfile() {
         System.out.println("profile fresh");
-        Uri u = Service.getImageUri(user.profile);
-        if(u != null )profile_view.setImageURI(u);
+        if( user.profile == null ) return;
+        Uri u = Service.getResourceUri(user.profile);
+        if (u != null) profile_view.setImageURI(u);
     }
 
     public void switchFollow(View view) {
@@ -144,18 +165,42 @@ public class UserActivity extends AppCompatActivity {
             username_view.setText(user.name);
             nickname_view.setText(user.nickname);
             bio_view.setText(user.bio);
-            if( user.profile_fetched ) {
+            if (user.profile_fetched) {
                 System.out.println("the profile is here");
                 freshProfile();
-            }
-            else Service.fetchImage(user);
+            } else Service.fetchImage(user);
             freshFollow();
         }
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        Service.setUserHandler(null);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Service.setUserHandler(handler);
+        /* 恢复用户信息 */
+        Service.setPerson(userid);
+        Service.getUserInfo(userid);
+
+        /* 设计 recycle view 的 adapter */
+        PostListAdapter adapter = new PostListAdapter(this, listener, Service.POST_LIST_TYPE.PERSON); // TODO
+        recycler_view.setAdapter(adapter);
+        recycler_view.setLayoutManager(new LinearLayoutManager(this));
+
+        /* 从后端获取信息 */
+        Service.fetchArticle(Service.POST_LIST_TYPE.PERSON);
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        /* 清理用户信息 */
         Service.setUserHandler(null);
     }
 }

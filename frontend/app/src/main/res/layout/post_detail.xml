@@ -90,12 +90,25 @@
             </LinearLayout>
 
             <TextView
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="2dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/noto_sans"
+                android:maxLines="1"
+                android:minLines="1"
+                android:text="标题"
+                android:textSize="12sp" />
+
+            <TextView
                 android:id="@+id/post_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
                 android:maxLength="15"
                 android:maxLines="1"
+                android:minLines="1"
                 android:text="TextView"
                 android:textColor="@color/black"
                 android:textSize="17sp"
@@ -103,38 +116,36 @@
                 tools:text="朝辞白帝彩云间，朝辞白帝彩云间,朝辞白帝彩云间,朝辞白帝彩云间,千里江陵一日还。\n两岸猿声啼不住\n轻舟已过万重山。" />
 
             <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="2dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/noto_sans"
+                android:maxLines="2"
+                android:minLines="1"
+                android:text="内容"
+                android:textSize="12sp" />
+
+            <TextView
                 android:id="@+id/post_content"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:minLines="1"
                 android:text="TextView"
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 tools:text="朝辞白帝彩云间，朝辞白帝彩云间,朝辞白帝彩云间,朝辞白帝彩云间,千里江陵一日还。\n两岸猿声啼不住\n轻舟已过万重山。" />
 
             <TextView
-                android:id="@+id/video_tag"
+                android:id="@+id/photo_tag"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="2dp"
-                android:layout_weight="1"
                 android:ellipsize="end"
                 android:fontFamily="@font/noto_sans"
                 android:maxLines="2"
                 android:minLines="1"
-                android:text="该动态包括视频，请在详情页查看"
-                android:textSize="12sp" />
-
-            <TextView
-                android:id="@+id/audio_tag"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="2dp"
-                android:layout_weight="1"
-                android:ellipsize="end"
-                android:fontFamily="@font/noto_sans"
-                android:maxLines="2"
-                android:minLines="1"
-                android:text="该动态包括音频，请在详情页查看"
+                android:text="图片"
                 android:textSize="12sp" />
 
             <androidx.cardview.widget.CardView
@@ -155,6 +166,59 @@
                     android:visibility="visible"
                     app:srcCompat="@drawable/default_image" />
             </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/audio_tag"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="2dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/noto_sans"
+                android:maxLines="2"
+                android:minLines="1"
+                android:text="音频"
+                android:textSize="12sp" />
+
+            <FrameLayout
+                android:id="@+id/audio_frame"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginVertical="5dp">
+
+                <com.example.sixths.view.StretchVideoView
+                    android:id="@+id/audio_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@color/white"
+                    android:backgroundTint="@android:color/background_light"
+                    android:foreground="@drawable/ic_music_fill" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/video_tag"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="2dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/noto_sans"
+                android:maxLines="2"
+                android:minLines="1"
+                android:text="视频"
+                android:textSize="12sp" />
+
+            <FrameLayout
+                android:id="@+id/video_frame"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginVertical="5dp">
+
+                <com.example.sixths.view.StretchVideoView
+                    android:id="@+id/video_view"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_gravity="center_horizontal" />
+            </FrameLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -223,7 +287,6 @@
 
 
             <ImageView
-                android:id="@+id/comment_icon"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_marginVertical="1dp"

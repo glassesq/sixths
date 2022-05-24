@@ -10,10 +10,7 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.persistence.*;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.Base64;
-import java.util.Date;
-import java.util.Set;
-import java.util.TimeZone;
+import java.util.*;
 
 
 @Entity
@@ -34,7 +31,7 @@ public class Article {
     private User author; // the author of the post
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "likeArticles", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "liking", fetch = FetchType.LAZY)
     private Set<User> liker;
 
     public Date time;
@@ -46,6 +43,23 @@ public class Article {
     public String content;
 
     public String position;
+
+    public String video;
+
+    public String audio;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "article", fetch = FetchType.LAZY) // TODO: cascade
+    private List<Comment> comments;
+
+    @JsonIgnore
+    public List<Comment> getCommentList() {
+        return comments;
+    }
+
+    public int getComment_num() {
+        return comments.size();
+    }
 
     public User getAuthor() {
         return author;
@@ -75,6 +89,21 @@ public class Article {
         this.position = position;
     }
 
+    public String getVideo() {
+        return video;
+    }
+
+    public void setVideo(String video) {
+        this.video = video;
+    }
+
+    public String getAudio() {
+        return audio;
+    }
+
+    public void setAudio(String audio) {
+        this.audio = audio;
+    }
 
     public String getImage() {
         return image;
@@ -90,7 +119,7 @@ public class Article {
     }
 
     public void setTitle(String title) {
-        if( title != null ) this.title = title;
+        if (title != null) this.title = title;
     }
 
     public void setTime(Date time) {

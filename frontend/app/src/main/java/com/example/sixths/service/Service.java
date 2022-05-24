@@ -1,6 +1,7 @@
 package com.example.sixths.service;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
@@ -13,11 +14,15 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
+import com.example.sixths.R;
+import com.example.sixths.activity.ArticleActivity;
 import com.example.sixths.activity.LoginActivity;
 import com.example.sixths.activity.MainActivity;
 import com.example.sixths.activity.UserActivity;
+import com.example.sixths.adapter.CommentListAdapter;
 import com.example.sixths.adapter.PostListAdapter;
 import com.example.sixths.activity.RegisterActivity;
 
@@ -58,24 +63,36 @@ public class Service {
     private static Handler register_handler = null;
     private static Handler main_handler = null;
     private static Handler user_handler = null;
+    private static Handler article_handler = null;
 
     public static final int START_ARTICLE_NUM = 100;
     public static final int MORE_ARTICLE_NUM = 100;
 
     public static final int DEEP_FRESH = 0;
     public static final int FRESH = 1;
+    public static final int COMMENT_FRESH = 2;
+    public static final int COMMENT_DEEP_FRESH = 3;
+
+    public static int COLOR_BLUE;
+    public static int COLOR_BLACK;
+    public static int COLOR_WHITE;
+    public static int COLOR_RED;
+    public static int COLOR_GREY;
 
     private static final ArticleManager all_manager = new ArticleManager();
     private static final ArticleManager follow_manager = new ArticleManager();
     private static final ArticleManager person_manager = new ArticleManager();
+
+    private static final CommentManager comment_manager = new CommentManager();
 
     private static String token = null;
 
     private static final String url = "http://10.0.2.2:8080";
 
     public static HashSet<Integer> following = new HashSet<>();
+    public static HashSet<Integer> liking = new HashSet<>();
 
-    private static final Handler handler = new Handler(Looper.getMainLooper()) {
+    private static final Handler handler = new Handler(Looper.myLooper()) {
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
@@ -83,6 +100,10 @@ public class Service {
                 deepfresh();
             } else if (msg.what == FRESH) {
                 fresh();
+            } else if (msg.what == COMMENT_FRESH) {
+                commentfresh();
+            } else if (msg.what == COMMENT_DEEP_FRESH) {
+                commentDeepFresh();
             }
         }
     };
@@ -99,10 +120,26 @@ public class Service {
         fetchArticle(POST_LIST_TYPE.PERSON);
     }
 
+    public static void commentfresh() {
+        comment_manager.fresh();
+    }
+
+    public static void commentDeepFresh() {
+        comment_manager.fetchComment();
+    }
+
     public static void initStorage(String path) {
         publicPath = path.concat("/statics");
         File dir = new File(publicPath);
         dir.mkdirs();
+    }
+
+    public static void initColor(Context context) {
+        COLOR_BLACK = ContextCompat.getColor(context, R.color.black);
+        COLOR_WHITE = ContextCompat.getColor(context, R.color.white);
+        COLOR_BLUE = ContextCompat.getColor(context, R.color.blue);
+        COLOR_RED = ContextCompat.getColor(context, R.color.red);
+        COLOR_GREY = ContextCompat.getColor(context, R.color.grey);
     }
 
     public static void setFollow() {
@@ -117,6 +154,10 @@ public class Service {
 
     public static void setPerson(int id) {
         person_manager.setPerson(id);
+    }
+
+    public static void setCommentArticle(int id) {
+        comment_manager.setArticle(id);
     }
 
     public static String getToken() {
@@ -145,6 +186,10 @@ public class Service {
         user_handler = handler;
     }
 
+    public static void setArticleHandler(Handler handler) {
+        article_handler = handler;
+    }
+
     public static void logout() {
         token = null;
     }
@@ -159,6 +204,10 @@ public class Service {
         if (type == POST_LIST_TYPE.PERSON) {
             person_manager.setAdapter(adapter);
         }
+    }
+
+    public static void setCommentAdapter(CommentListAdapter adapter) {
+        comment_manager.setAdapter(adapter);
     }
 
     /* 网络工具 */
@@ -383,6 +432,27 @@ public class Service {
         thread.start();
     }
 
+    public static void sendMessage(Handler _handler, int _what) {
+        if (_handler == null) return;
+        Message msg = new Message();
+        System.out.println("message send");
+        msg.what = _what;
+        msg.setTarget(_handler);
+        msg.sendToTarget();
+    }
+
+    public static void sendMessage(Handler _handler, int _what, String data) {
+        if (_handler == null) return;
+        System.out.println("message send");
+        Message msg = new Message();
+        msg.what = _what;
+        Bundle bundle = new Bundle();
+        bundle.putString("data", data);
+        msg.setData(bundle);
+        msg.setTarget(_handler);
+        msg.sendToTarget();
+    }
+
     public static void getMyself() {
         Thread thread = new Thread(() -> {
             try {
@@ -415,12 +485,26 @@ public class Service {
 
                     following = decodeIntegerSet(result);
                 }
-                Message msg = new Message();
-                msg.what = FRESH;
-                msg.setTarget(handler);
-                msg.sendToTarget();
 
-                System.out.println("get user following finished");
+                /* liking list */
+                conn = getConnectionWithToken("/article/get_liking", "GET", "");
+                System.out.println("get liking conn established");
+
+                System.out.println(conn.getResponseCode());
+                if (conn.getResponseCode() == 200) {
+                    InputStream in = conn.getInputStream();
+
+                    String result = is2String(in);
+                    System.out.println(result);
+
+                    liking = decodeIntegerSet(result);
+                    System.out.println("article fresh");
+
+                    sendMessage(article_handler, ArticleActivity.ARTICLE_FRESH);
+                }
+
+                sendMessage(handler, FRESH);
+                System.out.println("get myself finished");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -437,8 +521,8 @@ public class Service {
             user.nickname = obj.getString("nickname");
             user.name = obj.getString("name");
             user.bio = obj.getString("bio");
+
             user.profile = checkStr(obj, "profile");
-            fetchImage(user);
             System.out.println("profile:" + user.profile);
             return user;
         } catch (Exception e) {
@@ -468,12 +552,7 @@ public class Service {
                     System.out.println(result);
                 }
                 getMyself();
-                Message msg = new Message();
-                msg.what = DEEP_FRESH;
-                msg.setTarget(handler);
-                msg.sendToTarget();
-
-
+                sendMessage(handler, DEEP_FRESH);
                 System.out.println("set user info finished");
             } catch (Exception e) {
                 e.printStackTrace();
@@ -486,6 +565,10 @@ public class Service {
         return following.contains(userid);
     }
 
+    public static boolean isLike(int articleid) {
+        return liking.contains(articleid);
+    }
+
     public static void followUser(int userid) {
         Thread thread = new Thread(() -> {
             try {
@@ -496,15 +579,8 @@ public class Service {
                 if (conn.getResponseCode() == 200) {
                     getMyself();
 
-                    Message msg = new Message();
-                    msg.what = DEEP_FRESH;
-                    msg.setTarget(handler);
-                    msg.sendToTarget();
-
-                    msg = new Message();
-                    msg.what = UserActivity.USER_FOLLOW;
-                    msg.setTarget(user_handler);
-                    msg.sendToTarget();
+                    sendMessage(handler, DEEP_FRESH);
+                    sendMessage(user_handler, UserActivity.USER_FOLLOW);
                 }
                 System.out.println("follow info finished");
             } catch (Exception e) {
@@ -525,15 +601,9 @@ public class Service {
                 if (conn.getResponseCode() == 200) {
                     getMyself();
 
-                    Message msg = new Message();
-                    msg.what = DEEP_FRESH;
-                    msg.setTarget(handler);
-                    msg.sendToTarget();
+                    sendMessage(handler, DEEP_FRESH);
 
-                    msg = new Message();
-                    msg.what = UserActivity.USER_UNFOLLOW;
-                    msg.setTarget(user_handler);
-                    msg.sendToTarget();
+                    sendMessage(user_handler, UserActivity.USER_UNFOLLOW);
                 }
 
                 System.out.println("unfollow info finished");
@@ -546,6 +616,38 @@ public class Service {
     }
 
     /* article */
+    public static Article decodeArticle(JSONObject obj, Article article) {
+        try {
+            article.author_nickname = obj.getJSONObject("author").getString("nickname");
+            article.author_username = obj.getJSONObject("author").getString("name");
+            article.author_id = obj.getJSONObject("author").getInt("id");
+
+            article.id = obj.getInt("id");
+
+            article.title = checkStr(obj, "title");
+            article.content = obj.getString("content");
+            article.position = checkStr(obj, "position");
+
+            article.image = checkStr(obj, "image");
+            article.image_fetched = checkFile(article.image);
+            article.audio = checkStr(obj, "audio");
+            article.audio_fetched = checkFile(article.audio);
+            article.video = checkStr(obj, "video");
+            article.video_fetched = checkFile(article.video);
+            article.author_profile = checkStr(obj.getJSONObject("author"), "profile");
+            article.profile_fetched = checkFile(article.author_profile);
+
+            // fetchMedia(article);
+            article.comments = obj.getInt("comment_num");
+            article.likes = obj.getInt("likes");
+            article.time = obj.getString("time");
+            return article;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public static Article decodeArticle(String str) {
         try {
             JSONObject obj = new JSONObject(str); //arr.getJSONObject();
@@ -559,18 +661,7 @@ public class Service {
     public static Article decodeArticle(JSONObject obj) {
         try {
             Article article = new Article();
-            article.author_nickname = obj.getJSONObject("author").getString("nickname");
-            article.author_username = obj.getJSONObject("author").getString("name");
-            article.author_id = obj.getJSONObject("author").getInt("id");
-            article.title = checkStr(obj, "title");
-            article.image = checkStr(obj, "image");
-            article.content = obj.getString("content");
-            article.position = obj.getString("position");
-            article.author_profile = checkStr(obj.getJSONObject("author"), "profile");
-            fetchImage(article);
-            if (article.position.equals("null")) article.position = null;
-            article.likes = obj.getInt("likes");
-            article.time = obj.getString("time");
+            decodeArticle(obj, article);
             return article;
         } catch (Exception e) {
             e.printStackTrace();
@@ -608,7 +699,7 @@ public class Service {
         all_manager.fetchArticle();
     }
 
-    public static void makeArticle(String content, String location, String title, String image) {
+    public static void makeArticle(String content, String location, String title, String image, String video, String audio) {
         System.out.println("start make article");
         Thread thread = new Thread(() -> {
             try {
@@ -622,22 +713,95 @@ public class Service {
                 if (image != null) {
                     params = params.concat("&image=" + URLEncoder.encode(image, "UTF-8"));
                 }
+                if (video != null) {
+                    params = params.concat("&video=" + URLEncoder.encode(video, "UTF-8"));
+                }
+                if (audio != null) {
+                    params = params.concat("&audio=" + URLEncoder.encode(audio, "UTF-8"));
+                }
                 System.out.println(params);
                 HttpURLConnection conn = getConnectionWithToken("/article", "POST", params);
                 System.out.println("make article conn established");
 
                 if (conn.getResponseCode() == 200) {
-                    Message msg = new Message();
-                    msg.what = MainActivity.NEW_SUCCESS;
-                    msg.setTarget(main_handler);
-                    msg.sendToTarget();
+                    sendMessage(main_handler, MainActivity.NEW_SUCCESS);
                 } else {
-                    Message msg = new Message();
-                    msg.what = MainActivity.NEW_FAIL;
-                    msg.setTarget(main_handler);
-                    msg.sendToTarget();
+                    sendMessage(main_handler, MainActivity.NEW_FAIL);
                 }
                 System.out.println("make article finished");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+    }
+
+    public static void switchLike(int article_id) {
+        if (isLike(article_id)) {
+            unlikeArticle(article_id);
+        } else {
+            likeArticle(article_id);
+        }
+    }
+
+    public static void likeArticle(int article_id) {
+        Thread thread = new Thread(() -> {
+            try {
+                String params = "article_id=" + URLEncoder.encode(String.valueOf(article_id), "UTF-8");
+                HttpURLConnection conn = getConnectionWithToken("/article/like", "POST", params);
+                System.out.println("article conn established");
+                System.out.println(conn.getResponseCode());
+                if (conn.getResponseCode() == 200) {
+                    getMyself();
+                    sendMessage(handler, DEEP_FRESH);
+                }
+                System.out.println("article info finished");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+    }
+
+    public static void unlikeArticle(int article_id) {
+        Thread thread = new Thread(() -> {
+            try {
+                String params = "article_id=" + URLEncoder.encode(String.valueOf(article_id), "UTF-8");
+                HttpURLConnection conn = getConnectionWithToken("/article/unlike", "POST", params);
+                System.out.println("article conn established");
+                System.out.println(conn.getResponseCode());
+                if (conn.getResponseCode() == 200) {
+                    getMyself();
+                    sendMessage(handler, DEEP_FRESH);
+                }
+                System.out.println("article info finished");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+    }
+
+    public static void getArticleInfo(int article_id) {
+        System.out.println(article_id);
+        System.out.println("start get article");
+        Thread thread = new Thread(() -> {
+            try {
+                String params = "article_id=" + URLEncoder.encode(String.valueOf(article_id), "UTF-8");
+                HttpURLConnection conn = getConnectionWithToken("/article/get_info", "GET", params);
+
+                System.out.println("get article conn established");
+
+                System.out.println(conn.getResponseCode());
+                if (conn.getResponseCode() == 200) {
+                    InputStream in = conn.getInputStream();
+
+                    String result = is2String(in);
+                    System.out.println(result);
+
+                    sendMessage(article_handler, ArticleActivity.ARTICLE_SUCCESS, result);
+                }
+                System.out.println("get article finished");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -653,7 +817,7 @@ public class Service {
         return "99+";
     }
 
-    /* image */
+    /* image / video / audio */
     public static String getEncoded64ImageStringFromBitmap(Bitmap bitmap) {
         /* https://stackoverflow.com/questions/26114661/how-to-upload-image-in-base64-on-server */
         System.out.println(bitmap.getByteCount());
@@ -747,11 +911,12 @@ public class Service {
     }
 
     public static boolean checkFile(String src) {
+        if( src == null ) return true;
         File file = new File(publicPath, src);
         return file.isFile() && file.exists();
     }
 
-    public static boolean fetchImageFromSrc(String src) {
+    public static boolean fetchResourceFromSrc(String src) {
         try {
             String webpath = url + "/res/" + src;
             InputStream input = new URL(webpath).openConnection().getInputStream();
@@ -765,43 +930,26 @@ public class Service {
     }
 
     public static void fetchImage(User user) {
+        if (user == null) return;
         System.out.println("fetch image");
         if (user.profile_fetched) return;
         if (user.profile == null || checkFile(user.profile)) {
             user.profile_fetched = true;
-            Message msg;
-            if (user_handler != null) {
-                msg = new Message();
-                msg.what = UserActivity.USER_PHOTO;
-                msg.setTarget(user_handler);
-                msg.sendToTarget();
-            }
-            msg = new Message();
-            msg.what = MainActivity.FRESH_PROFILE;
-            msg.setTarget(main_handler);
-            msg.sendToTarget();
-
+            sendMessage(user_handler, UserActivity.USER_PHOTO);
+            sendMessage(main_handler, MainActivity.FRESH_PROFILE);
         }
         if (user.profile_fetched) return;
 
         Thread thread = new Thread(() -> {
             try {
                 if (!user.profile_fetched) {
-                    if (fetchImageFromSrc(user.profile)) {
+                    if (fetchResourceFromSrc(user.profile)) {
                         user.profile_fetched = true;
                     }
                 }
-                Message msg;
-                if (user_handler != null) {
-                    msg = new Message();
-                    msg.what = UserActivity.USER_PHOTO;
-                    msg.setTarget(user_handler);
-                    msg.sendToTarget();
-                }
-                msg = new Message();
-                msg.what = MainActivity.FRESH_PROFILE;
-                msg.setTarget(main_handler);
-                msg.sendToTarget();
+                sendMessage(user_handler, UserActivity.USER_PHOTO);
+                sendMessage(main_handler, MainActivity.FRESH_PROFILE);
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -809,35 +957,94 @@ public class Service {
         thread.start();
     }
 
-
     public static void fetchImage(Article article) {
-        System.out.println("fetch image");
-        if (article.profile_fetched && article.image_fetched) return;
+        if (article == null) return;
         if (article.author_profile == null || checkFile(article.author_profile)) {
             article.profile_fetched = true;
         }
         if (article.image == null || checkFile(article.image)) {
             article.image_fetched = true;
         }
-        if (article.profile_fetched && article.image_fetched) return;
-
+        if (article.profile_fetched && article.image_fetched) {
+            sendMessage(article_handler, ArticleActivity.ARTICLE_RESOURCE);
+            sendMessage(main_handler, MainActivity.FRESH);
+            return;
+        }
         Thread thread = new Thread(() -> {
             try {
                 if (!article.profile_fetched) {
-                    if (fetchImageFromSrc(article.author_profile)) {
+                    if (fetchResourceFromSrc(article.author_profile)) {
                         article.profile_fetched = true;
                     }
                 }
                 if (!article.image_fetched) {
-                    if (fetchImageFromSrc(article.image)) {
+                    if (fetchResourceFromSrc(article.image)) {
                         article.image_fetched = true;
                     }
                 }
+                sendMessage(main_handler, MainActivity.FRESH);
+                sendMessage(article_handler, ArticleActivity.ARTICLE_RESOURCE);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+    }
 
-                Message msg = new Message();
-                msg.what = MainActivity.FRESH;
-                msg.setTarget(main_handler);
-                msg.sendToTarget();
+    public static void fetchImage(Comment comment) {
+        if (comment == null) return;
+        System.out.println("fetch image");
+        if (comment.profile_fetched) return;
+        if (comment.author_profile == null || checkFile(comment.author_profile)) {
+            comment.profile_fetched = true;
+            sendMessage(handler, COMMENT_FRESH);
+        }
+        if (comment.profile_fetched) return;
+
+        Thread thread = new Thread(() -> {
+            try {
+                if (!comment.profile_fetched) {
+                    if (fetchResourceFromSrc(comment.author_profile)) {
+                        comment.profile_fetched = true;
+                    }
+                }
+                sendMessage(handler, COMMENT_FRESH);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+    }
+
+    public static void fetchMedia(Article article) {
+        if (article == null) return;
+        System.out.println("fetch video & audio");
+        if (article.video == null || checkFile(article.video)) {
+            article.video_fetched = true;
+        }
+        if (article.audio == null || checkFile(article.audio)) {
+            article.audio_fetched = true;
+        }
+        if (article.audio_fetched && article.video_fetched) {
+            sendMessage(article_handler, ArticleActivity.ARTICLE_RESOURCE);
+            return;
+        }
+
+        Thread thread = new Thread(() -> {
+            try {
+                if (!article.audio_fetched) {
+                    if (fetchResourceFromSrc(article.audio)) {
+                        article.audio_fetched = true;
+                        System.out.println("audio got");
+                    }
+                }
+                if (!article.video_fetched) {
+                    if (fetchResourceFromSrc(article.video)) {
+                        article.video_fetched = true;
+                        System.out.println("video got");
+                    }
+                }
+                sendMessage(article_handler, ArticleActivity.ARTICLE_RESOURCE);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -862,25 +1069,37 @@ public class Service {
         return null;
     }
 
-    public static Uri getImageUri(String src) {
+    public static Uri getResourceUri(String src) {
         try {
             File file = new File(publicPath + "/" + src);
             return Uri.fromFile(file);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        // /data/user/0/com.example.sixths/files/statics/images/image_1652884612878.jpeg
-        // /data/user/0/com.example.sixths/files/statics/image_1652884612878.jpeg
         return null;
     }
+
+/*    public static Uri getImageUri(String src) {
+        return getResourceUri(src);
+    } */
 
     public static void uploadImage(int what, Handler handler, InputStream input, String type) {
         String[] types = type.split("/");
         uploadResource(what, handler, input, types[0], types[1]);
     }
 
-    public static void uploadResource(int what, Handler handler, InputStream input,
-                                      String type, String format) {
+    public static void uploadVideo(int what, Handler handler, InputStream input) {
+        // TODO: format
+        uploadResource(what, handler, input, "video", "flv");
+    }
+
+    public static void uploadAudio(int what, Handler handler, InputStream input) {
+        // TODO: format
+        uploadResource(what, handler, input, "audio", "aac");
+    }
+
+    private static void uploadResource(int what, Handler handler, InputStream input,
+                                       String type, String format) {
         Thread thread = new Thread(() -> {
             try {
                 File file = null;
@@ -897,21 +1116,12 @@ public class Service {
                 List<String> response = multipart.finish();
                 String s = "";
                 for (String line : response) {
-                    String responseString = line;
                     System.out.println(line);
                     s = s.concat(line);
                 }
 
                 if (handler != null) {
-                    System.out.println("send message now");
-                    Message msg = new Message();
-                    Bundle bundle = new Bundle();
-                    bundle.putString("data", s);
-                    msg.what = what;
-                    msg.setData(bundle);
-                    msg.setTarget(handler);
-                    msg.sendToTarget();
-                    System.out.println("send ok");
+                    sendMessage(handler, what, s);
                 }
 
 
@@ -922,4 +1132,88 @@ public class Service {
         thread.start();
     }
 
+    /* comment */
+    public static Comment decodeComment(String str) {
+        try {
+            JSONObject obj = new JSONObject(str); //arr.getJSONObject();
+            return decodeComment(obj);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static Comment decodeComment(JSONObject obj) {
+        try {
+            Comment comment = new Comment();
+            comment.author_nickname = obj.getJSONObject("author").getString("nickname");
+            comment.author_username = obj.getJSONObject("author").getString("name");
+            comment.author_id = obj.getJSONObject("author").getInt("id");
+
+            comment.id = obj.getInt("id");
+            comment.article_id = obj.getInt("article_id");
+
+            comment.content = obj.getString("content");
+            comment.author_profile = checkStr(obj.getJSONObject("author"), "profile");
+
+            comment.time = obj.getString("time");
+            return comment;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static Comment getComment(int index) {
+        return comment_manager.getByIndex(index);
+    }
+
+    public static int getCommentCount() {
+        return comment_manager.count();
+    }
+
+    public static void fetchComment() {
+        comment_manager.fetchComment();
+    }
+
+    public static void makeComment(int article_id, String content) {
+        System.out.println("start make comment");
+        Thread thread = new Thread(() -> {
+            try {
+                String params = "content=" + URLEncoder.encode(content, "UTF-8")
+                        + "article_id=" + URLEncoder.encode(String.valueOf(article_id), "UTF-8");
+                System.out.println(params);
+                HttpURLConnection conn = getConnectionWithToken("/article/add_comment", "POST", params);
+                System.out.println("make comment conn established");
+
+                if (conn.getResponseCode() == 200) {
+                    sendMessage(handler, COMMENT_FRESH);
+                }
+                System.out.println("make comment finished");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+    }
+
+    public static void removeComment(int comment_id) {
+        Thread thread = new Thread(() -> {
+            try {
+                String params = "comment_id=" + URLEncoder.encode(String.valueOf(comment_id), "UTF-8");
+                System.out.println(params);
+                HttpURLConnection conn = getConnectionWithToken("/article/remove_comment", "POST", params);
+                System.out.println("make comment conn established");
+
+                if (conn.getResponseCode() == 200) {
+                    sendMessage(handler, COMMENT_DEEP_FRESH);
+                    sendMessage(article_handler, ArticleActivity.ARTICLE_FRESH);
+                }
+                System.out.println("make comment finished");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+    }
 }

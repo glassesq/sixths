@@ -1,12 +1,12 @@
 package com.example.sixths.adapter;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,14 +16,15 @@ import com.example.sixths.R;
 import com.example.sixths.service.Article;
 import com.example.sixths.service.Service;
 
-import java.net.URI;
-import java.util.WeakHashMap;
-
 
 public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostViewHolder> {
 
     public interface postListener {
         void gotoUserPage(int userid);
+
+        void switchLike(int article_id);
+
+        void gotoArticlePage(int article_id);
     }
 
     private postListener listener;
@@ -44,21 +45,18 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
         inflater = LayoutInflater.from(context);
         this.listener = null;
         setType(null);
-//        card_listener = _card_listener;
     }
 
     public PostListAdapter(Context context, postListener listener) {
         inflater = LayoutInflater.from(context);
         this.listener = listener;
         setType(null);
-//        card_listener = _card_listener;
     }
 
     public PostListAdapter(Context context, postListener listener, Service.POST_LIST_TYPE type) {
         inflater = LayoutInflater.from(context);
         this.listener = listener;
         setType(type);
-//        card_listener = _card_listener;
     }
 
     public void setType(Service.POST_LIST_TYPE type) {
@@ -100,13 +98,18 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
         public TextView title_view;
 
         public TextView follow_tag;
+        public TextView audio_tag;
+        public TextView video_tag;
 
         public ImageView image_view;
         public ImageView profile_view;
         public ImageView position_icon;
 
-        //        public TextView title_view;
-        //        public CardView card_view;
+        public ImageView like_icon;
+        public ImageView comment_icon;
+
+        public LinearLayout touch_area;
+
         public PostListAdapter adapter;
         private int view_type;
 
@@ -126,15 +129,22 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
                 image_view = item_view.findViewById(R.id.image_view);
                 profile_view = item_view.findViewById(R.id.profile_view);
 
-                position_text = item_view.findViewById(R.id.position_text);
+                position_text = item_view.findViewById(R.id.delete_tag);
                 position_icon = item_view.findViewById(R.id.position_icon);
 
                 likes_view = item_view.findViewById(R.id.likes_view);
+                like_icon = item_view.findViewById(R.id.like_icon);
+
                 comments_view = item_view.findViewById(R.id.comments_view);
+                comment_icon = item_view.findViewById(R.id.comment_icon);
 
                 follow_tag = item_view.findViewById(R.id.follow_tag);
+                audio_tag = item_view.findViewById(R.id.audio_tag);
+                video_tag = item_view.findViewById(R.id.video_tag);
 
                 title_view = item_view.findViewById(R.id.post_title);
+
+                touch_area = item_view.findViewById(R.id.touch_area);
             }
         }
 
@@ -147,9 +157,6 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
         if (viewType == TYPE_CLASSIC) {
             item_view = inflater.inflate(R.layout.post_simple, parent, false);
         }
-/*        } else {
-            item_view = inflater.inflate(R.layout.post_simple, parent, false);
-        } */
         return new PostViewHolder(item_view, this, viewType);
     }
 
@@ -179,17 +186,23 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
                 holder.follow_tag.setVisibility(View.GONE);
             }
 
+            if (Service.isLike(article.id)) {
+                holder.like_icon.setImageResource(R.drawable.ic_like_blue);
+                holder.likes_view.setTextColor(Service.COLOR_BLUE);
+            } else {
+                holder.like_icon.setImageResource(R.drawable.ic_like);
+                holder.likes_view.setTextColor(Service.COLOR_GREY);
+            }
+
             if (article.author_profile != null && article.profile_fetched) {
-//                Bitmap b = Service.getImageBitmap(article.author_profile);
-//                if( b != null) holder.profile_view.setImageBitmap(b);
-                Uri u = Service.getImageUri(article.author_profile);
+                Uri u = Service.getResourceUri(article.author_profile);
                 if (u != null) holder.profile_view.setImageURI(u);
             } else {
                 holder.profile_view.setImageResource(R.drawable.default_profile);
             }
 
             if (article.image != null && article.image_fetched) {
-                Uri u = Service.getImageUri(article.image);
+                Uri u = Service.getResourceUri(article.image);
                 if (u != null) {
                     holder.image_view.setImageURI(u);
                     holder.image_view.setVisibility(View.VISIBLE);
@@ -198,32 +211,33 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
                 holder.image_view.setVisibility(View.GONE);
             }
 
+            if (article.audio != null) {
+                holder.audio_tag.setVisibility(View.VISIBLE);
+            } else {
+                holder.audio_tag.setVisibility(View.GONE);
+            }
+
+            if (article.video != null) {
+                holder.video_tag.setVisibility(View.VISIBLE);
+            } else {
+                holder.video_tag.setVisibility(View.GONE);
+            }
+
             holder.likes_view.setText(Service.wrapInt(article.likes));
             holder.comments_view.setText(Service.wrapInt(article.comments));
 
             // TODO: else
-            if (listener != null)
+            if (listener != null) {
                 holder.profile_view.setOnClickListener(view -> listener.gotoUserPage(article.author_id));
-        }
-//        if (position != getItemCount() - 1) {
-//            String title = manager.getByIndex(position).getTitle();
-//            holder.title_view.setText(title);
-//        String content = manager.getByIndex(position).getContent();
-//        holder.content_view.setText("天生我才必有用");
-//            String id = manager.getByIndex(position).getId();
-//            holder.card_view.setOnClickListener(view -> card_listener.onCardClick(id));
 
-//        } else {
-        // if (if_more) {
-        //     holder.footer_view.setText("查看更多");
-        //     holder.footer_view.setClickable(true);
-        //     holder.footer_view.setOnClickListener(view -> showTenMoreArticle());
-        // } else {
-        //     holder.footer_view.setText("没有更多了");
-        //     holder.footer_view.setClickable(false);
-        // }
-//        Log.d(LOG_TAG, "onBindViewHolder - footer");
-//        }
+                holder.like_icon.setOnClickListener(view -> listener.switchLike(article.id));
+                holder.likes_view.setOnClickListener(view -> listener.switchLike(article.id));
+
+                holder.touch_area.setOnClickListener(view -> listener.gotoArticlePage(article.id));
+                holder.comments_view.setOnClickListener(view -> listener.gotoArticlePage(article.id));
+                holder.comment_icon.setOnClickListener(view -> listener.gotoArticlePage(article.id));
+            }
+        }
     }
 
     @Override

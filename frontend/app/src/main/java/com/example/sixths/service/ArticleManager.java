@@ -73,6 +73,7 @@ public class ArticleManager {
                     params = params.concat("&follow=true");
                     System.out.println("follow");
                 }
+
                 HttpURLConnection conn =
                         Service.getConnectionWithToken("/article/get_list", "GET", params);
                 System.out.println("fetch Article conn established");
@@ -83,14 +84,12 @@ public class ArticleManager {
                     String result = Service.is2String(in);
                     System.out.println(result);
 
-//                    JSONObject obj = new JSONObject(result);
-
                     ArrayList<Article> list = new ArrayList<Article>();
                     JSONArray arr = new JSONArray(result);
                     for (int i = 0; i < arr.length(); i++) {
                         Article article = Service.decodeArticle(arr.getJSONObject(i));
                         if (article != null) {
-                            System.out.println(article.author_nickname + " " + article.author_username + " " + article.content);
+                            Service.fetchImage(article);
                             list.add(article);
                         }
                     }
@@ -99,8 +98,14 @@ public class ArticleManager {
                     Message msg = new Message();
                     msg.setTarget(handler);
                     msg.sendToTarget();
+
+                    /*
+                    for (int i = 0; i < arr.length(); i++) {
+                        Service.fetchResourceFromSrc(article_list.get(i).author_profile);
+                        adapter.notifyItemChanged(i);
+                    } */
+
                 } else {
-                    System.out.println("fetch failed");
                     System.out.println(conn.getResponseCode());
                     InputStream in = conn.getErrorStream();
 

@@ -58,11 +58,14 @@ public class PersonFragment extends Fragment {
         username_view.setText(Service.myself.name);
         nickname_view.setText(Service.myself.nickname);
         if (Service.myself.profile_fetched) freshProfile();
-        else { Service.fetchImage(Service.myself); }
+        else {
+            Service.fetchImage(Service.myself);
+        }
     }
 
     public void freshProfile() {
-        Uri u = Service.getImageUri(Service.myself.profile);
+        if( Service.myself.profile == null ) return;
+        Uri u = Service.getResourceUri(Service.myself.profile);
         if (u != null) image_view.setImageURI(u);
     }
 

@@ -24,6 +24,10 @@ public class User {
 
     @JsonIgnore
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY) // TODO: cascade
+    private List<Comment> comments;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "author", fetch = FetchType.LAZY) // TODO: cascade
     private List<Article> articles;
 
     @ManyToMany() // TODO: cascade
@@ -46,7 +50,7 @@ public class User {
 
     @JsonIgnore
     @ManyToMany()
-    private Set<Article> likeArticles;
+    private Set<Article> liking;
 
     @JsonIgnore
     private String email;
@@ -60,9 +64,12 @@ public class User {
     }
 
     @JsonIgnore
-    public List<Article> getArticle() {
+    public List<Article> getArticles() {
         return articles;
     }
+
+    @JsonIgnore
+    public List<Comment> getComments() { return comments; }
 
     public Integer getId() {
         return id;
@@ -118,6 +125,10 @@ public class User {
 
     public Set<User> getFollowing() {
         return following;
+    }
+
+    public Set<Article> getLiking() {
+        return liking;
     }
 
     public Set<User> getBlockBy() {

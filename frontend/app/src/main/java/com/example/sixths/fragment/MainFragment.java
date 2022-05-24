@@ -32,15 +32,9 @@ public class MainFragment extends Fragment {
         this.listener = listener;
     }
 
-//    private final CardListAdapter.OnArticleCardClickListener card_listener;
-
     public MainFragment() {
 //        card_listener = null;
     }
-
-    //   public MainFragment(CardListAdapter.OnArticleCardClickListener listener) {
-    //       card_listener = listener;
-    //   }
 
 
     @Override

@@ -21,6 +21,9 @@
         android:theme="@style/Theme.Sixths"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".activity.CommentActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.ArticleActivity"
             android:exported="false" />
 

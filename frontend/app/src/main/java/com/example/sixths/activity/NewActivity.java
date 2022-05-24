@@ -5,15 +5,19 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
@@ -44,10 +48,9 @@ import java.util.List;
 public class NewActivity extends AppCompatActivity {
     // 新建post的activity
 
-
     boolean enableLocation = false;
-    boolean enableImage = false;
     String locationText = null;
+    private Location realLocation = null;
 
     private TextView content_view;
     private TextView title_view;
@@ -80,6 +83,8 @@ public class NewActivity extends AppCompatActivity {
     public static int PHOTO = 1;
     public static int VIDEO = 2;
     public static int AUDIO = 3;
+
+    private LocationManager locationManager;
 
     ActivityResultLauncher<Uri> launcher;
     ActivityResultLauncher<Uri> video_launcher;
@@ -121,6 +126,27 @@ public class NewActivity extends AppCompatActivity {
         }
     };
 
+    protected final LocationListener locationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            if (location != null) NewActivity.this.realLocation = location;
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+        }
+    };
+
+
+    @SuppressLint("MissingPermission")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -218,6 +244,9 @@ public class NewActivity extends AppCompatActivity {
                 mediaPlayer.setLooping(true);
             }
         }); */
+
+        locationManager = (LocationManager) this.getApplicationContext().getSystemService(LOCATION_SERVICE);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
     }
 
     public boolean checkVideo() {
@@ -250,7 +279,7 @@ public class NewActivity extends AppCompatActivity {
     }
 
     public void capturePhoto(View view) {
-        if( photo_src == null ) {
+        if (photo_src == null) {
             File file = Service.makeEmptyFile("image", "jpeg");
             if (file == null) return;
 
@@ -270,7 +299,7 @@ public class NewActivity extends AppCompatActivity {
 
 
     public void recordVideo(View view) {
-        if( video_src == null ) {
+        if (video_src == null) {
             File file = Service.makeEmptyFile("video", "video");
             if (file == null) return;
 
@@ -299,7 +328,7 @@ public class NewActivity extends AppCompatActivity {
 
     public void recordAudio() {
         try {
-            if( audio_src == null ) {
+            if (audio_src == null) {
                 recorder = new MediaRecorder();
                 File file = Service.makeEmptyFile("audio", "audio");
 
@@ -384,17 +413,14 @@ public class NewActivity extends AppCompatActivity {
         }
     }
 
-    @SuppressLint("MissingPermission")
     private Location getLocation() {
         /* https://blog.csdn.net/ming54ming/article/details/118853081 */
-        Location location = null;
-        LocationManager locationManager = (LocationManager) this.getApplicationContext().getSystemService(LOCATION_SERVICE);
+        Location location = realLocation;
+
         if (locationManager == null) {
             return null;
         }
 
-        System.out.println(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER));
-        System.out.println(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER));
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
                 && !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
             Intent intent = new Intent();
@@ -407,8 +433,14 @@ public class NewActivity extends AppCompatActivity {
         System.out.println("location manager get");
         List<String> providers = locationManager.getProviders(true);
         System.out.println(providers);
+
         for (String provider : providers) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                System.out.println("it is permission");
+                return null;
+            }
             Location l = locationManager.getLastKnownLocation(provider);
+            System.out.println(provider);
             System.out.println("location:");
             System.out.println(l);
             if (l == null) {
@@ -433,9 +465,9 @@ public class NewActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         if (addressList != null && addressList.size() >= 1) {
-            for (Address address : addressList) {
+/*            for (Address address : addressList) {
                 System.out.println(String.format("address: %s", address.toString()));
-            }
+            } */
             return addressList.get(0).getAddressLine(0);
         }
         return null;

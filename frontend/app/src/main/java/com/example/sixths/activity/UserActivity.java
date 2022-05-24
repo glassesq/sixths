@@ -12,20 +12,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.sixths.R;
 import com.example.sixths.adapter.PostListAdapter;
-import com.example.sixths.adapter.PostPagerAdapter;
 import com.example.sixths.service.Service;
 import com.example.sixths.service.User;
-import com.google.android.material.tabs.TabLayoutMediator;
 
 public class UserActivity extends AppCompatActivity {
 
@@ -106,7 +101,7 @@ public class UserActivity extends AppCompatActivity {
         nickname_view = findViewById(R.id.nickname_view);
         username_view = findViewById(R.id.username_view);
         recycler_view = findViewById(R.id.recycler_view);
-        profile_view = findViewById(R.id.profile_view);
+        profile_view = findViewById(R.id.user_profile_view);
         bio_view = findViewById(R.id.user_bio);
 
         followed_but = findViewById(R.id.followed_but);

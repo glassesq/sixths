@@ -580,6 +580,7 @@ public class Service {
                     getMyself();
 
                     sendMessage(handler, DEEP_FRESH);
+                    sendMessage(main_handler, MainActivity.FRESH_PROFILE);
                     sendMessage(user_handler, UserActivity.USER_FOLLOW);
                 }
                 System.out.println("follow info finished");
@@ -1181,7 +1182,7 @@ public class Service {
         Thread thread = new Thread(() -> {
             try {
                 String params = "content=" + URLEncoder.encode(content, "UTF-8")
-                        + "article_id=" + URLEncoder.encode(String.valueOf(article_id), "UTF-8");
+                        + "&article_id=" + URLEncoder.encode(String.valueOf(article_id), "UTF-8");
                 System.out.println(params);
                 HttpURLConnection conn = getConnectionWithToken("/article/add_comment", "POST", params);
                 System.out.println("make comment conn established");

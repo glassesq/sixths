@@ -127,7 +127,7 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
                 time_view = item_view.findViewById(R.id.time_view);
 
                 image_view = item_view.findViewById(R.id.image_view);
-                profile_view = item_view.findViewById(R.id.profile_view);
+                profile_view = item_view.findViewById(R.id.user_profile_view);
 
                 position_text = item_view.findViewById(R.id.delete_tag);
                 position_icon = item_view.findViewById(R.id.position_icon);

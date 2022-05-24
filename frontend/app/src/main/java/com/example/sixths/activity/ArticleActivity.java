@@ -181,7 +181,7 @@ public class ArticleActivity extends AppCompatActivity {
         time_view = findViewById(R.id.time_view);
 
         image_view = findViewById(R.id.image_view);
-        profile_view = findViewById(R.id.profile_view);
+        profile_view = findViewById(R.id.user_profile_view);
 
         position_text = findViewById(R.id.delete_tag);
         position_icon = findViewById(R.id.position_icon);
@@ -224,12 +224,7 @@ public class ArticleActivity extends AppCompatActivity {
 
         recycler_view = findViewById(R.id.recycler_view);
 
-        CommentListAdapter adapter = new CommentListAdapter(this, listener, commentListener);
-        recycler_view.setAdapter(adapter);
-        recycler_view.setLayoutManager(new LinearLayoutManager(this));
 
-        Service.setCommentArticle(article_id);
-        Service.fetchComment();
     }
 
     public void successArticleInfo(String data) {
@@ -390,6 +385,12 @@ public class ArticleActivity extends AppCompatActivity {
         this.finish();
     }
 
+    public void makeComment(View view) {
+        Intent intent = new Intent(this, CommentActivity.class);
+        intent.putExtra("article_id", article.id);
+        startActivity(intent);
+    }
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -399,7 +400,6 @@ public class ArticleActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        /*
         Service.setArticleHandler(handler);
         Service.getArticleInfo(article_id);
 
@@ -409,8 +409,6 @@ public class ArticleActivity extends AppCompatActivity {
 
         Service.setCommentArticle(article_id);
         Service.fetchComment();
-         */
-
     }
 
 

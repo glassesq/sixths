@@ -13,7 +13,6 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -49,6 +48,8 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
 
     String[] permissions = new String[]{Manifest.permission.CAMERA,
             Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.RECORD_AUDIO};
 
     public void checkPermissions() {
@@ -131,6 +132,7 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
         Service.setMainHandler(handler);
         updateTokenFromPref();
         fresh();
+        Service.fetchImage(Service.myself);
     }
 
     @Override

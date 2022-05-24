@@ -6,14 +6,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sixths.R;
-import com.example.sixths.service.Article;
 import com.example.sixths.service.Comment;
 import com.example.sixths.service.Service;
 
@@ -77,7 +75,7 @@ public class CommentListAdapter extends RecyclerView.Adapter<CommentListAdapter.
 
                 time_view = item_view.findViewById(R.id.time_view);
 
-                profile_view = item_view.findViewById(R.id.profile_view);
+                profile_view = item_view.findViewById(R.id.user_profile_view);
 
                 follow_tag = item_view.findViewById(R.id.follow_tag);
                 delete_tag = item_view.findViewById(R.id.delete_tag);

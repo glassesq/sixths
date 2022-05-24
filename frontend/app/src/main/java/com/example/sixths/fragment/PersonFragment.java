@@ -37,14 +37,13 @@ public class PersonFragment extends Fragment {
         bio_view = view.findViewById(R.id.bio_view);
         username_view = view.findViewById(R.id.center_username_view);
         nickname_view = view.findViewById(R.id.nickname_view);
-        image_view = view.findViewById(R.id.profile_view);
+        image_view = view.findViewById(R.id.user_profile_view);
         return view;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        fresh();
     }
 
     @Override
@@ -64,9 +63,13 @@ public class PersonFragment extends Fragment {
     }
 
     public void freshProfile() {
-        if( Service.myself.profile == null ) return;
+        if (Service.myself.profile == null) return;
+        System.out.print(Service.myself.profile_fetched);
         Uri u = Service.getResourceUri(Service.myself.profile);
-        if (u != null) image_view.setImageURI(u);
+        if (u != null) {
+            image_view.setImageURI(u);
+            image_view.setVisibility(View.VISIBLE);
+        }
     }
 
 }

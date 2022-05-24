@@ -36,7 +36,7 @@ public class StretchVideoView extends VideoView {
         if( isAudio ) return;
         if( w < 100 ) w = 100;
         if( h < 100 ) h = 100;
-        if (w > h) {
+        if (w > h || w > 1280 || h > 960) {
             w = (int) ((double) w / 1.5);
             h = (int) ((double) h / 1.5);
             // TODO: adjust with screen.

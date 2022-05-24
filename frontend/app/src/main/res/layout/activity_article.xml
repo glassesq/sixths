@@ -88,7 +88,7 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <ImageView
-                        android:id="@+id/profile_view"
+                        android:id="@+id/user_profile_view"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="@drawable/circle"
@@ -360,11 +360,13 @@
                             android:layout_height="match_parent"
                             android:layout_marginVertical="1dp"
                             android:layout_weight="0.5"
+                            android:onClick="makeComment"
                             app:srcCompat="@drawable/ic_comment" />
 
                         <TextView
                             android:id="@+id/comments_view"
                             android:layout_width="0dp"
+                            android:onClick="makeComment"
                             android:layout_height="wrap_content"
                             android:layout_weight="1.5"
                             android:text="99+"
@@ -397,10 +399,10 @@
                 android:id="@+id/textView3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="cancel"
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="5dp"
                 android:text="评论"
+                android:clickable="true"
                 android:textColor="@color/grey"
                 android:textSize="16sp"
                 android:textStyle="bold"

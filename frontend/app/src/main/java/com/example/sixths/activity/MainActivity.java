@@ -19,6 +19,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.sixths.adapter.PostListAdapter;
@@ -39,13 +40,16 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
 
     private FragmentTransaction transaction;
     private Fragment main_frag = null;
-    private Fragment person_frag = null;
+    private PersonFragment person_frag = null;
+
+    private ImageView person_icon;
 
     public static final int NEW_FAIL = 0;
     public static final int NEW_SUCCESS = 1;
     public static final int FRESH = 2;
     public static final int FRESH_PROFILE = 3;
     public static final int DRAFT = 4;
+    public static final int NOTI_GOT = 5;
 
     String[] permissions = new String[]{Manifest.permission.CAMERA,
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -96,6 +100,8 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
                 if (person_frag != null) p.fresh();
             } else if (msg.what == DRAFT) {
                 successDraft();
+            } else if (msg.what == NOTI_GOT) {
+                freshNoti();
             }
         }
     };
@@ -115,6 +121,8 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
 
         setContentView(R.layout.overall_page);
 
+        person_icon = findViewById(R.id.person_icon);
+
         Service.setMainHandler(handler);
         Service.initStorage(this.getApplicationContext().getFilesDir().getPath());
         Service.getMyself();
@@ -128,6 +136,10 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
         selectTab(FragName.MAIN);
 
         checkPermissions();
+
+        Service.loopFetchNotification();
+
+        freshNoti();
     }
 
     @Override
@@ -136,7 +148,20 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
         Service.setMainHandler(handler);
         updateTokenFromPref();
         fresh();
+        Service.deepfresh();
         Service.fetchImage(Service.myself);
+        freshNoti();
+    }
+
+    public void freshNoti() {
+        if (Service.notiUncheck()) {
+            person_icon.setImageResource(R.drawable.ic_shock_user);
+        } else {
+            person_icon.setImageResource(R.drawable.ic_user);
+        }
+        try {
+            if (person_frag != null) person_frag.freshNoti();
+        } catch (Exception ignored) {}
     }
 
     @Override
@@ -168,7 +193,7 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
         transaction = getSupportFragmentManager().beginTransaction();
         if (main_frag == null) {
             main_frag = getSupportFragmentManager().findFragmentByTag("main_frag");
-            if( main_frag == null ) {
+            if (main_frag == null) {
                 MainFragment f = new MainFragment();
                 f.setListener(this);
                 main_frag = f;
@@ -176,8 +201,8 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
             }
         }
         if (person_frag == null) {
-            person_frag = getSupportFragmentManager().findFragmentByTag("person_frag");
-            if( person_frag == null ) {
+            person_frag = (PersonFragment) getSupportFragmentManager().findFragmentByTag("person_frag");
+            if (person_frag == null) {
                 person_frag = new PersonFragment();
                 transaction.add(R.id.frame_content, person_frag, "person_frag");
             }
@@ -227,7 +252,14 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
         startActivity(intent);
     }
 
+
+    public void gotoNoti(View view) {
+        Intent intent = new Intent(MainActivity.this, NotificationActivity.class);
+        startActivity(intent);
+    }
+
     public void gotoDraft(View view) {
+
         Intent intent = new Intent(MainActivity.this, DraftActivity.class);
         startActivity(intent);
     }

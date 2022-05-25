@@ -6,13 +6,25 @@
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_bell.xml" value="0.264" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_camera_grey.xml" value="0.1" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_camera_red.xml" value="0.1" />
+        <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_comment.xml" value="0.1875" />
+        <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_comment_red.xml" value="0.1875" />
+        <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_edit_red.xml" value="0.1875" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_like.xml" value="0.1" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_like_blue.xml" value="0.1" />
+        <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_like_red.xml" value="0.242" />
+        <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_location.xml" value="0.1875" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_location_blue.xml" value="0.1" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_location_grey.xml" value="0.1" />
+        <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_location_red.xml" value="0.1875" />
+        <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_plus.xml" value="0.1875" />
+        <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_record.xml" value="0.1875" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_record_red.xml" value="0.1" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_record_white.xml" value="0.1" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_setting.xml" value="0.145" />
+        <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_share.xml" value="0.1875" />
+        <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_shock_user.xml" value="0.1" />
+        <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_user.xml" value="0.1875" />
+        <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_user_red.xml" value="0.127" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_video.xml" value="0.1" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_video_grey.xml" value="0.1" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_video_red.xml" value="0.1" />
@@ -31,8 +43,9 @@
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/draft_simple.xml" value="0.2" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/fragment_post_list.xml" value="0.25885416666666666" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/new_post.xml" value="0.15520833333333334" />
-        <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/notice_box.xml" value="0.15520833333333334" />
-        <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/overall_page.xml" value="0.264" />
+        <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/notice_box.xml" value="0.264" />
+        <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/notice_simple.xml" value="0.264" />
+        <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/overall_page.xml" value="0.1" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/person_center.xml" value="0.16" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/post_detail.xml" value="0.264" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/post_simple.xml" value="0.264" />

@@ -1,6 +1,8 @@
 package com.example.sixths.service;
 
+import com.example.sixths.model.Notification;
 import com.example.sixths.repository.ArticleRepository;
+import com.example.sixths.repository.NotificationRepository;
 import com.example.sixths.utils.JWTUtils;
 import com.example.sixths.model.User;
 import com.example.sixths.repository.UserRepository;
@@ -17,7 +19,10 @@ public class UserService {
     private ArticleRepository articleRepository;
 
     @Autowired
-    public UserRepository userRepository;
+    private UserRepository userRepository;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
 
     public Pair<String, String> addUser(String name, String email, String password) {
         if (userRepository.findByEmail(email).size() > 0)
@@ -128,5 +133,20 @@ public class UserService {
             ret.add(_user.getId());
         }
         return ret;
+    }
+
+    public List<Notification> getNotificationList(int userid) {
+        User user = userRepository.findById(userid).orElse(null);
+        if (user == null) return null;
+        List<Notification> ret = new ArrayList<>(user.getNotification());
+        Collections.reverse(ret);
+        return ret;
+    }
+
+    public void setNotification(int id) {
+        Notification noti = notificationRepository.findById(id).orElse(null);
+        if( noti == null ) return;
+        noti.setChecked();
+        notificationRepository.save(noti);
     }
 }

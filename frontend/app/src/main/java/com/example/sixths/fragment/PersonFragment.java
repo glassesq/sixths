@@ -20,6 +20,9 @@ public class PersonFragment extends Fragment {
     private TextView nickname_view = null;
     private TextView username_view = null;
 
+    private TextView normal_noti;
+    private TextView shock_noti;
+
     private ImageView image_view = null;
 
     public PersonFragment() {
@@ -38,6 +41,8 @@ public class PersonFragment extends Fragment {
         username_view = view.findViewById(R.id.center_username_view);
         nickname_view = view.findViewById(R.id.nickname_view);
         image_view = view.findViewById(R.id.user_profile_view);
+        normal_noti = view.findViewById(R.id.normal_noti);
+        shock_noti = view.findViewById(R.id.shock_noti);
         return view;
     }
 
@@ -69,6 +74,16 @@ public class PersonFragment extends Fragment {
         if (u != null) {
             image_view.setImageURI(u);
             image_view.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void freshNoti() {
+        if (Service.notiUncheck()) {
+            normal_noti.setVisibility(View.GONE);
+            shock_noti.setVisibility(View.VISIBLE);
+        } else {
+            normal_noti.setVisibility(View.VISIBLE);
+            shock_noti.setVisibility(View.GONE);
         }
     }
 

@@ -54,6 +54,7 @@
             app:srcCompat="@drawable/ic_search" />
 
         <ImageView
+            android:id="@+id/person_icon"
             android:layout_width="0dp"
             android:layout_height="25dp"
             android:layout_weight="1"

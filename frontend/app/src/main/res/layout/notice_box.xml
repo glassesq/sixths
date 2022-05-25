@@ -21,6 +21,7 @@
             android:layout_weight="1.5"
             android:paddingStart="25dp"
             android:paddingEnd="0dp"
+            android:onClick="cancel"
             android:text="返回"
             android:textColor="@color/black"
             android:textSize="16sp"
@@ -36,35 +37,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingHorizontal="10dp"
-            android:text="草稿箱"
+            android:text="通知中心"
             android:textColor="@color/black"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="通知" />
+            tools:text="通知中心" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/notification_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone" />
-
-    <include layout="@layout/single_notice"></include>
-    <include layout="@layout/single_notice"></include>
-    <include layout="@layout/single_notice"></include>
-
-
-    <View
-        android:id="@+id/divider2"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider" />
-
+        android:layout_height="match_parent" />
 
 </LinearLayout>
 

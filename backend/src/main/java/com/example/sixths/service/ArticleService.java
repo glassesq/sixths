@@ -2,9 +2,11 @@ package com.example.sixths.service;
 
 import com.example.sixths.model.Article;
 import com.example.sixths.model.Comment;
+import com.example.sixths.model.Notification;
 import com.example.sixths.model.User;
 import com.example.sixths.repository.ArticleRepository;
 import com.example.sixths.repository.CommentRepository;
+import com.example.sixths.repository.NotificationRepository;
 import com.example.sixths.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -26,7 +28,10 @@ public class ArticleService {
     private UserRepository userRepository;
 
     @Autowired
-    CommentRepository commentRepository;
+    private NotificationRepository notificationRepository;
+
+    @Autowired
+    private CommentRepository commentRepository;
 
     public int addArticle(int userid, String content, String position, String title, String image, String video, String audio, boolean draft) {
         Article article = new Article();
@@ -37,9 +42,13 @@ public class ArticleService {
         article.setVideo(video);
         article.setAudio(audio);
         article.setDraft(draft);
+        Date time = new Date();
         article.setAuthor(userRepository.getById(userid));
-        article.setTime(new Date());
+        article.setTime(time);
         articleRepository.save(article);
+        if (!draft) {
+            makeNoti("new", userid, article.getId(), time);
+        }
         return article.getId();
     }
 
@@ -53,8 +62,12 @@ public class ArticleService {
         article.setImage(image);
         article.setVideo(video);
         article.setAudio(audio);
+        Date time = new Date();
+        if (draft && !article.draft) {
+            makeNoti("new", article.getAuthor().getId(), article.getId(), time);
+        }
         article.setDraft(draft);
-        article.setTime(new Date());
+        article.setTime(time);
         articleRepository.save(article);
         return article.getId();
     }
@@ -78,8 +91,8 @@ public class ArticleService {
                 .filter(
                         t -> (
                                 (!enable_target || targets.contains(t.getAuthor().getId())) // only show targets
-                                && (!enable_block || !blockers.contains(t.getAuthor())) // filter those blocker
-                                && (t.getDraft() == draft) // not showing draft
+                                        && (!enable_block || !blockers.contains(t.getAuthor())) // filter those blocker
+                                        && (t.getDraft() == draft) // not showing draft
                         )
                 ).collect(Collectors.toList());
 
@@ -89,12 +102,15 @@ public class ArticleService {
     }
 
     public String likeArticle(int user_id, int article_id) {
+        System.out.println(user_id);
+        System.out.println(article_id);
         User user = userRepository.findById(user_id).orElse(null);
         if (user == null) return "invalid user id";
         Article article = articleRepository.findById(article_id).orElse(null);
         if (article == null) return "invalid article id";
         user.getLiking().add(article);
         userRepository.save(user);
+        makeNoti("like", user_id, article_id, new Date());
         return "success";
 
     }
@@ -137,9 +153,11 @@ public class ArticleService {
         comment.setContent(content);
         comment.setArticle(article);
         comment.setAuthor(user);
-        comment.setTime(new Date());
+        Date time = new Date();
+        comment.setTime(time);
         commentRepository.save(comment);
 
+        makeNoti("comment", user_id, article_id, time);
         return "success";
     }
 
@@ -150,6 +168,61 @@ public class ArticleService {
         if (comment.getAuthor().getId() != userid) return "not your comment";
         commentRepository.delete(comment);
         return "success";
+    }
+
+    public void makeNoti(String type, int user_id, int id, Date time) {
+        // makeNoti("new", article.getAuthor().getId(), article.getId(), time );
+        User user = userRepository.findById(user_id).orElse(null);
+        if (user == null) return;
+
+        if (type.equals("new")) {
+            Set<User> u = user.getFollower();
+            u.remove(user);
+            if (u.isEmpty()) return;
+
+            Notification noti = new Notification();
+            noti.setArticle_id(id);
+            noti.setContent("您关注的" + user.getNickname() + "(@" + user.getName() + ")" + "更新了新的动态");
+            noti.setType(type);
+            noti.setTime(time);
+            noti.setTarget(u);
+            notificationRepository.save(noti);
+
+        } else if (type.equals("comment")) {
+
+            Article article = findById(id);
+            if (article.getAuthor().getId() == user_id) return;
+
+            Notification noti = new Notification();
+            noti.setType(type);
+            noti.setTime(time);
+
+            noti.setArticle_id(id);
+            noti.setContent(user.getNickname() + "(@" + user.getName() + ")" + "评论了您的动态");
+
+            HashSet<User> u = new HashSet<>();
+            u.add(article.getAuthor());
+            noti.setTarget(u);
+            System.out.println("size:" + u.size());
+            notificationRepository.save(noti);
+        } else if (type.equals("like")) {
+
+            Article article = findById(id);
+            if (article.getAuthor().getId() == user_id) return;
+
+            Notification noti = new Notification();
+            noti.setType(type);
+            noti.setTime(time);
+
+            noti.setArticle_id(id);
+            noti.setContent(user.getNickname() + "(@" + user.getName() + ")" + "点赞了您的动态");
+
+            HashSet<User> u = new HashSet<>();
+            u.add(article.getAuthor());
+            noti.setTarget(u);
+
+            notificationRepository.save(noti);
+        }
     }
 
 }

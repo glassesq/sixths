@@ -44,6 +44,11 @@ public class User {
     @JsonIgnore
     private Set<User> following;
 
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "target") // TODO: cascade
+    private List<Notification> notification;
+
     @JsonIgnore
     @ManyToMany(mappedBy = "following", fetch = FetchType.LAZY) // TODO: cascade
     private Set<User> follower;
@@ -127,6 +132,10 @@ public class User {
         return following;
     }
 
+    public Set<User> getFollower() {
+        return follower;
+    }
+
     public Set<Article> getLiking() {
         return liking;
     }
@@ -134,4 +143,6 @@ public class User {
     public Set<User> getBlockBy() {
         return blockBy;
     }
+
+    public List<Notification> getNotification() { return notification; }
 }

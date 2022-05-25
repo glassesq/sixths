@@ -1,6 +1,7 @@
 package com.example.sixths.controller;
 
 import com.example.sixths.interceptor.LoginInterceptor;
+import com.example.sixths.model.Notification;
 import com.example.sixths.model.User;
 import com.example.sixths.service.UserService;
 import org.javatuples.Pair;
@@ -159,5 +160,23 @@ public class UserController {
         if (ret != null)
             return ResponseEntity.ok().body(ret);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ret);
+    }
+
+
+    @GetMapping(path = "/get_notification")
+    public ResponseEntity<List<Notification>> getNotification(HttpServletRequest req) {
+        int id = Integer.parseInt(req.getAttribute(LoginInterceptor.ID_KEY).toString());
+        List<Notification> ret = userService.getNotificationList(id);
+        if (ret != null)
+            return ResponseEntity.ok().body(ret);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+    }
+
+
+    @PostMapping(path = "/set_notification")
+    public ResponseEntity<String> setNotification(HttpServletRequest req) {
+        int noti_id = Integer.parseInt(req.getParameter("noti_id"));
+        userService.setNotification(noti_id);
+        return ResponseEntity.ok().body("success");
     }
 }

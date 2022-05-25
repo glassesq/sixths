@@ -1,22 +1,17 @@
 package com.example.sixths.service;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.widget.ImageView;
-import android.widget.Toast;
+import android.os.SystemClock;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
 
 import com.example.sixths.R;
 import com.example.sixths.activity.ArticleActivity;
@@ -25,13 +20,13 @@ import com.example.sixths.activity.MainActivity;
 import com.example.sixths.activity.NewActivity;
 import com.example.sixths.activity.UserActivity;
 import com.example.sixths.adapter.CommentListAdapter;
+import com.example.sixths.adapter.NotificationListAdapter;
 import com.example.sixths.adapter.PostListAdapter;
 import com.example.sixths.activity.RegisterActivity;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -40,9 +35,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.URI;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
@@ -55,6 +48,8 @@ import java.util.HashSet;
 public class Service {
 
     public enum POST_LIST_TYPE {ALL, FOLLOW, PERSON, DRAFT}
+
+    public static boolean enableNoti = false;
 
     public static String publicPath = "";
 
@@ -88,6 +83,7 @@ public class Service {
     private static final ArticleManager draft_manager = new ArticleManager();
 
     private static final CommentManager comment_manager = new CommentManager();
+    private static final NotificationManager noti_manager = new NotificationManager();
 
     private static String token = null;
 
@@ -216,10 +212,17 @@ public class Service {
         if (type == POST_LIST_TYPE.PERSON) {
             person_manager.setAdapter(adapter);
         }
+        if (type == POST_LIST_TYPE.DRAFT) {
+            draft_manager.setAdapter(adapter);
+        }
     }
 
     public static void setCommentAdapter(CommentListAdapter adapter) {
         comment_manager.setAdapter(adapter);
+    }
+
+    public static void setNotificationAdapter(NotificationListAdapter adapter) {
+        noti_manager.setAdapter(adapter);
     }
 
     /* 网络工具 */
@@ -749,11 +752,13 @@ public class Service {
                 System.out.println(params);
                 HttpURLConnection conn = getConnectionWithToken("/article", "POST", params);
                 System.out.println("make article conn established");
-
+                System.out.println("article:" + conn.getResponseCode());
                 if (conn.getResponseCode() == 200) {
                     sendMessage(main_handler, MainActivity.NEW_SUCCESS);
+                    System.out.println("success");
                 } else {
                     sendMessage(main_handler, MainActivity.NEW_FAIL);
+                    System.out.println("not success");
                 }
                 System.out.println("make article finished");
             } catch (Exception e) {
@@ -1288,5 +1293,83 @@ public class Service {
             }
         });
         thread.start();
+    }
+
+    /* notification */
+    public static Notification decodeNotification(JSONObject obj) {
+        try {
+            Notification noti = new Notification();
+            noti.id = obj.getInt("id");
+            noti.checked = obj.getBoolean("checked");
+            noti.article_id = obj.getInt("article_id");
+            noti.content = obj.getString("content");
+            noti.time = obj.getString("time");
+            noti.type = checkStr(obj, "type");
+            return noti;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static Notification getNotification(int index) {
+        return noti_manager.getByIndex(index);
+    }
+
+    public static int getNotificationCount() {
+        return noti_manager.count();
+    }
+
+    public static void fetchNotification() {
+        // TODO
+        noti_manager.fetchNotification();
+    }
+
+    public static void loopFetchNotification() {
+        // TODO
+        if( enableNoti ) return;
+        Thread thread = new Thread( () -> {
+            while( true ) {
+                noti_manager.fetchNotification();
+                SystemClock.sleep(10 * 1000);
+            }
+        });
+        enableNoti = true;
+        thread.start();
+    }
+
+    public static void setNoti(int id) {
+        Thread thread = new Thread(() -> {
+            try {
+                String params = "noti_id=" + URLEncoder.encode(String.valueOf(id), "UTF-8");
+                System.out.println(params);
+                HttpURLConnection conn = getConnectionWithToken("/user/set_notification", "POST", params);
+                System.out.println("set noti conn established");
+
+                if (conn.getResponseCode() == 200) {
+//                    sendMessage(handler, COMMENT_DEEP_FRESH);
+                    //                   sendMessage(article_handler, ArticleActivity.ARTICLE_FRESH);
+                    //TODO
+                    Service.freshUncheck();
+                    Service.notiGot();
+                }
+                System.out.println("set noti finished");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+    }
+
+    public static void notiGot() {
+        sendMessage(main_handler, MainActivity.NOTI_GOT);
+    }
+
+    public static void freshUncheck() {
+        noti_manager.freshUncheck();
+    }
+
+    public static boolean notiUncheck() {
+        return noti_manager.unchecked;
     }
 }

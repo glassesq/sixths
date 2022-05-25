@@ -31,7 +31,7 @@ public class Article {
     private User author; // the author of the post
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "liking", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "liking")
     private Set<User> liker;
 
     public boolean draft;

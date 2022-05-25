@@ -22,12 +22,15 @@
         android:usesCleartextTraffic="true">
         <activity
             android:name=".activity.DraftActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="false" />
         <activity
             android:name=".activity.CommentActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="false" />
         <activity
             android:name=".activity.ArticleActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="false" />
 
         <provider
@@ -42,6 +45,11 @@
 
         <activity
             android:name=".activity.SettingActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="false" />
+
+        <activity
+            android:name=".activity.NotificationActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="false" />
         <activity

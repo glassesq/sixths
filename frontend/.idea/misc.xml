@@ -29,9 +29,11 @@
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_video_grey.xml" value="0.1" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_video_red.xml" value="0.1" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/white_corner.xml" value="0.1625" />
-        <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/activity_article.xml" value="0.27313769751693" />
+        <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/activity_article.xml" value="0.264" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/activity_comment.xml" value="0.3148148148148148" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/activity_draft.xml" value="0.1" />
+        <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/activity_follower.xml" value="0.15925925925925927" />
+        <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/activity_like.xml" value="0.17291666666666666" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/activity_login.xml" value="0.2" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/activity_main.xml" value="0.15520833333333334" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/activity_new.xml" value="0.2" />
@@ -43,7 +45,9 @@
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/comment_simple.xml" value="0.264" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/draft_box.xml" value="0.15520833333333334" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/draft_simple.xml" value="0.2" />
+        <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/follow_simple.xml" value="0.264" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/fragment_post_list.xml" value="0.25885416666666666" />
+        <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/like_simple.xml" value="0.264" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/new_post.xml" value="0.15520833333333334" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/notice_box.xml" value="0.264" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/notice_simple.xml" value="0.264" />

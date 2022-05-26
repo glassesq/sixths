@@ -34,6 +34,10 @@ public class UserActivity extends AppCompatActivity {
     private TextView username_view = null;
     private TextView bio_view = null;
 
+    private TextView follower_text = null;
+    private TextView following_text = null;
+
+
     private ImageView profile_view = null;
 
     private Button followed_but = null;
@@ -107,6 +111,9 @@ public class UserActivity extends AppCompatActivity {
         followed_but = findViewById(R.id.followed_but);
         follow_but = findViewById(R.id.follow_but);
 
+        follower_text = findViewById(R.id.followed_view);
+        following_text = findViewById(R.id.following_view);
+
         /* 设计 recycle view 的 adapter */
         PostListAdapter adapter = new PostListAdapter(this, listener, Service.POST_LIST_TYPE.PERSON); // TODO
         recycler_view.setAdapter(adapter);
@@ -126,7 +133,7 @@ public class UserActivity extends AppCompatActivity {
 
     public void freshProfile() {
         System.out.println("profile fresh");
-        if( user.profile == null ) return;
+        if (user.profile == null) return;
         Uri u = Service.getResourceUri(user.profile);
         if (u != null) profile_view.setImageURI(u);
     }
@@ -149,22 +156,31 @@ public class UserActivity extends AppCompatActivity {
     }
 
     public void setUnfollow() {
-
         follow_but.setVisibility(View.VISIBLE);
         followed_but.setVisibility(View.GONE);
     }
 
     public void successUserInfo(String info_str) {
-        user = Service.decodeUserInfo(info_str);
-        if (user != null) {
-            username_view.setText(user.name);
-            nickname_view.setText(user.nickname);
-            bio_view.setText(user.bio);
-            if (user.profile_fetched) {
-                System.out.println("the profile is here");
-                freshProfile();
-            } else Service.fetchImage(user);
-            freshFollow();
+        if (user == null) {
+            user = Service.decodeUserInfo(info_str);
+            if (user != null) {
+                username_view.setText(user.name);
+                nickname_view.setText(user.nickname);
+                bio_view.setText(user.bio);
+                follower_text.setText(String.valueOf(user.followed_num));
+                following_text.setText(String.valueOf(user.following_num));
+                if (user.profile_fetched) {
+                    System.out.println("the profile is here");
+                    freshProfile();
+                } else Service.fetchImage(user);
+                freshFollow();
+            }
+        } else {
+            user = Service.decodeUserInfo(info_str);
+            if (user != null) {
+                follower_text.setText(String.valueOf(user.followed_num));
+                following_text.setText(String.valueOf(user.following_num));
+            }
         }
     }
 
@@ -189,6 +205,13 @@ public class UserActivity extends AppCompatActivity {
 
         /* 从后端获取信息 */
         Service.fetchArticle(Service.POST_LIST_TYPE.PERSON);
+    }
+
+
+    public void gotoFollowerPage(View view) {
+        Intent intent = new Intent(UserActivity.this, FollowerActivity.class);
+        intent.putExtra("id", userid);
+        startActivity(intent);
     }
 
     @Override

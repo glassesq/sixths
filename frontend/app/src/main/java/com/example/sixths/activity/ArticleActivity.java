@@ -27,7 +27,6 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 public class ArticleActivity extends AppCompatActivity {
@@ -176,8 +175,8 @@ public class ArticleActivity extends AppCompatActivity {
 
         content_view = findViewById(R.id.post_content);
 
-        nickname_view = findViewById(R.id.post_nickname);
-        username_view = findViewById(R.id.center_username_view);
+        nickname_view = findViewById(R.id.follow_nickname);
+        username_view = findViewById(R.id.follow_username);
 
         time_view = findViewById(R.id.time_view);
 
@@ -389,6 +388,12 @@ public class ArticleActivity extends AppCompatActivity {
     public void makeComment(View view) {
         Intent intent = new Intent(this, CommentActivity.class);
         intent.putExtra("article_id", article.id);
+        startActivity(intent);
+    }
+
+    public void gotoLiker(View view) {
+        Intent intent = new Intent(this, LikeActivity.class);
+        intent.putExtra("id", article_id);
         startActivity(intent);
     }
 

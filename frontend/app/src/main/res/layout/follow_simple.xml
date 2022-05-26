@@ -20,7 +20,7 @@
             android:layout_height="60dp"
             android:layout_gravity="center_vertical"
             android:padding="15dp"
-            app:srcCompat="@drawable/ic_like" />
+            app:srcCompat="@drawable/ic_user" />
 
         <LinearLayout
             android:id="@+id/touch_area"
@@ -29,15 +29,41 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/textView5"
+            <Space
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="5dp"
-                android:ellipsize="end"
-                android:gravity="right|center_vertical"
-                android:maxLines="1"
-                android:textColor="@color/black" />
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/follow_nickname"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:text="TextView"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    tools:text="李白" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/noto_sans"
+                    android:text="\@" />
+
+                <TextView
+                    android:id="@+id/follow_username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/noto_sans"
+                    android:text="LiBai" />
+
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/follow_bio"
@@ -47,21 +73,14 @@
                 android:ellipsize="end"
                 android:gravity="center_vertical"
                 android:maxLines="1"
-                android:text="TextView"
+                android:text="它说：..."
                 android:textColor="@color/black"
-                tools:text="杜甫(\@Duufuuu)点赞了你的动态。" />
+                tools:text="它说：..." />
 
-            <TextView
-                android:id="@+id/notification_time_view"
+            <Space
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="10dp"
-                android:layout_marginVertical="5dp"
-                android:ellipsize="end"
-                android:gravity="right|center_vertical"
-                android:maxLines="1"
-                android:text="2021/05/05 12:30:31"
-                android:textColor="@color/black" />
+                android:layout_height="0dp"
+                android:layout_weight="1" />
 
         </LinearLayout>
 

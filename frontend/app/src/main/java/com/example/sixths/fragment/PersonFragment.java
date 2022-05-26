@@ -38,7 +38,7 @@ public class PersonFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.person_center, container, false);
         bio_view = view.findViewById(R.id.bio_view);
-        username_view = view.findViewById(R.id.center_username_view);
+        username_view = view.findViewById(R.id.follow_username);
         nickname_view = view.findViewById(R.id.nickname_view);
         image_view = view.findViewById(R.id.user_profile_view);
         normal_noti = view.findViewById(R.id.normal_noti);

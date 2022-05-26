@@ -23,6 +23,7 @@ import com.example.sixths.adapter.CommentListAdapter;
 import com.example.sixths.adapter.NotificationListAdapter;
 import com.example.sixths.adapter.PostListAdapter;
 import com.example.sixths.activity.RegisterActivity;
+import com.example.sixths.adapter.UserListAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -48,6 +49,8 @@ import java.util.HashSet;
 public class Service {
 
     public enum POST_LIST_TYPE {ALL, FOLLOW, PERSON, DRAFT, SEARCH}
+
+    public enum USER_LIST_TYPE {FOLLOW, LIKE}
 
     public enum SEARCH_TYPE {TITLE, CONTENT, USER}
 
@@ -91,6 +94,9 @@ public class Service {
     private static final ArticleManager draft_manager = new ArticleManager();
     private static final ArticleManager search_manager = new ArticleManager();
 
+    private static final UserManager follower_manager = new UserManager();
+    private static final UserManager like_manager = new UserManager();
+
     private static final CommentManager comment_manager = new CommentManager();
     private static final NotificationManager noti_manager = new NotificationManager();
 
@@ -128,6 +134,11 @@ public class Service {
         fetchArticle(POST_LIST_TYPE.ALL);
         fetchArticle(POST_LIST_TYPE.FOLLOW);
         fetchArticle(POST_LIST_TYPE.PERSON);
+    }
+
+    public static void initUserManager() {
+        like_manager.enableLike();
+        follower_manager.enableFollow();
     }
 
     public static void commentfresh() {
@@ -544,12 +555,24 @@ public class Service {
 
     public static User decodeUserInfo(String str) {
         try {
-            User user = new User();
             JSONObject obj = new JSONObject(str);
+            return decodeUserInfo(obj);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static User decodeUserInfo(JSONObject obj) {
+        try {
+            User user = new User();
             user.id = obj.getInt("id");
             user.nickname = obj.getString("nickname");
             user.name = obj.getString("name");
             user.bio = obj.getString("bio");
+
+            user.followed_num = obj.getInt("follower_num");
+            user.following_num = obj.getInt("following_num");
 
             user.profile = checkStr(obj, "profile");
             System.out.println("profile:" + user.profile);
@@ -559,6 +582,7 @@ public class Service {
             return null;
         }
     }
+
 
     public static void setUserInfo(String nickname, String bio, String profile) {
         Thread thread = new Thread(() -> {
@@ -607,12 +631,14 @@ public class Service {
                 System.out.println(conn.getResponseCode());
                 if (conn.getResponseCode() == 200) {
                     getMyself();
+                    getUserInfo(userid);
 
                     sendMessage(handler, DEEP_FRESH);
                     sendMessage(main_handler, MainActivity.FRESH_PROFILE);
                     sendMessage(user_handler, UserActivity.USER_FOLLOW);
                 }
                 System.out.println("follow info finished");
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -630,6 +656,7 @@ public class Service {
                 System.out.println(conn.getResponseCode());
                 if (conn.getResponseCode() == 200) {
                     getMyself();
+                    getUserInfo(userid);
 
                     sendMessage(handler, DEEP_FRESH);
 
@@ -643,6 +670,47 @@ public class Service {
         });
         thread.start();
 
+    }
+
+
+    public static User getUser(int index, USER_LIST_TYPE type) {
+        if (type == USER_LIST_TYPE.FOLLOW) {
+            return follower_manager.getByIndex(index);
+        }
+        return like_manager.getByIndex(index);
+
+    }
+
+    public static int getUserCount(USER_LIST_TYPE type) {
+        if (type == USER_LIST_TYPE.FOLLOW) {
+            return follower_manager.count();
+        }
+        return like_manager.count();
+    }
+
+    public static void fetchUser(USER_LIST_TYPE type) {
+        if (type == USER_LIST_TYPE.FOLLOW) {
+            follower_manager.fetchUser();
+        }
+        like_manager.fetchUser();
+    }
+
+
+    public static void setUserAdapter(UserListAdapter adapter, USER_LIST_TYPE type) {
+        if (type == USER_LIST_TYPE.FOLLOW) {
+            follower_manager.setAdapter(adapter);
+        }
+        if (type == USER_LIST_TYPE.LIKE) {
+            like_manager.setAdapter(adapter);
+        }
+    }
+
+    public static void setLikeId(int id) {
+        like_manager.setArticle(id);
+    }
+
+    public static void setUserFollowId(int id) {
+        follower_manager.setUser(id);
     }
 
     /* article */

@@ -30,13 +30,13 @@
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:onClick="cancel"
             android:paddingHorizontal="10dp"
             android:paddingVertical="5dp"
             android:text="返回"
             android:textColor="@color/grey"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:onClick="cancel"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.08"
@@ -51,8 +51,7 @@
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scroll_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        android:layout_height="match_parent">
 
 
         <LinearLayout
@@ -120,7 +119,7 @@
                             android:orientation="horizontal">
 
                             <TextView
-                                android:id="@+id/post_nickname"
+                                android:id="@+id/follow_nickname"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="5dp"
@@ -136,7 +135,7 @@
                                 android:text="\@" />
 
                             <TextView
-                                android:id="@+id/center_username_view"
+                                android:id="@+id/follow_username"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/noto_sans"
@@ -367,9 +366,9 @@
                         <TextView
                             android:id="@+id/comments_view"
                             android:layout_width="0dp"
-                            android:onClick="makeComment"
                             android:layout_height="wrap_content"
                             android:layout_weight="1.5"
+                            android:onClick="makeComment"
                             android:text="99+"
                             android:textSize="16sp"
                             tools:text="99+" />
@@ -396,18 +395,49 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <TextView
-                android:id="@+id/textView3"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="5dp"
-                android:text="评论"
-                android:clickable="true"
-                android:textColor="@color/grey"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent" />
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView3"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="30dp"
+                    android:layout_weight="1"
+                    android:clickable="false"
+                    android:gravity="center"
+                    android:onClick="makeComment"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="5dp"
+                    android:text="发表评论"
+                    android:textColor="@color/blue"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <View
+                    android:id="@+id/divider6"
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="?android:attr/listDivider" />
+
+                <TextView
+                    android:id="@+id/time_view2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="30dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:onClick="gotoLiker"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="5dp"
+                    android:text="点赞详情"
+                    android:textColor="@color/blue"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
             <View
                 android:id="@+id/view"

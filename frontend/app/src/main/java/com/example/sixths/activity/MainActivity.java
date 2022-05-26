@@ -131,6 +131,7 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
         Service.setFollow();
         Service.setDraft();
         Service.initSearch();
+        Service.initUserManager();
 
         Service.initColor(this.getApplicationContext());
 

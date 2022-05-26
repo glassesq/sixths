@@ -61,7 +61,7 @@ public class NotificationListAdapter extends RecyclerView.Adapter<NotificationLi
             this.view_type = view_type;
             adapter = _adapter;
             if (this.view_type == NotificationListAdapter.TYPE_NOTI) {
-                content_view = item_view.findViewById(R.id.notification_view);
+                content_view = item_view.findViewById(R.id.follow_bio);
                 time_view = item_view.findViewById(R.id.notification_time_view);
                 image_view = item_view.findViewById(R.id.notification_image_view);
 

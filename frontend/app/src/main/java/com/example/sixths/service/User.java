@@ -6,6 +6,9 @@ public class User {
     public String nickname = "nickname";
     public String bio = "bio";
 
+    public int followed_num = 0;
+    public int following_num = 0;
+
     public String profile = null;
     public boolean profile_fetched = false;
 }

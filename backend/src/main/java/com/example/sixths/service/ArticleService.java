@@ -177,6 +177,13 @@ public class ArticleService {
         return ret;
     }
 
+
+    public Set<User> getLiker(int article_id) {
+        Article article = findById(article_id);
+        if (article == null) return null;
+        return article.getLiker();
+    }
+
     public List<Comment> getComments(int article_id) {
         Article article = findById(article_id);
         if (article == null) return null;
@@ -264,5 +271,8 @@ public class ArticleService {
             notificationRepository.save(noti);
         }
     }
+
+
+
 
 }

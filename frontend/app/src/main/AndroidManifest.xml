@@ -21,6 +21,12 @@
         android:theme="@style/Theme.Sixths"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".activity.FollowerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.LikeActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.SearchconfigActivity"
             android:exported="false" />
         <activity

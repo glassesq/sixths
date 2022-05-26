@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequestMapping(path = "/article")
@@ -214,6 +215,16 @@ public class ArticleController {
         if (ret != null) {
             return ResponseEntity.ok().body(ret);
         }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+    }
+
+
+    @GetMapping(path = "/get_liker")
+    public ResponseEntity<Set<User>> getFollowingDetail(HttpServletRequest req) {
+        int article_id = Integer.parseInt(req.getParameter("article_id"));
+        Set<User> ret = articleService.getLiker(article_id);
+        if (ret != null)
+            return ResponseEntity.ok().body(ret);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
     }
 

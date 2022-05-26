@@ -70,8 +70,8 @@ public class CommentListAdapter extends RecyclerView.Adapter<CommentListAdapter.
             if (this.view_type == CommentListAdapter.TYPE_COMMENT) {
                 content_view = item_view.findViewById(R.id.post_content);
 
-                nickname_view = item_view.findViewById(R.id.post_nickname);
-                username_view = item_view.findViewById(R.id.center_username_view);
+                nickname_view = item_view.findViewById(R.id.follow_nickname);
+                username_view = item_view.findViewById(R.id.follow_username);
 
                 time_view = item_view.findViewById(R.id.time_view);
 

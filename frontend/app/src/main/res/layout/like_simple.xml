@@ -26,42 +26,49 @@
             android:id="@+id/touch_area"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:layout_weight="1">
 
             <TextView
-                android:id="@+id/textView5"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="5dp"
-                android:ellipsize="end"
-                android:gravity="right|center_vertical"
-                android:maxLines="1"
-                android:textColor="@color/black" />
-
-            <TextView
-                android:id="@+id/follow_bio"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
+                android:id="@+id/like_nickname"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
                 android:ellipsize="end"
                 android:gravity="center_vertical"
                 android:maxLines="1"
                 android:text="TextView"
                 android:textColor="@color/black"
-                tools:text="杜甫(\@Duufuuu)点赞了你的动态。" />
+                tools:text="杜甫" />
 
             <TextView
-                android:id="@+id/notification_time_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="10dp"
-                android:layout_marginVertical="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
                 android:ellipsize="end"
-                android:gravity="right|center_vertical"
+                android:gravity="center_vertical"
                 android:maxLines="1"
-                android:text="2021/05/05 12:30:31"
-                android:textColor="@color/black" />
+                android:text="(\@"
+                android:textColor="@color/black"
+                tools:text="(\@" />
+
+            <TextView
+                android:id="@+id/like_name"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:text="TextView"
+                android:textColor="@color/black"
+                tools:text="Duufuuu" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:text=")点赞了这条动态。"
+                android:textColor="@color/black"
+                tools:text=")点赞了这条动态。" />
 
         </LinearLayout>
 

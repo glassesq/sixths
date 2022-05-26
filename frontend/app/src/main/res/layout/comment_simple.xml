@@ -54,7 +54,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/post_nickname"
+                    android:id="@+id/follow_nickname"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="5dp"
@@ -70,7 +70,7 @@
                     android:text="\@" />
 
                 <TextView
-                    android:id="@+id/center_username_view"
+                    android:id="@+id/follow_username"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/noto_sans"

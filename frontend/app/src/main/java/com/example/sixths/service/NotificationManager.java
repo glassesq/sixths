@@ -47,7 +47,6 @@ public class NotificationManager {
     };
 
     public void fetchNotification() {
-        System.out.println("fetch Notification");
         Thread thread = new Thread(() -> {
             try {
                 String params = "";
@@ -55,10 +54,7 @@ public class NotificationManager {
 
                 if (conn.getResponseCode() == 200) {
                     InputStream in = conn.getInputStream();
-
                     String result = Service.is2String(in);
-                    System.out.println(result);
-
                     JSONArray arr = new JSONArray(result);
                     if (arr.length() != noti_list.size()) {
                         boolean tmp_checked = true;
@@ -72,7 +68,6 @@ public class NotificationManager {
                         }
                         noti_list = list;
                         unchecked = !tmp_checked;
-                        System.out.println("unchecked: " + unchecked);
 
                         Message msg = new Message();
                         msg.setTarget(handler);
@@ -86,7 +81,6 @@ public class NotificationManager {
                     String result = Service.is2String(in);
                     System.out.println(result);
                 }
-                System.out.println("notify data set changed");
             } catch (Exception e) {
                 e.printStackTrace();
             }

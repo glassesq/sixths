@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -78,8 +80,30 @@ public class ArticleService {
     }
 
 
+    public Pattern getPattern(String pattern) {
+        if (pattern == null) return null;
+        String match = "\\E[\\s\\S]*\\Q";
+        String _pattern = pattern.replace(" ", "");
+        _pattern = _pattern.replace("", match);
+        int length = _pattern.length();
+        _pattern = _pattern.substring(2, 2 + (length - 4));
+        System.out.println("pattern here");
+        System.out.println("pattern:" + _pattern);
+        return Pattern.compile(_pattern);
+    }
+
+    public boolean fuzzyMatch(String text, Pattern pattern) {
+        if (pattern == null) return false;
+        return pattern.matcher(text).find();
+    }
+
     public List<Article> getArticleList(int userid, int start, int num, List<Integer> targets,
-                                        boolean enable_target, boolean enable_block, boolean draft) {
+                                        boolean enable_target, boolean enable_block, boolean draft,
+                                        boolean search_title, boolean search_content, boolean search_user,
+                                        boolean filter_text, boolean filter_image, boolean filter_audio,
+                                        boolean filter_video, String text) {
+
+
         User user = userRepository.findById(userid).orElse(null);
         if (user == null) return new ArrayList<Article>();
 
@@ -87,14 +111,30 @@ public class ArticleService {
 
         List<Article> all_list = articleRepository.findAllByOrderByTimeDesc(); // TODO: other order
 
+        System.out.println(all_list.size());
+
+        Pattern pattern = getPattern(text);
+
+        System.out.println("pattern got");
+
         List<Article> ret_list = all_list.stream()
                 .filter(
                         t -> (
                                 (!enable_target || targets.contains(t.getAuthor().getId())) // only show targets
                                         && (!enable_block || !blockers.contains(t.getAuthor())) // filter those blocker
                                         && (t.getDraft() == draft) // not showing draft
+                                        && (!search_title || fuzzyMatch(t.title, pattern)) //e fuzzy match
+                                        && (!search_content || fuzzyMatch(t.content, pattern)) // fuzzy match
+                                        && (!search_user || fuzzyMatch(t.getAuthor().getNickname(), pattern)) // fuzzy match
+                                        && (!filter_text || (t.content != null && !t.content.isEmpty())) // type filter
+                                        && (!filter_audio || t.audio != null) // type filter
+                                        && (!filter_video || t.video != null) // type filter
+                                        && (!filter_image || t.image != null) // type filter
                         )
                 ).collect(Collectors.toList());
+
+
+        System.out.println(ret_list.size());
 
         int real_num = Math.min(ret_list.size() - start, num);
         if (real_num < 0) return new ArrayList<Article>();

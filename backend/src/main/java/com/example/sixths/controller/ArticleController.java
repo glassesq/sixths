@@ -38,7 +38,7 @@ public class ArticleController {
             String video = req.getParameter("video");
             String audio = req.getParameter("audio");
             int ret;
-            if( req.getParameter("article_id") == null ) {
+            if (req.getParameter("article_id") == null) {
                 ret = articleService.addArticle(userid, content, position, title, image, video, audio, false);
             } else {
                 int article_id = Integer.parseInt(req.getParameter("article_id"));
@@ -61,7 +61,7 @@ public class ArticleController {
             String video = req.getParameter("video");
             String audio = req.getParameter("audio");
             int ret;
-            if( req.getParameter("article_id") == null ) {
+            if (req.getParameter("article_id") == null) {
                 ret = articleService.addArticle(userid, content, position, title, image, video, audio, true);
             } else {
                 int article_id = Integer.parseInt(req.getParameter("article_id"));
@@ -82,6 +82,11 @@ public class ArticleController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
     }
 
+    public boolean getBool(String str) {
+        if (str != null && str.equals("true")) return true;
+        return false;
+    }
+
     /* 根据用户,偏好和分页，返回一个列表 */
     @GetMapping(path = "/get_list")
     public @ResponseBody
@@ -90,25 +95,48 @@ public class ArticleController {
             int userid = Integer.parseInt(req.getAttribute(LoginInterceptor.ID_KEY).toString());
             int start = Integer.parseInt(req.getParameter("start"));
             int num = Integer.parseInt(req.getParameter("num"));
+
             if (req.getParameter("userid") != null) {
                 ArrayList<Integer> list = new ArrayList<>();
                 list.add(Integer.parseInt(req.getParameter("userid")));
                 return articleService.getArticleList(userid, start, num,
-                        list, true, false, false);
+                        list, true, false, false,
+                        false, false, false,
+                        false, false, false, false, null);
             }
             if (req.getParameter("follow") != null) {
                 List<Integer> list = userService.getFollowing(userid);
                 return articleService.getArticleList(userid, start, num,
-                        list, true, false, false);
+                        list, true, false, false,
+                        false, false, false,
+                        false, false, false, false, null);
             }
             if (req.getParameter("draft") != null) {
                 ArrayList<Integer> list = new ArrayList<>();
                 list.add(userid);
                 return articleService.getArticleList(userid, start, num,
-                        list, true, false, true);
+                        list, true, false, true,
+                        false, false, false,
+                        false, false, false, false, null);
             }
+
+            boolean search_title = getBool(req.getParameter("search_title"));
+            boolean search_content = getBool(req.getParameter("search_content"));
+            boolean search_user = getBool(req.getParameter("search_user"));
+
+            boolean filter_text = getBool(req.getParameter("filter_text"));
+            boolean filter_image = getBool(req.getParameter("filter_image"));
+            boolean filter_video = getBool(req.getParameter("filter_video"));
+            boolean filter_audio = getBool(req.getParameter("filter_audio"));
+
+            System.out.println("here");
+
+            String text = req.getParameter("search_text");
+            System.out.println("check" + search_title + search_content + search_user + filter_audio + filter_text + filter_video + filter_image);
             return articleService.getArticleList(userid, start, num,
-                    null, false, true, false);
+                    null, false, true, false,
+                    search_title, search_content, search_user,
+                    filter_text, filter_image, filter_audio, filter_video, text);
         } catch (Exception e) {
             return null;
         }

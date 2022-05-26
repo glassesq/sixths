@@ -21,6 +21,9 @@
         android:theme="@style/Theme.Sixths"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".activity.SearchconfigActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.DraftActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="false" />
@@ -47,7 +50,6 @@
             android:name=".activity.SettingActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="false" />
-
         <activity
             android:name=".activity.NotificationActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"

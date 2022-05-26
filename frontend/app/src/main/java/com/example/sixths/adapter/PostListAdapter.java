@@ -95,6 +95,8 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
 
         public LinearLayout touch_area;
 
+        public LinearLayout multi_line;
+
         public PostListAdapter adapter;
         private int view_type;
 
@@ -130,6 +132,7 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
                 title_view = item_view.findViewById(R.id.post_title);
 
                 touch_area = item_view.findViewById(R.id.touch_area);
+                multi_line = item_view.findViewById(R.id.multi_line);
             } else if (this.view_type == TYPE_DRAFT) {
                 content_view = item_view.findViewById(R.id.post_content);
 
@@ -191,20 +194,14 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
                 holder.follow_tag.setVisibility(View.GONE);
             }
 
-            if (Service.isLike(article.id)) {
-                holder.like_icon.setImageResource(R.drawable.ic_like_blue);
-                holder.likes_view.setTextColor(Service.COLOR_BLUE);
-            } else {
-                holder.like_icon.setImageResource(R.drawable.ic_like);
-                holder.likes_view.setTextColor(Service.COLOR_GREY);
-            }
-
             if (article.author_profile != null && article.profile_fetched) {
                 Uri u = Service.getResourceUri(article.author_profile);
                 if (u != null) holder.profile_view.setImageURI(u);
             } else {
                 holder.profile_view.setImageResource(R.drawable.default_profile);
             }
+
+
 
             if (article.image != null && article.image_fetched) {
                 Uri u = Service.getResourceUri(article.image);
@@ -228,8 +225,21 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
                 holder.video_tag.setVisibility(View.GONE);
             }
 
-            holder.likes_view.setText(Service.wrapInt(article.likes));
-            holder.comments_view.setText(Service.wrapInt(article.comments));
+            if( type != Service.POST_LIST_TYPE.SEARCH ) {
+                holder.multi_line.setVisibility(View.VISIBLE);
+                holder.likes_view.setText(Service.wrapInt(article.likes));
+                holder.comments_view.setText(Service.wrapInt(article.comments));
+                if (Service.isLike(article.id)) {
+                    holder.like_icon.setImageResource(R.drawable.ic_like_blue);
+                    holder.likes_view.setTextColor(Service.COLOR_BLUE);
+                } else {
+                    holder.like_icon.setImageResource(R.drawable.ic_like);
+                    holder.likes_view.setTextColor(Service.COLOR_GREY);
+                }
+            } else {
+                holder.multi_line.setVisibility(View.GONE);
+            }
+
 
             // TODO: else
             if (listener != null) {

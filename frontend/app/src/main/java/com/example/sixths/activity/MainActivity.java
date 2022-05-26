@@ -26,6 +26,7 @@ import com.example.sixths.adapter.PostListAdapter;
 import com.example.sixths.fragment.MainFragment;
 import com.example.sixths.fragment.PersonFragment;
 import com.example.sixths.R;
+import com.example.sixths.fragment.SearchFragment;
 import com.example.sixths.service.Service;
 
 public class MainActivity extends AppCompatActivity implements PostListAdapter.postListener {
@@ -41,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
     private FragmentTransaction transaction;
     private Fragment main_frag = null;
     private PersonFragment person_frag = null;
+    private SearchFragment search_frag = null;
 
     private ImageView person_icon;
 
@@ -128,6 +130,7 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
         Service.getMyself();
         Service.setFollow();
         Service.setDraft();
+        Service.initSearch();
 
         Service.initColor(this.getApplicationContext());
 
@@ -161,7 +164,8 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
         }
         try {
             if (person_frag != null) person_frag.freshNoti();
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
     }
 
     @Override
@@ -207,8 +211,17 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
                 transaction.add(R.id.frame_content, person_frag, "person_frag");
             }
         }
+        if (search_frag == null) {
+            search_frag = (SearchFragment) getSupportFragmentManager().findFragmentByTag("search_frag");
+            if (search_frag == null) {
+                search_frag = new SearchFragment();
+                search_frag.setListener(this);
+                transaction.add(R.id.frame_content, search_frag, "search_frag");
+            }
+        }
         transaction.hide(main_frag);
         transaction.hide(person_frag);
+        transaction.hide(search_frag);
         transaction.commit();
     }
 
@@ -220,12 +233,24 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
         selectTab(FragName.PERSON);
     }
 
+    public void gotoSearch(View view) {
+        selectTab(FragName.SEARCH);
+    }
+
+    public void gotoSearchConfig(View view) {
+        Intent intent = new Intent(MainActivity.this, SearchconfigActivity.class);
+        startActivity(intent);
+    }
+
     private void selectTab(FragName aim) {
         transaction = getSupportFragmentManager().beginTransaction();
         transaction.hide(main_frag);
         transaction.hide(person_frag);
+        transaction.hide(search_frag);
         if (aim == FragName.PERSON) {
             transaction.show(person_frag);
+        } else if (aim == FragName.SEARCH) {
+            transaction.show(search_frag);
         } else {
             transaction.show(main_frag);
         }

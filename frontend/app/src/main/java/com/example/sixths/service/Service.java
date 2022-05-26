@@ -47,7 +47,15 @@ import java.util.HashSet;
 
 public class Service {
 
-    public enum POST_LIST_TYPE {ALL, FOLLOW, PERSON, DRAFT}
+    public enum POST_LIST_TYPE {ALL, FOLLOW, PERSON, DRAFT, SEARCH}
+
+    public enum SEARCH_TYPE {TITLE, CONTENT, USER}
+
+    public static int FILTER_TEXT = 0b00001; // contains not null text
+    public static int FILTER_IMAGE = 0b00010; // contains image
+    public static int FILTER_AUDIO = 0b00100; // contains audio
+    public static int FILTER_VIDEO = 0b01000; // contains video
+    public static int FILTER_ALL = 0b0000; // no matter what
 
     public static boolean enableNoti = false;
 
@@ -81,6 +89,7 @@ public class Service {
     private static final ArticleManager follow_manager = new ArticleManager();
     private static final ArticleManager person_manager = new ArticleManager();
     private static final ArticleManager draft_manager = new ArticleManager();
+    private static final ArticleManager search_manager = new ArticleManager();
 
     private static final CommentManager comment_manager = new CommentManager();
     private static final NotificationManager noti_manager = new NotificationManager();
@@ -112,6 +121,7 @@ public class Service {
         all_manager.fresh();
         follow_manager.fresh();
         person_manager.fresh();
+        search_manager.fresh();
     }
 
     public static void deepfresh() {
@@ -214,6 +224,9 @@ public class Service {
         }
         if (type == POST_LIST_TYPE.DRAFT) {
             draft_manager.setAdapter(adapter);
+        }
+        if (type == POST_LIST_TYPE.SEARCH) {
+            search_manager.setAdapter(adapter);
         }
     }
 
@@ -696,7 +709,11 @@ public class Service {
         if (type == POST_LIST_TYPE.DRAFT) {
             return draft_manager.getByIndex(index);
         }
+        if (type == POST_LIST_TYPE.SEARCH) {
+            return search_manager.getByIndex(index);
+        }
         return all_manager.getByIndex(index);
+
     }
 
     public static int getArticleCount(POST_LIST_TYPE type) {
@@ -708,6 +725,9 @@ public class Service {
         }
         if (type == POST_LIST_TYPE.DRAFT) {
             return draft_manager.count();
+        }
+        if (type == POST_LIST_TYPE.SEARCH) {
+            return search_manager.count();
         }
         return all_manager.count();
     }
@@ -721,6 +741,9 @@ public class Service {
         }
         if (type == POST_LIST_TYPE.DRAFT) {
             draft_manager.fetchArticle();
+        }
+        if (type == POST_LIST_TYPE.SEARCH) {
+            search_manager.fetchArticle();
         }
         all_manager.fetchArticle();
     }
@@ -1327,9 +1350,9 @@ public class Service {
 
     public static void loopFetchNotification() {
         // TODO
-        if( enableNoti ) return;
-        Thread thread = new Thread( () -> {
-            while( true ) {
+        if (enableNoti) return;
+        Thread thread = new Thread(() -> {
+            while (true) {
                 noti_manager.fetchNotification();
                 SystemClock.sleep(10 * 1000);
             }
@@ -1372,4 +1395,42 @@ public class Service {
     public static boolean notiUncheck() {
         return noti_manager.unchecked;
     }
+
+    /* search */
+    public static void setSearchConfig(boolean text, boolean image,
+                                       boolean audio, boolean video, SEARCH_TYPE type) {
+        int f = 0;
+        if (text) f = f | FILTER_TEXT;
+        if (image) f = f | FILTER_IMAGE;
+        if (audio) f = f | FILTER_AUDIO;
+        if (video) f = f | FILTER_VIDEO;
+        System.out.println("filter" + f);
+        search_manager.setSearchFilter(f);
+        search_manager.setSearchType(type);
+    }
+
+    public static int getSearchFilter() {
+        return search_manager.getSearchFilter();
+    }
+
+    public static SEARCH_TYPE getSearchType() {
+        return search_manager.getSearchType();
+    }
+
+    public static void search(String text) {
+        search_manager.setSearchText(text);
+        search_manager.fetchArticle();
+    }
+
+    public static void initSearch() {
+        search_manager.setEnableSearch();
+        search_manager.setSearchFilter(FILTER_ALL);
+        search_manager.setSearchType(SEARCH_TYPE.TITLE);
+        search_manager.clear();
+    }
+
+    public static void clearSearch() {
+        search_manager.clear();
+    }
+
 }

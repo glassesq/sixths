@@ -147,7 +147,7 @@
                     android:text="昵称" />
 
                 <EditText
-                    android:id="@+id/nickname_view"
+                    android:id="@+id/username_set"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"

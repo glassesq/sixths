@@ -21,6 +21,12 @@
         android:theme="@style/Theme.Sixths"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".activity.UsernameconfigActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.PassconfigActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.MainconfigActivity"
             android:exported="false" />
         <activity

@@ -1,6 +1,5 @@
 package com.example.sixths.activity;
 
-import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -8,18 +7,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.ContentProvider;
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -29,13 +22,7 @@ import android.widget.Toast;
 import com.example.sixths.R;
 import com.example.sixths.service.Service;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.InputStream;
-import java.util.Base64;
-import java.util.Date;
 
 public class SettingActivity extends AppCompatActivity {
 
@@ -97,7 +84,7 @@ public class SettingActivity extends AppCompatActivity {
                 });
 
 
-        nickname_view = findViewById(R.id.nickname_view);
+        nickname_view = findViewById(R.id.username_set);
         bio_view = findViewById(R.id.bio_view);
 
         nickname_view.setText(Service.myself.nickname);

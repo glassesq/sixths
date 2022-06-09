@@ -120,7 +120,7 @@ public class UserActivity extends AppCompatActivity {
         Service.setPerson(userid);
         Service.getUserInfo(userid);
 
-        nickname_view = findViewById(R.id.nickname_view);
+        nickname_view = findViewById(R.id.username_set);
         username_view = findViewById(R.id.username_view);
         recycler_view = findViewById(R.id.recycler_view);
         profile_view = findViewById(R.id.user_profile_view);

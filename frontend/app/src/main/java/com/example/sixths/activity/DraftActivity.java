@@ -31,13 +31,21 @@ public class DraftActivity extends AppCompatActivity {
         @Override
         public void gotoArticlePage(int article_id) {
             Intent intent = getIntent();
+            if (intent.getStringExtra("main") != null) {
+                Intent _intent = new Intent(DraftActivity.this, NewActivity.class);
+                _intent.putExtra("article_id", article_id);
+                System.out.println("put id here" + article_id);
+                startActivity(_intent);
+                return;
+            }
             setResult(RESULT_OK, intent);
             intent.putExtra("article_id", article_id);
             finish();
         }
 
         @Override
-        public void shareArticle(String str) {}
+        public void shareArticle(String str) {
+        }
     };
 
     @Override
@@ -58,5 +66,12 @@ public class DraftActivity extends AppCompatActivity {
 
     public void cancel(View view) {
         this.finish();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        /* 从后端获取信息 */
+        Service.fetchArticle(Service.POST_LIST_TYPE.DRAFT);
     }
 }

@@ -18,7 +18,9 @@ import com.example.sixths.activity.ArticleActivity;
 import com.example.sixths.activity.LoginActivity;
 import com.example.sixths.activity.MainActivity;
 import com.example.sixths.activity.NewActivity;
+import com.example.sixths.activity.PassconfigActivity;
 import com.example.sixths.activity.UserActivity;
+import com.example.sixths.activity.UsernameconfigActivity;
 import com.example.sixths.adapter.CommentListAdapter;
 import com.example.sixths.adapter.NotificationListAdapter;
 import com.example.sixths.adapter.PostListAdapter;
@@ -75,6 +77,8 @@ public class Service {
     private static Handler user_handler = null;
     private static Handler article_handler = null;
     private static Handler new_handler = null;
+    private static Handler username_set_handler = null;
+    private static Handler password_set_handler = null;
 
     public static final int START_ARTICLE_NUM = 100;
     public static final int MORE_ARTICLE_NUM = 100;
@@ -224,6 +228,15 @@ public class Service {
 
     public static void setArticleHandler(Handler handler) {
         article_handler = handler;
+    }
+
+    public static void setUsernameSetHandler(Handler handler) {
+        username_set_handler = handler;
+    }
+
+
+    public static void setPasswordSetHandler(Handler handler) {
+        password_set_handler = handler;
     }
 
     public static void logout() {
@@ -609,6 +622,68 @@ public class Service {
 
                     String result = is2String(in);
                     System.out.println(result);
+                }
+                getMyself();
+                sendMessage(handler, DEEP_FRESH);
+                System.out.println("set user info finished");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+    }
+
+
+    public static void setUsername(String name) {
+        Thread thread = new Thread(() -> {
+            try {
+                String params = "username=" + URLEncoder.encode(name, "UTF-8");
+
+                System.out.println(params);
+                HttpURLConnection conn = getConnectionWithToken("/user/set_username", "POST", params);
+                System.out.println("set username conn established");
+
+                System.out.println(conn.getResponseCode());
+                if (conn.getResponseCode() == 200) {
+                    InputStream in = conn.getInputStream();
+
+                    String result = is2String(in);
+                    System.out.println(result);
+                    sendMessage(username_set_handler, UsernameconfigActivity.SUCCESS);
+                } else if (conn.getResponseCode() == 403 ) {
+                    sendMessage(username_set_handler, UsernameconfigActivity.DUP);
+                } else {
+                    sendMessage(username_set_handler, UsernameconfigActivity.FAIL);
+                }
+                getMyself();
+                sendMessage(handler, DEEP_FRESH);
+                System.out.println("set username finished");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+    }
+
+
+    public static void setPassword(String password) {
+        Thread thread = new Thread(() -> {
+            try {
+                String params = "password=" + URLEncoder.encode(encryptPassword(password), "UTF-8");
+
+                System.out.println(params);
+                HttpURLConnection conn = getConnectionWithToken("/user/set_password", "POST", params);
+                System.out.println("set password conn established");
+
+                System.out.println(conn.getResponseCode());
+                if (conn.getResponseCode() == 200) {
+                    InputStream in = conn.getInputStream();
+
+                    String result = is2String(in);
+                    System.out.println(result);
+                    sendMessage(password_set_handler, PassconfigActivity.SUCCESS);
+                } else {
+                    sendMessage(password_set_handler, PassconfigActivity.FAIL);
                 }
                 getMyself();
                 sendMessage(handler, DEEP_FRESH);

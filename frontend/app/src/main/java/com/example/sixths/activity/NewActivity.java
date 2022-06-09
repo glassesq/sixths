@@ -265,6 +265,13 @@ public class NewActivity extends AppCompatActivity {
         locationManager = (LocationManager) this.getApplicationContext().getSystemService(LOCATION_SERVICE);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
 
+
+        article_id = getIntent().getIntExtra("article_id", -1);
+        if (article_id != -1) {
+            Service.getArticleInfo(article_id);
+            System.out.println("article_id got here" + article_id);
+        }
+
         draft_launcher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
@@ -696,7 +703,7 @@ public class NewActivity extends AppCompatActivity {
         super.onDestroy();
         Service.setNewHandler(handler);
         if (!post_made) {
-            if (photo_src != null || audio_src != null || video_src != null ||  enableLocation) {
+            if (photo_src != null || audio_src != null || video_src != null || enableLocation) {
                 makeDraft(null);
             } else if (title_view.getText().toString().length() > 0 || content_view.getText().toString().length() > 0) {
                 System.out.println("#" + title_view.getText().toString().length() + "#");

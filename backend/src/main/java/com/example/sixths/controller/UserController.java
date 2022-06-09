@@ -189,4 +189,31 @@ public class UserController {
             return ResponseEntity.ok().body(ret);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
     }
+
+
+    @PostMapping(path = "/set_username")
+    public ResponseEntity<String> set_username(HttpServletRequest req) {
+        int id = Integer.parseInt(req.getAttribute(LoginInterceptor.ID_KEY).toString());
+        String name = req.getParameter("username");
+        String ret = userService.setUsername(id, name);
+        if (ret.equals("success")) {
+            return ResponseEntity.ok().body(ret);
+        }
+        else if (ret.equals("dup")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ret);
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ret);
+    }
+
+
+    @PostMapping(path = "/set_password")
+    public ResponseEntity<String> set_password(HttpServletRequest req) {
+        int id = Integer.parseInt(req.getAttribute(LoginInterceptor.ID_KEY).toString());
+        String password = req.getParameter("password");
+        String ret = userService.setPassword(id, password);
+        if (ret.equals("success")) {
+            return ResponseEntity.ok().body(ret);
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ret);
+    }
 }

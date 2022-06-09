@@ -250,6 +250,17 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
         startActivity(intent);
     }
 
+
+    public void gotoSetPass(View view) {
+        Intent intent = new Intent(MainActivity.this, PassconfigActivity.class);
+        startActivity(intent);
+    }
+
+    public void gotoSetUsername(View view) {
+        Intent intent = new Intent(MainActivity.this, UsernameconfigActivity.class);
+        startActivity(intent);
+    }
+
     private void selectTab(FragName aim) {
         transaction = getSupportFragmentManager().beginTransaction();
         transaction.hide(main_frag);
@@ -267,7 +278,6 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
 
     private void failNewPost() {
         Toast.makeText(MainActivity.this, "发送失败", Toast.LENGTH_SHORT).show();
-        // TODO: save to draft box.
     }
 
     private void successNewPost() {
@@ -292,8 +302,8 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
     }
 
     public void gotoDraft(View view) {
-
         Intent intent = new Intent(MainActivity.this, DraftActivity.class);
+        intent.putExtra("main", "true");
         startActivity(intent);
     }
 
@@ -336,7 +346,6 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
 
     private void failUserInfo() {
         Toast.makeText(MainActivity.this, "查询失败", Toast.LENGTH_SHORT).show();
-        // TODO: save to draft box.
     }
 
     private void successDraft() {

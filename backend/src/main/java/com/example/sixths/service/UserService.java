@@ -104,6 +104,23 @@ public class UserService {
         return "success";
     }
 
+    public String setUsername(int userid, String username) {
+        User user = getUserById(userid);
+        if (user == null) return "invalid userid";
+        if(!user.getName().equals(username) && !userRepository.findByName(username).isEmpty()) return "dup";
+        user.setName(username);
+        userRepository.save(user);
+        return "success";
+    }
+
+    public String setPassword(int userid, String password) {
+        User user = getUserById(userid);
+        if (user == null) return "invalid userid";
+        user.setPassword(password);
+        userRepository.save(user);
+        return "success";
+    }
+
 
     public String followUser(int userid, int follow_id) {
         User user = getUserById(userid);

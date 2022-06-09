@@ -114,7 +114,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/nickname_view"
+                android:id="@+id/username_set"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/noto_sans"

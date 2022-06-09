@@ -2,6 +2,7 @@ package com.example.sixths.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ShareCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -16,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.sixths.R;
 import com.example.sixths.adapter.PostListAdapter;
@@ -29,6 +31,7 @@ public class UserActivity extends AppCompatActivity {
     public static final int USER_SUCCESS = 3;
     public static final int USER_UNFOLLOW = 4;
     public static final int USER_PHOTO = 5;
+    public static final int BLOCK_DONE = 6;
 
     private TextView nickname_view = null;
     private TextView username_view = null;
@@ -65,7 +68,20 @@ public class UserActivity extends AppCompatActivity {
             intent.putExtra("article_id", article_id);
             startActivity(intent);
         }
+
+        @Override
+        public void shareArticle(String str) {
+            UserActivity.this.shareArticle(str);
+        }
+
     };
+
+
+    public void shareArticle(String txt) {
+        String mimeType = "text/plain";
+        ShareCompat.IntentBuilder builder = new ShareCompat.IntentBuilder(this);
+        builder.setType(mimeType).setChooserTitle("选择您要分享的应用").setText(txt).startChooser();
+    }
 
     @SuppressLint("HandlerLeak")
     private final Handler handler = new Handler(Looper.getMainLooper()) {
@@ -81,6 +97,8 @@ public class UserActivity extends AppCompatActivity {
                 setUnfollow();
             } else if (msg.what == USER_PHOTO) {
                 freshProfile();
+            } else if (msg.what == BLOCK_DONE) {
+                doneBlock();
             }
         }
     };
@@ -213,6 +231,20 @@ public class UserActivity extends AppCompatActivity {
         intent.putExtra("id", userid);
         startActivity(intent);
     }
+
+    public void startBlock(View view) {
+        if (userid == Service.myself.id) {
+            Toast.makeText(this.getApplicationContext(), "您不能屏蔽自己", Toast.LENGTH_SHORT).show();
+        } else {
+            Service.blockUser(userid);
+        }
+    }
+
+    public void doneBlock() {
+        Toast.makeText(this.getApplicationContext(), "屏蔽成功", Toast.LENGTH_SHORT).show();
+        finish();
+    }
+
 
     @Override
     protected void onDestroy() {

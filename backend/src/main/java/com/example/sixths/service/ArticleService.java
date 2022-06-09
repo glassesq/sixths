@@ -101,7 +101,7 @@ public class ArticleService {
                                         boolean enable_target, boolean enable_block, boolean draft,
                                         boolean search_title, boolean search_content, boolean search_user,
                                         boolean filter_text, boolean filter_image, boolean filter_audio,
-                                        boolean filter_video, String text) {
+                                        boolean filter_video, String text, boolean sort_like) {
 
 
         User user = userRepository.findById(userid).orElse(null);
@@ -110,6 +110,16 @@ public class ArticleService {
         Set<User> blockers = user.getBlockTarget();
 
         List<Article> all_list = articleRepository.findAllByOrderByTimeDesc(); // TODO: other order
+
+        if (sort_like) all_list.sort(new Comparator<Article>() {
+                                         @Override
+                                         public int compare(Article o1, Article o2) {
+                                             if( o1.getLikes() > o2.getLikes() ) return -1;
+                                             else if ( o1.getLikes() < o2.getLikes() ) return 1;
+                                             if( o1.getRealTime().before(o2.getRealTime()) ) return 1;
+                                             return -1;
+                                         }
+                                     } );
 
         System.out.println(all_list.size());
 

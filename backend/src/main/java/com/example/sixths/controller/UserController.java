@@ -179,4 +179,14 @@ public class UserController {
         userService.setNotification(noti_id);
         return ResponseEntity.ok().body("success");
     }
+
+
+    @GetMapping(path = "/get_following_detail")
+    public ResponseEntity<Set<User>> getFollowingDetail(HttpServletRequest req) {
+        int userid = Integer.parseInt(req.getParameter("user_id"));
+        Set<User> ret = userService.getFollowingDetail(userid);
+        if (ret != null)
+            return ResponseEntity.ok().body(ret);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+    }
 }

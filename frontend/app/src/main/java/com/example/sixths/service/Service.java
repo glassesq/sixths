@@ -62,6 +62,8 @@ public class Service {
 
     public static boolean enableNoti = false;
 
+    public static boolean enableSort = false;
+
     public static String publicPath = "";
 
     public static int myself_id = -1;
@@ -122,6 +124,11 @@ public class Service {
             }
         }
     };
+
+    public static void setEnableSort(boolean t) {
+        enableSort = t;
+    }
+
 
     public static void fresh() {
         all_manager.fresh();
@@ -583,7 +590,6 @@ public class Service {
         }
     }
 
-
     public static void setUserInfo(String nickname, String bio, String profile) {
         Thread thread = new Thread(() -> {
             try {
@@ -672,6 +678,26 @@ public class Service {
 
     }
 
+    public static void blockUser(int userid) {
+        Thread thread = new Thread(() -> {
+            try {
+                String params = "block_id=" + URLEncoder.encode(String.valueOf(userid), "UTF-8");
+                HttpURLConnection conn = getConnectionWithToken("/user/block", "POST", params);
+                System.out.println("follow conn established");
+                System.out.println(conn.getResponseCode());
+                if (conn.getResponseCode() == 200) {
+                    sendMessage(user_handler, UserActivity.BLOCK_DONE);
+                    System.out.println("block ok");
+                }
+                System.out.println("follow info finished");
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+
+    }
 
     public static User getUser(int index, USER_LIST_TYPE type) {
         if (type == USER_LIST_TYPE.FOLLOW) {

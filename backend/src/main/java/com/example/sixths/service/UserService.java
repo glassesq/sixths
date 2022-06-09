@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -133,6 +134,13 @@ public class UserService {
             ret.add(_user.getId());
         }
         return ret;
+    }
+
+
+    public Set<User> getFollowingDetail(int userid) {
+        User user = getUserById(userid);
+        if (user == null) return null;
+        return user.getFollowing();
     }
 
     public List<Notification> getNotificationList(int userid) {

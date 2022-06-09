@@ -168,10 +168,10 @@
                 android:orientation="horizontal">
 
 
-                <LinearLayout xmlns:tools="http://schemas.android.com/tools"
+                <LinearLayout
                     android:layout_width="wrap_content"
-                    android:onClick="gotoFollowerPage"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:onClick="gotoFollowerPage">
 
                     <TextView
                         android:id="@+id/following_view"
@@ -195,9 +195,11 @@
                         tools:text="关注" />
                 </LinearLayout>
 
-                <LinearLayout xmlns:tools="http://schemas.android.com/tools"
+
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
+
 
                     <TextView
                         android:id="@+id/followed_view"
@@ -219,7 +221,27 @@
                         android:paddingEnd="10dp"
                         android:text="被关注"
                         tools:text="被关注" />
+
+
                 </LinearLayout>
+
+                <Space
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:id="@+id/block_but"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0"
+                    android:fontFamily="@font/noto_sans"
+                    android:onClick="startBlock"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:text="屏蔽此人"
+                    android:textColor="@color/grey"
+                    android:textStyle="bold" />
 
 
             </LinearLayout>

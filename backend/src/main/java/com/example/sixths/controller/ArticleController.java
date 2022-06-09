@@ -97,20 +97,23 @@ public class ArticleController {
             int start = Integer.parseInt(req.getParameter("start"));
             int num = Integer.parseInt(req.getParameter("num"));
 
+            boolean sort_like = false;
+            if( req.getParameter("sort_like") != null ) { sort_like = true; }
+
             if (req.getParameter("userid") != null) {
                 ArrayList<Integer> list = new ArrayList<>();
                 list.add(Integer.parseInt(req.getParameter("userid")));
                 return articleService.getArticleList(userid, start, num,
                         list, true, false, false,
                         false, false, false,
-                        false, false, false, false, null);
+                        false, false, false, false, null, sort_like);
             }
             if (req.getParameter("follow") != null) {
                 List<Integer> list = userService.getFollowing(userid);
                 return articleService.getArticleList(userid, start, num,
-                        list, true, false, false,
+                        list, true, true, false,
                         false, false, false,
-                        false, false, false, false, null);
+                        false, false, false, false, null, sort_like);
             }
             if (req.getParameter("draft") != null) {
                 ArrayList<Integer> list = new ArrayList<>();
@@ -118,7 +121,7 @@ public class ArticleController {
                 return articleService.getArticleList(userid, start, num,
                         list, true, false, true,
                         false, false, false,
-                        false, false, false, false, null);
+                        false, false, false, false, null, false);
             }
 
             boolean search_title = getBool(req.getParameter("search_title"));
@@ -137,7 +140,7 @@ public class ArticleController {
             return articleService.getArticleList(userid, start, num,
                     null, false, true, false,
                     search_title, search_content, search_user,
-                    filter_text, filter_image, filter_audio, filter_video, text);
+                    filter_text, filter_image, filter_audio, filter_video, text, sort_like);
         } catch (Exception e) {
             return null;
         }

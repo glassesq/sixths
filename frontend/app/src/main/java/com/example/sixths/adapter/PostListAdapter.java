@@ -2,6 +2,7 @@ package com.example.sixths.adapter;
 
 import android.content.Context;
 import android.net.Uri;
+import android.net.sip.SipSession;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,8 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
         void switchLike(int article_id);
 
         void gotoArticlePage(int article_id);
+
+        void shareArticle(String str);
     }
 
     private postListener listener;
@@ -92,6 +95,7 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
 
         public ImageView like_icon;
         public ImageView comment_icon;
+        public ImageView share_icon;
 
         public LinearLayout touch_area;
 
@@ -124,6 +128,8 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
 
                 comments_view = item_view.findViewById(R.id.comments_view);
                 comment_icon = item_view.findViewById(R.id.comment_icon);
+
+                share_icon = item_view.findViewById(R.id.share_icon);
 
                 follow_tag = item_view.findViewById(R.id.follow_tag);
                 audio_tag = item_view.findViewById(R.id.audio_tag);
@@ -201,8 +207,6 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
                 holder.profile_view.setImageResource(R.drawable.default_profile);
             }
 
-
-
             if (article.image != null && article.image_fetched) {
                 Uri u = Service.getResourceUri(article.image);
                 if (u != null) {
@@ -251,6 +255,8 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
                 holder.touch_area.setOnClickListener(view -> listener.gotoArticlePage(article.id));
                 holder.comments_view.setOnClickListener(view -> listener.gotoArticlePage(article.id));
                 holder.comment_icon.setOnClickListener(view -> listener.gotoArticlePage(article.id));
+
+                holder.share_icon.setOnClickListener(view -> listener.shareArticle(article.getShareText()));
             }
         } else if (getItemViewType(position) == TYPE_DRAFT) {
             Article article = Service.getArticle(position, type);

@@ -64,6 +64,7 @@
             app:layout_constraintHorizontal_bias="0.803"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            android:onClick="gotoMainConfig"
             app:srcCompat="@drawable/ic_setting" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

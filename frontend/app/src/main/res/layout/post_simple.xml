@@ -242,6 +242,7 @@
 
 
             <ImageView
+                android:id="@+id/share_icon"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_marginVertical="1dp"

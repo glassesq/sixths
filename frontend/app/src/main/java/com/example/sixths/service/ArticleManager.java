@@ -4,8 +4,11 @@ import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ShareCompat;
 
 import com.example.sixths.adapter.PostListAdapter;
 
@@ -99,6 +102,9 @@ public class ArticleManager {
                         + "&num=" + URLEncoder.encode(String.valueOf(allowSize), "UTF-8");
                 System.out.println("person userid");
                 System.out.println(person_userid);
+
+                if (Service.enableSort && !draft) params = params.concat("&sort_like=true");
+
                 if (person_userid >= 0) {
                     params = params.concat("&userid=" + URLEncoder.encode(String.valueOf(person_userid), "UTF-8"));
                 } else if (follow) {
@@ -211,4 +217,6 @@ public class ArticleManager {
         msg.setTarget(handler);
         msg.sendToTarget();
     }
+
+
 }

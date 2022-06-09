@@ -4,6 +4,7 @@ package com.example.sixths.activity;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.ShareCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -27,6 +28,7 @@ import com.example.sixths.fragment.MainFragment;
 import com.example.sixths.fragment.PersonFragment;
 import com.example.sixths.R;
 import com.example.sixths.fragment.SearchFragment;
+import com.example.sixths.service.Article;
 import com.example.sixths.service.Service;
 
 public class MainActivity extends AppCompatActivity implements PostListAdapter.postListener {
@@ -243,6 +245,11 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
         startActivity(intent);
     }
 
+    public void gotoMainConfig(View view) {
+        Intent intent = new Intent(MainActivity.this, MainconfigActivity.class);
+        startActivity(intent);
+    }
+
     private void selectTab(FragName aim) {
         transaction = getSupportFragmentManager().beginTransaction();
         transaction.hide(main_frag);
@@ -334,6 +341,18 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
 
     private void successDraft() {
         Toast.makeText(MainActivity.this, "草稿保存成功", Toast.LENGTH_SHORT).show();
+    }
+
+
+    public void shareArticle(String txt) {
+        System.out.println("share here");
+        String mimeType = "text/plain";
+        ShareCompat.IntentBuilder builder = new ShareCompat.IntentBuilder(this);
+        builder.setType(mimeType).setChooserTitle("选择您要分享的应用").setText(txt).startChooser();
+    }
+
+    public void shareArticle(Article article) {
+        shareArticle(article.getShareText());
     }
 
 }

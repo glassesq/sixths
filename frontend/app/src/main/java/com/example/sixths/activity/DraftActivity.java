@@ -35,6 +35,9 @@ public class DraftActivity extends AppCompatActivity {
             intent.putExtra("article_id", article_id);
             finish();
         }
+
+        @Override
+        public void shareArticle(String str) {}
     };
 
     @Override

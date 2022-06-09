@@ -79,6 +79,16 @@ public class Article {
         content = "";
     }
 
+
+    @JsonIgnore
+    public Date getRealTime() {
+        return time;
+    }
+
+    public Set<User> getLiker() {
+        return liker;
+    }
+
     public Integer getId() {
         return id;
     }

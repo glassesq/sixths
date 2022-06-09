@@ -3,13 +3,8 @@ package com.example.sixths.activity;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 
-import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
 import com.example.sixths.R;
@@ -31,7 +26,7 @@ public class SearchconfigActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_searchconfig);
 
-        switch_text = findViewById(R.id.switch_text);
+        switch_text = findViewById(R.id.switch_sort);
         switch_image = findViewById(R.id.switch_image);
         switch_audio = findViewById(R.id.switch_audio);
         switch_video = findViewById(R.id.switch_video);

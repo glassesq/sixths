@@ -40,6 +40,9 @@ public class NotificationActivity extends AppCompatActivity {
             intent.putExtra("article_id", article_id);
             startActivity(intent);
         }
+
+        @Override
+        public void shareArticle(String str) {}
     };
 
     @Override

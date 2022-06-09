@@ -11,6 +11,8 @@ public class User {
 
     public String profile = null;
     public boolean profile_fetched = false;
+
+    public boolean is_blocked = false;
 }
 
 

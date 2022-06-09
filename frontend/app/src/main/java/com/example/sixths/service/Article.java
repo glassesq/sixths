@@ -28,4 +28,8 @@ public class Article {
     public String title = "title";
     public int likes = 0;
     public int comments = 0;
+
+    public String getShareText() {
+        return "[来自Sixths的分享]\n标题:" + title + "\n文字内容:" + content + "\n作者:" + author_nickname;
+    }
 }

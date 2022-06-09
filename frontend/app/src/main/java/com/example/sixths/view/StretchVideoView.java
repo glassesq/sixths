@@ -41,6 +41,10 @@ public class StretchVideoView extends VideoView {
             h = (int) ((double) h / 1.5);
             // TODO: adjust with screen.
             System.out.println(" resize ");
+        } else if( w > 1000 || h > 760 ){
+            w = (int) ((double) w / 1.2);
+            h = (int) ((double) h / 1.2);
+            System.out.println(" resize ");
         }
         this.width = w;
         this.height = h;

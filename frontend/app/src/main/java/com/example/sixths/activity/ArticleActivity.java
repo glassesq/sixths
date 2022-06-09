@@ -10,6 +10,7 @@ import com.example.sixths.view.StretchVideoView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ShareCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -53,6 +54,7 @@ public class ArticleActivity extends AppCompatActivity {
     public ImageView image_view;
     public ImageView profile_view;
     public ImageView position_icon;
+    public ImageView share_view;
 
     private StretchVideoView video_view;
     private StretchVideoView audio_view;
@@ -134,7 +136,12 @@ public class ArticleActivity extends AppCompatActivity {
         @Override
         public void gotoArticlePage(int article_id) {
         }
+
+        @Override
+        public void shareArticle(String str) {
+        }
     };
+
 
     private final CommentListAdapter.CommentListener commentListener = new CommentListAdapter.CommentListener() {
         @Override
@@ -253,11 +260,8 @@ public class ArticleActivity extends AppCompatActivity {
 
                     like_icon.setOnClickListener(view -> listener.switchLike(article.id));
                     likes_view.setOnClickListener(view -> listener.switchLike(article.id));
-                    System.out.println("listener set ok");
 
-                    // TODO
-//                comments_view.setOnClickListener(view -> listener.gotoArticlePage(article.id));
-//                comment_icon.setOnClickListener(view -> listener.gotoArticlePage(article.id));
+                    System.out.println("listener set ok");
                 }
 
                 info_init = true;
@@ -417,6 +421,16 @@ public class ArticleActivity extends AppCompatActivity {
         Service.fetchComment();
     }
 
+    public void shareArticle(View view) {
+        System.out.println("here in");
+        shareArticle(article.getShareText());
+    }
+
+    public void shareArticle(String txt) {
+        String mimeType = "text/plain";
+        ShareCompat.IntentBuilder builder = new ShareCompat.IntentBuilder(this);
+        builder.setType(mimeType).setChooserTitle("选择您要分享的应用").setText(txt).startChooser();
+    }
 
     @Override
     public void onDestroy() {

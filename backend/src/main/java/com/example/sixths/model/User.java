@@ -145,4 +145,8 @@ public class User {
     }
 
     public List<Notification> getNotification() { return notification; }
+
+    public int getFollower_num() { return follower.size(); }
+
+    public int getFollowing_num() { return following.size(); }
 }

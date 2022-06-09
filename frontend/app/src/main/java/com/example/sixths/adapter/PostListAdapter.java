@@ -117,7 +117,7 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
 
                 time_view = item_view.findViewById(R.id.time_view);
 
-                image_view = item_view.findViewById(R.id.image_view);
+//                image_view = item_view.findViewById(R.id.image_view);
                 profile_view = item_view.findViewById(R.id.user_profile_view);
 
                 position_text = item_view.findViewById(R.id.delete_tag);
@@ -134,6 +134,7 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
                 follow_tag = item_view.findViewById(R.id.follow_tag);
                 audio_tag = item_view.findViewById(R.id.audio_tag);
                 video_tag = item_view.findViewById(R.id.video_tag);
+                image_tag = item_view.findViewById(R.id.image_tag);
 
                 title_view = item_view.findViewById(R.id.post_title);
 
@@ -207,14 +208,10 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
                 holder.profile_view.setImageResource(R.drawable.default_profile);
             }
 
-            if (article.image != null && article.image_fetched) {
-                Uri u = Service.getResourceUri(article.image);
-                if (u != null) {
-                    holder.image_view.setImageURI(u);
-                    holder.image_view.setVisibility(View.VISIBLE);
-                }
+            if (article.image != null) {
+                holder.image_tag.setVisibility(View.VISIBLE);
             } else {
-                holder.image_view.setVisibility(View.GONE);
+                holder.image_tag.setVisibility(View.GONE);
             }
 
             if (article.audio != null) {

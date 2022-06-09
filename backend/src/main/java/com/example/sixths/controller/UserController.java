@@ -216,4 +216,10 @@ public class UserController {
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ret);
     }
+
+    @PostMapping(path = "/check")
+    public ResponseEntity<String> check_token(HttpServletRequest req) {
+        System.out.println("check");
+        return ResponseEntity.ok().body("success");
+    }
 }

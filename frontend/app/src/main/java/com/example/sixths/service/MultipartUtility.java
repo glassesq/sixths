@@ -118,6 +118,8 @@ public class MultipartUtility {
         inputStream.close();
         writer.append(LINE_FEED);
         writer.flush();
+
+
     }
 
     /**
@@ -160,6 +162,7 @@ public class MultipartUtility {
         } else {
             throw new IOException("Server returned non-OK status: " + status);
         }
+        outputStream.close();
         return response;
     }
 }

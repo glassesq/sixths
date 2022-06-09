@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
+import androidx.core.graphics.BitmapCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -15,7 +16,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Rect;
+import android.hardware.Camera;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -28,8 +31,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -42,8 +47,13 @@ import com.example.sixths.service.Article;
 import com.example.sixths.service.Service;
 import com.example.sixths.view.AutoMediaController;
 import com.example.sixths.view.StretchVideoView;
+import com.example.sixths.view.customTakePicture;
+import com.example.sixths.view.customVideo;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.List;
 
@@ -198,7 +208,8 @@ public class NewActivity extends AppCompatActivity {
 
         /* image */
         launcher = registerForActivityResult(
-                new ActivityResultContracts.TakePicture(),
+                new customTakePicture(),
+//                new ActivityResultContracts.TakePicture(),
                 new ActivityResultCallback<Boolean>() {
                     @Override
                     public void onActivityResult(Boolean result) {
@@ -206,7 +217,22 @@ public class NewActivity extends AppCompatActivity {
                             System.out.println("picture taken");
                             try {
                                 InputStream is = getContentResolver().openInputStream(photo_uri);
-                                Service.uploadImage(PHOTO, handler, is, getContentResolver().getType(photo_uri));
+                                Bitmap bit = Service.getBitmap(is);
+
+                                ByteArrayOutputStream baos = null;
+                                int x = 10;
+                                while (x >= 1 && (baos == null || baos.toByteArray().length >= 1024 * 50)) {
+                                    baos = new ByteArrayOutputStream();
+                                    bit.compress(Bitmap.CompressFormat.JPEG, x, baos);
+                                    x = x / 2;
+                                }
+                                byte[] bytes = baos.toByteArray();
+
+                                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                                image_view.setImageBitmap(bitmap);
+
+                                InputStream is2 = new ByteArrayInputStream(bytes);
+                                Service.uploadImage(PHOTO, handler, is2, getContentResolver().getType(photo_uri));
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -219,7 +245,7 @@ public class NewActivity extends AppCompatActivity {
         video_controller = new AutoMediaController(this);
         video_controller.setChecker(videoChecker);
         video_launcher = registerForActivityResult(
-                new ActivityResultContracts.TakeVideo(), new ActivityResultCallback<Bitmap>() {
+                new customVideo(), new ActivityResultCallback<Bitmap>() {
                     @Override
                     public void onActivityResult(Bitmap result) {
                         try {
@@ -288,6 +314,14 @@ public class NewActivity extends AppCompatActivity {
                         }
                     }
                 });
+
+        scroll_view.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+            @Override
+            public void onScrollChanged() {
+                audio_controller.hide();
+                video_controller.hide();
+            }
+        });
     }
 
     public boolean checkVideo() {
@@ -536,7 +570,7 @@ public class NewActivity extends AppCompatActivity {
             photo_src = null;
             return;
         }
-        image_view.setImageURI(photo_uri);
+//        image_view.setImageURI(photo_uri);
         image_view.setVisibility(View.VISIBLE);
 
         camera_button.setImageResource(R.drawable.ic_camera);

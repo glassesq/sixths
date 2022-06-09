@@ -33,19 +33,20 @@ public class StretchVideoView extends VideoView {
     }
 
     public void setDimensions(int w, int h) {
-        if( isAudio ) return;
-        if( w < 100 ) w = 100;
-        if( h < 100 ) h = 100;
-        if (w > h || w > 1280 || h > 960) {
-            w = (int) ((double) w / 1.5);
-            h = (int) ((double) h / 1.5);
-            // TODO: adjust with screen.
-            System.out.println(" resize ");
-        } else if( w > 1000 || h > 760 ){
+        if (isAudio) return;
+        // TODO: adjust for different screen.
+
+        while (w > 800 || h > 760) {
             w = (int) ((double) w / 1.2);
             h = (int) ((double) h / 1.2);
             System.out.println(" resize ");
         }
+
+        while (w < 400 && h < 380) {
+            w = (int) ((double)w * 1.6);
+            h = (int) ((double)h * 1.6);
+        }
+
         this.width = w;
         this.height = h;
     }

@@ -108,7 +108,7 @@ public class Service {
 
     private static String token = null;
 
-    private static final String url = "http://10.0.2.2:8080";
+    private static final String url = "http://47.103.11.174:8080";
 
     public static HashSet<Integer> following = new HashSet<>();
     public static HashSet<Integer> liking = new HashSet<>();
@@ -202,9 +202,31 @@ public class Service {
 
     public static boolean checkToken() {
         /* check 是否 存在token && token有效 */
-        // TODO
+        Thread thread = new Thread(() -> {
+            try {
+                String params = "";
+                HttpURLConnection conn = getConnectionWithToken("/user/check", "POST", params);
+                System.out.println("set check conn established");
+
+                if (conn.getResponseCode() == 200) {
+                    System.out.println("check ok");
+                } else {
+                    System.out.println("check fail");
+                    token = null;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+        try {
+            thread.join();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return token != null;
     }
+
 
     public static void setNewHandler(Handler handler) {
         new_handler = handler;
@@ -650,7 +672,7 @@ public class Service {
                     String result = is2String(in);
                     System.out.println(result);
                     sendMessage(username_set_handler, UsernameconfigActivity.SUCCESS);
-                } else if (conn.getResponseCode() == 403 ) {
+                } else if (conn.getResponseCode() == 403) {
                     sendMessage(username_set_handler, UsernameconfigActivity.DUP);
                 } else {
                     sendMessage(username_set_handler, UsernameconfigActivity.FAIL);
@@ -1389,6 +1411,8 @@ public class Service {
                     s = s.concat(line);
                 }
 
+                System.out.println("upload ok");
+
                 if (handler != null) {
                     sendMessage(handler, what, s);
                 }
@@ -1601,5 +1625,6 @@ public class Service {
     public static void clearSearch() {
         search_manager.clear();
     }
+
 
 }

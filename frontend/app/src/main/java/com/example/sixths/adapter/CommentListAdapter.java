@@ -122,7 +122,6 @@ public class CommentListAdapter extends RecyclerView.Adapter<CommentListAdapter.
                 holder.delete_tag.setVisibility(View.INVISIBLE);
             }
 
-            // TODO: else
             if (listener != null) {
                 holder.profile_view.setOnClickListener(view -> listener.gotoUserPage(comment.author_id));
             }

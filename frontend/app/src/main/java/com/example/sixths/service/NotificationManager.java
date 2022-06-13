@@ -73,13 +73,6 @@ public class NotificationManager {
                         msg.setTarget(handler);
                         msg.sendToTarget();
                     }
-                } else {
-                    System.out.println("fetch failed");
-                    System.out.println(conn.getResponseCode());
-                    InputStream in = conn.getErrorStream();
-
-                    String result = Service.is2String(in);
-                    System.out.println(result);
                 }
             } catch (Exception e) {
                 e.printStackTrace();

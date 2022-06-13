@@ -69,7 +69,6 @@ public class PersonFragment extends Fragment {
 
     public void freshProfile() {
         if (Service.myself.profile == null) return;
-        System.out.print(Service.myself.profile_fetched);
         Uri u = Service.getResourceUri(Service.myself.profile);
         if (u != null) {
             image_view.setImageURI(u);

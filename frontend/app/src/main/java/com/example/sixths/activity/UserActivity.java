@@ -131,14 +131,6 @@ public class UserActivity extends AppCompatActivity {
 
         follower_text = findViewById(R.id.followed_view);
         following_text = findViewById(R.id.following_view);
-
-        /* 设计 recycle view 的 adapter */
-//        PostListAdapter adapter = new PostListAdapter(this, listener, Service.POST_LIST_TYPE.PERSON); // TODO
-//        recycler_view.setAdapter(adapter);
-//        recycler_view.setLayoutManager(new LinearLayoutManager(this));
-
-        /* 从后端获取信息 */
-//        Service.fetchArticle(Service.POST_LIST_TYPE.PERSON);
     }
 
     public void switchFollow() {
@@ -150,7 +142,6 @@ public class UserActivity extends AppCompatActivity {
     }
 
     public void freshProfile() {
-        System.out.println("profile fresh");
         if (user.profile == null) return;
         Uri u = Service.getResourceUri(user.profile);
         if (u != null) profile_view.setImageURI(u);
@@ -188,7 +179,6 @@ public class UserActivity extends AppCompatActivity {
                 follower_text.setText(String.valueOf(user.followed_num));
                 following_text.setText(String.valueOf(user.following_num));
                 if (user.profile_fetched) {
-                    System.out.println("the profile is here");
                     freshProfile();
                 } else Service.fetchImage(user);
                 freshFollow();
@@ -212,7 +202,6 @@ public class UserActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        System.out.println("on resume");
         Service.setUserHandler(handler);
 
         /* 恢复用户信息 */
@@ -220,7 +209,7 @@ public class UserActivity extends AppCompatActivity {
         Service.getUserInfo(userid);
 
         /* 设计 recycle view 的 adapter */
-        PostListAdapter adapter = new PostListAdapter(this, listener, Service.POST_LIST_TYPE.PERSON); // TODO
+        PostListAdapter adapter = new PostListAdapter(this, listener, Service.POST_LIST_TYPE.PERSON);
         recycler_view.setAdapter(adapter);
         recycler_view.setLayoutManager(new CustomLayoutManager(this));
 

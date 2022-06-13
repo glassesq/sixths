@@ -88,7 +88,6 @@ public class NotificationListAdapter extends RecyclerView.Adapter<NotificationLi
             holder.content_view.setText(noti.content);
             holder.time_view.setText(noti.time);
 
-            // TODO: else
             if (listener != null) {
                 holder.touch_area.setOnClickListener(view -> {
                             noti.checked = true;

@@ -51,18 +51,15 @@ public class CommentManager {
     };
 
     public void fetchComment() {
-        System.out.println("fetch Comment");
         @SuppressLint("NotifyDataSetChanged") Thread thread = new Thread(() -> {
             try {
                 String params = "article_id=" + URLEncoder.encode(String.valueOf(article_id), "UTF-8");
                 HttpURLConnection conn = Service.getConnectionWithToken("/article/get_comments", "GET", params);
-                System.out.println("fetch Comment conn established");
 
                 if (conn.getResponseCode() == 200) {
                     InputStream in = conn.getInputStream();
 
                     String result = Service.is2String(in);
-                    System.out.println(result);
 
                     ArrayList<Comment> list = new ArrayList<>();
                     JSONArray arr = new JSONArray(result);
@@ -79,14 +76,10 @@ public class CommentManager {
                     msg.setTarget(handler);
                     msg.sendToTarget();
                 } else {
-                    System.out.println("fetch failed");
-                    System.out.println(conn.getResponseCode());
                     InputStream in = conn.getErrorStream();
 
                     String result = Service.is2String(in);
-                    System.out.println(result);
                 }
-                System.out.println("notify data set changed");
             } catch (Exception e) {
                 e.printStackTrace();
             }

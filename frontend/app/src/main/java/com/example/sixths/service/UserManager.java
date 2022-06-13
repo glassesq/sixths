@@ -67,7 +67,6 @@ public class UserManager {
     };
 
     public void fetchUser() {
-        System.out.println("fetch User");
         Thread thread = new Thread(() -> {
             try {
                 String params = "start=" + URLEncoder.encode(String.valueOf(0), "UTF-8")
@@ -81,7 +80,6 @@ public class UserManager {
                     params = params.concat("&article_id=" + URLEncoder.encode(String.valueOf(article_id), "UTF-8"));
                 }
 
-                System.out.println(params);
 
                 HttpURLConnection conn;
                 if (follow) {
@@ -90,13 +88,10 @@ public class UserManager {
                     conn = Service.getConnectionWithToken("/article/get_liker", "GET", params);
                 } else return;
 
-                System.out.println("fetch User conn established");
-
                 if (conn.getResponseCode() == 200) {
                     InputStream in = conn.getInputStream();
 
                     String result = Service.is2String(in);
-                    System.out.println(result);
 
                     ArrayList<User> list = new ArrayList<>();
                     JSONArray arr = new JSONArray(result);
@@ -112,13 +107,10 @@ public class UserManager {
                     msg.setTarget(handler);
                     msg.sendToTarget();
                 } else {
-                    System.out.println(conn.getResponseCode());
                     InputStream in = conn.getErrorStream();
 
                     String result = Service.is2String(in);
-                    System.out.println(result);
                 }
-                System.out.println("notify data set changed");
             } catch (Exception e) {
                 e.printStackTrace();
             }

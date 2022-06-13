@@ -92,28 +92,22 @@ public class ArticleActivity extends AppCompatActivity {
     };
 
     public boolean checkVideo() {
-        System.out.println("check video");
         Rect scrollBounds = new Rect();
         scroll_view.getDrawingRect(scrollBounds);
 
         float top = video_frame.getY();
         float bottom = top + video_frame.getHeight();
-        System.out.println(scrollBounds.top + " " + scrollBounds.bottom);
-        System.out.println(top + " " + bottom);
 
         /* if fully visible */
         return scrollBounds.top <= top && scrollBounds.bottom >= bottom;
     }
 
     public boolean checkAudio() {
-        System.out.println("check audio");
         Rect scrollBounds = new Rect();
         scroll_view.getDrawingRect(scrollBounds);
 
         float top = audio_frame.getY();
         float bottom = top + audio_frame.getHeight();
-        System.out.println(scrollBounds.top + " " + scrollBounds.bottom);
-        System.out.println(top + " " + bottom);
 
         /* if fully visible */
         return scrollBounds.top <= top && scrollBounds.bottom >= bottom;
@@ -158,7 +152,6 @@ public class ArticleActivity extends AppCompatActivity {
             if (msg.what == ARTICLE_SUCCESS) {
                 successArticleInfo(msg.getData().getString("data"));
             } else if (msg.what == ARTICLE_RESOURCE) {
-                System.out.println("resource got");
                 successArticleResource();
             } else if (msg.what == ARTICLE_FRESH) {
                 Service.getArticleInfo(article_id);
@@ -238,7 +231,7 @@ public class ArticleActivity extends AppCompatActivity {
         article = Service.decodeArticle(data);
         if (article != null) {
             if (!info_init) {
-                successArticleResource(); // TODO
+                successArticleResource();
 
                 nickname_view.setText(article.author_nickname);
                 username_view.setText(article.author_username);
@@ -261,7 +254,6 @@ public class ArticleActivity extends AppCompatActivity {
                     like_icon.setOnClickListener(view -> listener.switchLike(article.id));
                     likes_view.setOnClickListener(view -> listener.switchLike(article.id));
 
-                    System.out.println("listener set ok");
                 }
 
                 info_init = true;
@@ -290,8 +282,6 @@ public class ArticleActivity extends AppCompatActivity {
         try {
             if (article == null) return;
 
-            System.out.print("media_init:");
-            System.out.println(media_init);
             if (media_init) return;
             if (article.image_fetched && article.video_fetched && article.audio_fetched && article.profile_fetched)
                 media_init = true;
@@ -302,10 +292,8 @@ public class ArticleActivity extends AppCompatActivity {
             }
 
             /* profile image */
-            System.out.println(article.author_profile);
             if (article.author_profile != null && article.profile_fetched) {
                 Uri u = Service.getResourceUri(article.author_profile);
-                System.out.println(u);
                 if (u != null) profile_view.setImageURI(u);
                 else {
                     profile_view.setImageResource(R.drawable.default_profile);
@@ -315,10 +303,8 @@ public class ArticleActivity extends AppCompatActivity {
             }
 
             /* image */
-            System.out.println(article.image);
             if (article.image != null && article.image_fetched) {
                 Uri u = Service.getResourceUri(article.image);
-                System.out.println(u);
                 if (u != null) {
                     image_view.setImageURI(u);
                     image_view.setVisibility(View.VISIBLE);
@@ -331,12 +317,8 @@ public class ArticleActivity extends AppCompatActivity {
 
 
             /* audio */
-            System.out.println("resource fetched");
-            System.out.println(article.audio);
-            System.out.println(article.audio_fetched);
             if (article.audio != null && article.audio_fetched) {
                 Uri u = Service.getResourceUri(article.audio);
-                System.out.println("audio fetched");
                 if (u != null) {
                     audio_controller.setMediaPlayer(audio_view);
                     audio_controller.setAnchorView(audio_view);
@@ -352,8 +334,6 @@ public class ArticleActivity extends AppCompatActivity {
             }
 
             /* video */
-            System.out.println(article.video);
-            System.out.println(article.video_fetched);
             if (article.video != null && article.video_fetched) {
                 Uri u = Service.getResourceUri(article.video);
                 if (u != null) {
@@ -380,9 +360,6 @@ public class ArticleActivity extends AppCompatActivity {
                 video_view.setVisibility(View.GONE);
                 video_tag.setVisibility(View.GONE);
             }
-
-            System.out.print("media_init done:");
-            System.out.println(media_init);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -426,7 +403,6 @@ public class ArticleActivity extends AppCompatActivity {
     }
 
     public void shareArticle(View view) {
-        System.out.println("here in");
         shareArticle(article.getShareText());
     }
 

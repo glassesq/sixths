@@ -42,7 +42,6 @@ public class SearchconfigActivity extends AppCompatActivity {
     }
 
     public void setType(Service.SEARCH_TYPE type) {
-        System.out.println("set type:" + type);
         this.search_type = type;
         if (type == Service.SEARCH_TYPE.TITLE) {
             type_view.setText("动态标题");
@@ -64,7 +63,6 @@ public class SearchconfigActivity extends AppCompatActivity {
     }
 
     public void changeType(View view) {
-        System.out.println("change _ type");
         if (search_type == Service.SEARCH_TYPE.CONTENT) {
             setType(Service.SEARCH_TYPE.TITLE);
         } else if (search_type == Service.SEARCH_TYPE.TITLE) {

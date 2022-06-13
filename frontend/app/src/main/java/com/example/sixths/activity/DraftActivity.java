@@ -34,7 +34,6 @@ public class DraftActivity extends AppCompatActivity {
             if (intent.getStringExtra("main") != null) {
                 Intent _intent = new Intent(DraftActivity.this, NewActivity.class);
                 _intent.putExtra("article_id", article_id);
-                System.out.println("put id here" + article_id);
                 startActivity(_intent);
                 return;
             }

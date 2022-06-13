@@ -18,7 +18,6 @@ public class customVideo extends  ActivityResultContracts.TakeVideo{
         Intent intent = super.createIntent(context, input);
         intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0.1);
         intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 5);
-        System.out.println("size limit");
         return intent;
     }
 }

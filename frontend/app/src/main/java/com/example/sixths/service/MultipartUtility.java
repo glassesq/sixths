@@ -15,8 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-// TODO: permission
-/* https://stackoverflow.com/questions/34276466/simple-httpurlconnection-post-file-multipart-form-data-from-android-to-google-bl */
+/* 修改自 https://stackoverflow.com/questions/34276466/simple-httpurlconnection-post-file-multipart-form-data-from-android-to-google-bl */
 public class MultipartUtility {
     private final String boundary;
     private static final String LINE_FEED = "\r\n";
@@ -41,7 +40,6 @@ public class MultipartUtility {
         boundary = "===" + System.currentTimeMillis() + "===";
         URL url = new URL(requestURL);
 
-        System.out.println(requestURL);
         httpConn = (HttpURLConnection) url.openConnection();
         httpConn.setUseCaches(false);
         httpConn.setDoOutput(true);    // indicates POST method
@@ -93,44 +91,20 @@ public class MultipartUtility {
         writer.append(LINE_FEED);
         writer.flush();
 
-        System.out.println("writer ok");
-
-        System.out.println(uploadFile.getPath());
-
-        System.out.println(uploadFile.isFile());
-
         FileInputStream inputStream = new FileInputStream(uploadFile);
-
-        //new FileInputStream(uploadFile.getPath());
-
-        System.out.println("stream file input ok");
 
         byte[] buffer = new byte[4096];
         int bytesRead = -1;
         while ((bytesRead = inputStream.read(buffer)) != -1) {
             outputStream.write(buffer, 0, bytesRead);
         }
-
-        System.out.println("stream output write done");
         outputStream.flush();
 
-        System.out.println("output stream ok");
         inputStream.close();
         writer.append(LINE_FEED);
         writer.flush();
 
 
-    }
-
-    /**
-     * Adds a header field to the request.
-     *
-     * @param name  - name of the header field
-     * @param value - value of the header field
-     */
-    public void addHeaderField(String name, String value) {
-        writer.append(name + ": " + value).append(LINE_FEED);
-        writer.flush();
     }
 
     /**
@@ -145,8 +119,6 @@ public class MultipartUtility {
         writer.append(LINE_FEED).flush();
         writer.append("--" + boundary + "--").append(LINE_FEED);
         writer.close();
-
-        System.out.println(response);
 
         // checks server's status code first
         int status = httpConn.getResponseCode();

@@ -60,7 +60,6 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
         inflater = LayoutInflater.from(context);
         this.listener = listener;
         setType(type);
-        if( type == Service.POST_LIST_TYPE.DRAFT) System.out.println("draft set ok");
     }
 
     public void setType(Service.POST_LIST_TYPE type) {
@@ -242,7 +241,6 @@ public class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.PostVi
             }
 
 
-            // TODO: else
             if (listener != null) {
                 holder.profile_view.setOnClickListener(view -> listener.gotoUserPage(article.author_id));
 

@@ -16,7 +16,6 @@ public class customTakePicture extends ActivityResultContracts.TakePicture {
         Intent intent = super.createIntent(context, input);
         intent.putExtra(MediaStore.EXTRA_SIZE_LIMIT, 30000);
         intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);
-        System.out.println("size limit");
         return intent;
     }
 

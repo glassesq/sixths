@@ -21,13 +21,10 @@ public class AutoMediaController extends MediaController {
 
     @Override
     public void show() {
-        System.out.println("i am trying to show");
         if (!checker.check()) {
             /* refuse to show if video_view is not fully visible */
-            System.out.println("refuse");
             return;
         }
-        System.out.println("accept");
         super.show();
     }
 }

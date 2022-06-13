@@ -243,7 +243,6 @@ public class NewActivity extends AppCompatActivity {
                     @Override
                     public void onActivityResult(Boolean result) {
                         if (result) {
-                            System.out.println("picture taken");
                             try {
                                 InputStream is = getContentResolver().openInputStream(photo_uri);
                                 Bitmap bit = Service.getBitmap(is);
@@ -278,7 +277,6 @@ public class NewActivity extends AppCompatActivity {
                     @Override
                     public void onActivityResult(Bitmap result) {
                         try {
-                            System.out.println("video:" + getContentResolver().getType(video_uri));
 
                             /* first resize, then set controller */
                             /* video view resize */
@@ -323,7 +321,6 @@ public class NewActivity extends AppCompatActivity {
         article_id = getIntent().getIntExtra("article_id", -1);
         if (article_id != -1) {
             Service.getArticleInfo(article_id);
-            System.out.println("article_id got here" + article_id);
             delete_button.setVisibility(View.VISIBLE);
         } else {
             delete_button.setVisibility(View.GONE);
@@ -334,10 +331,7 @@ public class NewActivity extends AppCompatActivity {
                 new ActivityResultCallback<ActivityResult>() {
                     @Override
                     public void onActivityResult(ActivityResult result) {
-                        System.out.println("hello activity result");
-                        System.out.println(result.getResultCode());
                         if (result.getResultCode() == Activity.RESULT_OK) {
-                            System.out.println("hello activity result");
                             Intent data = result.getData();
                             if (data == null) return;
                             article_id = data.getIntExtra("article_id", -1);
@@ -361,28 +355,22 @@ public class NewActivity extends AppCompatActivity {
     }
 
     public boolean checkVideo() {
-        System.out.println("check video");
         Rect scrollBounds = new Rect();
         scroll_view.getDrawingRect(scrollBounds);
 
         float top = video_frame.getY();
         float bottom = top + video_frame.getHeight();
-        System.out.println(scrollBounds.top + " " + scrollBounds.bottom);
-        System.out.println(top + " " + bottom);
 
         /* if fully visible */
         return scrollBounds.top <= top && scrollBounds.bottom >= bottom;
     }
 
     public boolean checkAudio() {
-        System.out.println("check audio");
         Rect scrollBounds = new Rect();
         scroll_view.getDrawingRect(scrollBounds);
 
         float top = audio_frame.getY();
         float bottom = top + audio_frame.getHeight();
-        System.out.println(scrollBounds.top + " " + scrollBounds.bottom);
-        System.out.println(top + " " + bottom);
 
 
         /* if fully visible */
@@ -429,7 +417,6 @@ public class NewActivity extends AppCompatActivity {
     }
 
     public void switchRecord(View view) {
-        System.out.println("switch record");
         if (!isRecording) {
             recordAudio();
         } else {
@@ -497,7 +484,6 @@ public class NewActivity extends AppCompatActivity {
         String video = video_src;
         String audio = audio_src;
 
-        System.out.println(content);
         this.finish();
         Service.makeArticle(article_id, content, locationText, title, image, video, audio);
     }
@@ -510,7 +496,6 @@ public class NewActivity extends AppCompatActivity {
         String video = video_src;
         String audio = audio_src;
 
-        System.out.println(content);
         Service.makeDraft(article_id, content, locationText, title, image, video, audio);
         delete_button.setVisibility(View.VISIBLE);
     }
@@ -522,7 +507,6 @@ public class NewActivity extends AppCompatActivity {
             enableLocation = false;
             locationText = null;
         } else {
-            System.out.println("try get location here");
             location_button.setImageResource(R.drawable.ic_location_red);
             getLocation();
         }
@@ -555,11 +539,8 @@ public class NewActivity extends AppCompatActivity {
                 intent.setAction(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                 return;
             }
-            System.out.println("good here");
 
-            System.out.println("location manager get");
             List<String> providers = locationManager.getProviders(true);
-            System.out.println(providers);
 
             for (String provider : providers) {
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -597,8 +578,6 @@ public class NewActivity extends AppCompatActivity {
             List<Address> addressList = null;
             Geocoder geocoder = new Geocoder(this.getApplicationContext());
             try {
-                System.out.println(location.getLatitude());
-                System.out.println(location.getLongitude());
                 addressList = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 5);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -625,7 +604,6 @@ public class NewActivity extends AppCompatActivity {
 
         photo_src = src;
 
-        System.out.println("photo set ok");
     }
 
     public void successVideo(String src) {
@@ -645,7 +623,6 @@ public class NewActivity extends AppCompatActivity {
 
         video_src = src;
 
-        System.out.println("video set ok");
     }
 
     public void successAudio(String src) {
@@ -664,7 +641,6 @@ public class NewActivity extends AppCompatActivity {
         audio_view.start();
         record_button.setImageResource(R.drawable.ic_record);
 
-        System.out.println("audio set ok");
     }
 
     public void stopAll() {
@@ -701,8 +677,6 @@ public class NewActivity extends AppCompatActivity {
         try {
             if (article == null) return;
 
-            System.out.print("media_init:");
-            System.out.println(media_init);
             if (media_init) return;
             if (article.image_fetched && article.video_fetched && article.audio_fetched)
                 media_init = true;
@@ -713,7 +687,6 @@ public class NewActivity extends AppCompatActivity {
             }
 
             /* image */
-            System.out.println(article.image);
             if (article.image != null && article.image_fetched) {
                 Uri u = Service.getResourceUri(article.image);
                 if (u != null) {
@@ -728,12 +701,8 @@ public class NewActivity extends AppCompatActivity {
 
 
             /* audio */
-            System.out.println("resource fetched");
-            System.out.println(article.audio);
-            System.out.println(article.audio_fetched);
             if (article.audio != null && article.audio_fetched) {
                 Uri u = Service.getResourceUri(article.audio);
-                System.out.println("audio fetched");
                 if (u != null) {
                     audio_uri = u;
                     successAudio(article.audio);
@@ -744,8 +713,6 @@ public class NewActivity extends AppCompatActivity {
             }
 
             /* video */
-            System.out.println(article.video);
-            System.out.println(article.video_fetched);
             if (article.video != null && article.video_fetched) {
                 Uri u = Service.getResourceUri(article.video);
                 if (u != null) {
@@ -757,8 +724,6 @@ public class NewActivity extends AppCompatActivity {
                 video_view.setVisibility(View.GONE);
             }
 
-            System.out.print("media_init done:");
-            System.out.println(media_init);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -802,8 +767,6 @@ public class NewActivity extends AppCompatActivity {
             if (photo_src != null || audio_src != null || video_src != null || enableLocation) {
                 makeDraft(null);
             } else if (title_view.getText().toString().length() > 0 || content_view.getText().toString().length() > 0) {
-                System.out.println("#" + title_view.getText().toString().length() + "#");
-                System.out.println("#" + content_view.getText().toString().length() + "#");
                 makeDraft(null);
             } else {
                 Toast.makeText(this.getApplicationContext(), "不自动保存空内容草稿", Toast.LENGTH_SHORT).show();

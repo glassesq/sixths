@@ -82,7 +82,6 @@ public class Service {
     private static Handler password_set_handler = null;
 
     public static final int START_ARTICLE_NUM = 100;
-    public static final int MORE_ARTICLE_NUM = 100;
 
     public static final int DEEP_FRESH = 0;
     public static final int FRESH = 1;
@@ -185,8 +184,6 @@ public class Service {
     }
 
     public static void setToken(String _token) {
-        /* check 是否 存在token && token有效 */
-        // TODO
         token = _token;
     }
 
@@ -208,12 +205,8 @@ public class Service {
             try {
                 String params = "";
                 HttpURLConnection conn = getConnectionWithToken("/user/check", "POST", params);
-                System.out.println("set check conn established");
 
-                if (conn.getResponseCode() == 200) {
-                    System.out.println("check ok");
-                } else {
-                    System.out.println("check fail");
+                if (conn.getResponseCode() != 200) {
                     token = null;
                 }
             } catch (Exception e) {
@@ -360,7 +353,6 @@ public class Service {
     }
 
     public static HttpURLConnection getConnectionWithToken(String path, String method, String params) throws Exception {
-        System.out.println(path + "-token:" + token);
         if (method.equals("GET")) {
             HttpURLConnection conn = (HttpURLConnection) new URL(url + path + "?" + params).openConnection();
             conn.setRequestMethod(method);
@@ -395,16 +387,12 @@ public class Service {
         messageDigest = MessageDigest.getInstance("SHA-256");
         messageDigest.update(password.getBytes(StandardCharsets.UTF_8));
         String encrypt_password = new String(Base64.getUrlEncoder().encode(messageDigest.digest()), StandardCharsets.UTF_8);
-        System.out.println(encrypt_password);
         return encrypt_password;
     }
 
     public static void signIn(String email, String password) {
         Thread thread = new Thread(() -> {
             try {
-                /* check 是否 存在token && token有效 */
-                System.out.println("signIn: email " + email + "password " + password);
-                // TODO: check username and password not null.
 
                 String params = "password=" + URLEncoder.encode(encryptPassword(password), "UTF-8")
                         + "&email=" + URLEncoder.encode(email, "UTF-8");
@@ -412,19 +400,15 @@ public class Service {
 
                 if (conn.getResponseCode() == 200) {
                     InputStream in = conn.getInputStream();
-                    System.out.println("success");
 
                     String result = is2String(in);
                     setToken(result);
-                    System.out.println(result);
 
-                    System.out.println("success login");
                     Message msg = new Message();
                     msg.what = LoginActivity.LOGIN_SUCCESS;
                     msg.setTarget(login_handler);
                     msg.sendToTarget();
                 } else {
-                    System.out.println("fail");
                     Message msg = new Message();
                     msg.what = LoginActivity.LOGIN_FAIL;
                     msg.setTarget(login_handler);
@@ -441,10 +425,6 @@ public class Service {
     public static void register(String username, String email, String password) {
         Thread thread = new Thread(() -> {
             try {
-                /* check 是否 存在token && token有效 */
-                System.out.println("register: email " + email + "password " + password);
-                // TODO: check username and password not null.
-
                 String params = "password=" + URLEncoder.encode(encryptPassword(password), "UTF-8")
                         + "&email=" + URLEncoder.encode(email, "UTF-8")
                         + "&name=" + URLEncoder.encode(username, "UTF-8");
@@ -455,21 +435,11 @@ public class Service {
 
                     String result = is2String(in);
                     setToken(result);
-                    System.out.println(result);
 
-                    Message msg = new Message();
-                    msg.what = RegisterActivity.REG_SUCCESS;
-                    msg.setTarget(register_handler);
-                    msg.sendToTarget();
+                    sendMessage(register_handler, RegisterActivity.REG_SUCCESS);
                 } else {
-//                        in = conn.getErrorStream();
-
-                    Message msg = new Message();
-                    msg.what = RegisterActivity.REG_FAIL;
-                    msg.setTarget(register_handler);
-                    msg.sendToTarget();
+                    sendMessage(register_handler, RegisterActivity.REG_FAIL);
                 }
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -478,20 +448,14 @@ public class Service {
     }
 
     public static void getUserInfo(int userid) {
-        System.out.println(userid);
-        System.out.println("start get user");
         Thread thread = new Thread(() -> {
             try {
                 String params = "userid=" + URLEncoder.encode(String.valueOf(userid), "UTF-8");
                 HttpURLConnection conn = getConnectionWithToken("/user/get_info", "GET", params);
-                System.out.println("get user conn established");
 
-                System.out.println(conn.getResponseCode());
                 if (conn.getResponseCode() == 200) {
                     InputStream in = conn.getInputStream();
-
                     String result = is2String(in);
-                    System.out.println(result);
 
                     Message msg = new Message();
                     msg.what = UserActivity.USER_SUCCESS;
@@ -501,12 +465,8 @@ public class Service {
                     msg.setTarget(user_handler);
                     msg.sendToTarget();
                 } else {
-                    Message msg = new Message();
-                    msg.what = UserActivity.USER_FAIL;
-                    msg.setTarget(user_handler);
-                    msg.sendToTarget();
+                    sendMessage(user_handler, UserActivity.USER_FAIL);
                 }
-                System.out.println("get user finished");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -517,7 +477,6 @@ public class Service {
     public static void sendMessage(Handler _handler, int _what) {
         if (_handler == null) return;
         Message msg = new Message();
-        System.out.println("message send");
         msg.what = _what;
         msg.setTarget(_handler);
         msg.sendToTarget();
@@ -525,7 +484,6 @@ public class Service {
 
     public static void sendMessage(Handler _handler, int _what, String data) {
         if (_handler == null) return;
-        System.out.println("message send");
         Message msg = new Message();
         msg.what = _what;
         Bundle bundle = new Bundle();
@@ -540,54 +498,42 @@ public class Service {
             try {
                 /* 基本信息 */
                 HttpURLConnection conn = getConnectionWithToken("/user/get_myself", "GET", "");
-                System.out.println("get user conn established");
 
-                System.out.println(conn.getResponseCode());
                 if (conn.getResponseCode() == 200) {
                     InputStream in = conn.getInputStream();
 
                     String result = is2String(in);
-                    System.out.println(result);
 
                     myself = decodeUserInfo(result);
                     if (myself != null) myself_id = myself.id;
                     fetchImage(myself);
                 }
-                System.out.println("get user finished");
 
                 /* following list */
                 conn = getConnectionWithToken("/user/get_following", "GET", "");
-                System.out.println("get following conn established");
 
-                System.out.println(conn.getResponseCode());
                 if (conn.getResponseCode() == 200) {
                     InputStream in = conn.getInputStream();
 
                     String result = is2String(in);
-                    System.out.println(result);
 
                     following = decodeIntegerSet(result);
                 }
 
                 /* liking list */
                 conn = getConnectionWithToken("/article/get_liking", "GET", "");
-                System.out.println("get liking conn established");
 
-                System.out.println(conn.getResponseCode());
                 if (conn.getResponseCode() == 200) {
                     InputStream in = conn.getInputStream();
 
                     String result = is2String(in);
-                    System.out.println(result);
 
                     liking = decodeIntegerSet(result);
-                    System.out.println("article fresh");
 
                     sendMessage(article_handler, ArticleActivity.ARTICLE_FRESH);
                 }
 
                 sendMessage(handler, FRESH);
-                System.out.println("get myself finished");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -618,7 +564,6 @@ public class Service {
             user.following_num = obj.getInt("following_num");
 
             user.profile = checkStr(obj, "profile");
-            System.out.println("profile:" + user.profile);
             return user;
         } catch (Exception e) {
             e.printStackTrace();
@@ -634,21 +579,15 @@ public class Service {
                 if (profile != null) {
                     params = params.concat("&profile=" + URLEncoder.encode(profile, "UTF-8"));
                 }
-                System.out.println(profile);
-                System.out.println(params);
                 HttpURLConnection conn = getConnectionWithToken("/user/set_info", "POST", params);
-                System.out.println("set info conn established");
 
-                System.out.println(conn.getResponseCode());
                 if (conn.getResponseCode() == 200) {
                     InputStream in = conn.getInputStream();
 
                     String result = is2String(in);
-                    System.out.println(result);
                 }
                 getMyself();
                 sendMessage(handler, DEEP_FRESH);
-                System.out.println("set user info finished");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -661,17 +600,10 @@ public class Service {
         Thread thread = new Thread(() -> {
             try {
                 String params = "username=" + URLEncoder.encode(name, "UTF-8");
-
-                System.out.println(params);
                 HttpURLConnection conn = getConnectionWithToken("/user/set_username", "POST", params);
-                System.out.println("set username conn established");
-
-                System.out.println(conn.getResponseCode());
                 if (conn.getResponseCode() == 200) {
                     InputStream in = conn.getInputStream();
-
                     String result = is2String(in);
-                    System.out.println(result);
                     sendMessage(username_set_handler, UsernameconfigActivity.SUCCESS);
                 } else if (conn.getResponseCode() == 403) {
                     sendMessage(username_set_handler, UsernameconfigActivity.DUP);
@@ -680,7 +612,6 @@ public class Service {
                 }
                 getMyself();
                 sendMessage(handler, DEEP_FRESH);
-                System.out.println("set username finished");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -693,24 +624,15 @@ public class Service {
         Thread thread = new Thread(() -> {
             try {
                 String params = "password=" + URLEncoder.encode(encryptPassword(password), "UTF-8");
-
-                System.out.println(params);
                 HttpURLConnection conn = getConnectionWithToken("/user/set_password", "POST", params);
-                System.out.println("set password conn established");
 
-                System.out.println(conn.getResponseCode());
                 if (conn.getResponseCode() == 200) {
-                    InputStream in = conn.getInputStream();
-
-                    String result = is2String(in);
-                    System.out.println(result);
                     sendMessage(password_set_handler, PassconfigActivity.SUCCESS);
                 } else {
                     sendMessage(password_set_handler, PassconfigActivity.FAIL);
                 }
                 getMyself();
                 sendMessage(handler, DEEP_FRESH);
-                System.out.println("set user info finished");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -731,8 +653,6 @@ public class Service {
             try {
                 String params = "follow_id=" + URLEncoder.encode(String.valueOf(userid), "UTF-8");
                 HttpURLConnection conn = getConnectionWithToken("/user/follow", "POST", params);
-                System.out.println("follow conn established");
-                System.out.println(conn.getResponseCode());
                 if (conn.getResponseCode() == 200) {
                     getMyself();
                     getUserInfo(userid);
@@ -741,8 +661,6 @@ public class Service {
                     sendMessage(main_handler, MainActivity.FRESH_PROFILE);
                     sendMessage(user_handler, UserActivity.USER_FOLLOW);
                 }
-                System.out.println("follow info finished");
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -756,18 +674,12 @@ public class Service {
             try {
                 String params = "follow_id=" + URLEncoder.encode(String.valueOf(userid), "UTF-8");
                 HttpURLConnection conn = getConnectionWithToken("/user/unfollow", "POST", params);
-                System.out.println("unfollow conn established");
-                System.out.println(conn.getResponseCode());
                 if (conn.getResponseCode() == 200) {
                     getMyself();
                     getUserInfo(userid);
-
                     sendMessage(handler, DEEP_FRESH);
-
                     sendMessage(user_handler, UserActivity.USER_UNFOLLOW);
                 }
-
-                System.out.println("unfollow info finished");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -781,14 +693,9 @@ public class Service {
             try {
                 String params = "block_id=" + URLEncoder.encode(String.valueOf(userid), "UTF-8");
                 HttpURLConnection conn = getConnectionWithToken("/user/block", "POST", params);
-                System.out.println("follow conn established");
-                System.out.println(conn.getResponseCode());
                 if (conn.getResponseCode() == 200) {
                     sendMessage(user_handler, UserActivity.BLOCK_DONE);
-                    System.out.println("block ok");
                 }
-                System.out.println("follow info finished");
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -941,7 +848,6 @@ public class Service {
     }
 
     public static void makeArticle(int article_id, String content, String location, String title, String image, String video, String audio) {
-        System.out.println("start make article");
         Thread thread = new Thread(() -> {
             try {
                 String params = "content=" + URLEncoder.encode(content, "UTF-8");
@@ -964,18 +870,12 @@ public class Service {
                     params = params.concat("&article_id=" +
                             URLEncoder.encode(String.valueOf(article_id), "UTF-8"));
                 }
-                System.out.println(params);
                 HttpURLConnection conn = getConnectionWithToken("/article", "POST", params);
-                System.out.println("make article conn established");
-                System.out.println("article:" + conn.getResponseCode());
                 if (conn.getResponseCode() == 200) {
                     sendMessage(main_handler, MainActivity.NEW_SUCCESS);
-                    System.out.println("success");
                 } else {
                     sendMessage(main_handler, MainActivity.NEW_FAIL);
-                    System.out.println("not success");
                 }
-                System.out.println("make article finished");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -985,7 +885,6 @@ public class Service {
 
 
     public static void makeDraft(int article_id, String content, String location, String title, String image, String video, String audio) {
-        System.out.println("start make article draft");
         Thread thread = new Thread(() -> {
             try {
                 String params = "content=" + URLEncoder.encode(content, "UTF-8");
@@ -1008,18 +907,14 @@ public class Service {
                     params = params.concat("&article_id=" +
                             URLEncoder.encode(String.valueOf(article_id), "UTF-8"));
                 }
-                System.out.println(params);
                 HttpURLConnection conn = getConnectionWithToken("/article/draft", "POST", params);
-                System.out.println("make article draft conn established");
 
                 if (conn.getResponseCode() == 200) {
                     InputStream in = conn.getInputStream();
                     String result = is2String(in);
-                    System.out.println("draft save");
                     sendMessage(main_handler, MainActivity.DRAFT);
                     sendMessage(new_handler, NewActivity.DRAFT, result);
                 }
-                System.out.println("make article draft finished");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -1028,19 +923,15 @@ public class Service {
     }
 
 
-
     public static void deleteDraft(int article_id) {
         Thread thread = new Thread(() -> {
             try {
-                String params = "&article_id=" +  URLEncoder.encode(String.valueOf(article_id), "UTF-8");
-                System.out.println(params);
+                String params = "&article_id=" + URLEncoder.encode(String.valueOf(article_id), "UTF-8");
                 HttpURLConnection conn = getConnectionWithToken("/article/delete", "POST", params);
-                System.out.println("make article draft conn established");
 
                 if (conn.getResponseCode() == 200) {
                     sendMessage(new_handler, NewActivity.ARTICLE_DELETE);
                 }
-                System.out.println("make article draft finished");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -1061,13 +952,10 @@ public class Service {
             try {
                 String params = "article_id=" + URLEncoder.encode(String.valueOf(article_id), "UTF-8");
                 HttpURLConnection conn = getConnectionWithToken("/article/like", "POST", params);
-                System.out.println("article conn established");
-                System.out.println(conn.getResponseCode());
                 if (conn.getResponseCode() == 200) {
                     getMyself();
                     sendMessage(handler, DEEP_FRESH);
                 }
-                System.out.println("article info finished");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -1080,13 +968,10 @@ public class Service {
             try {
                 String params = "article_id=" + URLEncoder.encode(String.valueOf(article_id), "UTF-8");
                 HttpURLConnection conn = getConnectionWithToken("/article/unlike", "POST", params);
-                System.out.println("article conn established");
-                System.out.println(conn.getResponseCode());
                 if (conn.getResponseCode() == 200) {
                     getMyself();
                     sendMessage(handler, DEEP_FRESH);
                 }
-                System.out.println("article info finished");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -1095,26 +980,17 @@ public class Service {
     }
 
     public static void getArticleInfo(int article_id) {
-        System.out.println(article_id);
-        System.out.println("start get article");
         Thread thread = new Thread(() -> {
             try {
                 String params = "article_id=" + URLEncoder.encode(String.valueOf(article_id), "UTF-8");
                 HttpURLConnection conn = getConnectionWithToken("/article/get_info", "GET", params);
-
-                System.out.println("get article conn established");
-
-                System.out.println(conn.getResponseCode());
                 if (conn.getResponseCode() == 200) {
                     InputStream in = conn.getInputStream();
-
                     String result = is2String(in);
-                    System.out.println(result);
 
                     sendMessage(article_handler, ArticleActivity.ARTICLE_SUCCESS, result);
                     sendMessage(new_handler, NewActivity.ARTICLE_SUCCESS, result);
                 }
-                System.out.println("get article finished");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -1131,18 +1007,6 @@ public class Service {
     }
 
     /* image / video / audio */
-    public static String getEncoded64ImageStringFromBitmap(Bitmap bitmap) {
-        /* https://stackoverflow.com/questions/26114661/how-to-upload-image-in-base64-on-server */
-        System.out.println(bitmap.getByteCount());
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-        byte[] byteFormat = stream.toByteArray();
-        // get the base 64 string
-        String imgString = Base64.getEncoder().encodeToString(byteFormat);
-        System.out.println(imgString.length());
-        return imgString;
-    }
-
     public static Bitmap getBitmap(InputStream input) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         return BitmapFactory.decodeStream(input, null, options);
@@ -1189,9 +1053,6 @@ public class Service {
             if (file.exists()) file.delete();
             file.createNewFile();
 
-            System.out.println("create: " + file.getPath());
-            System.out.println("create ok");
-
             FileOutputStream out = new FileOutputStream(file);
             int read;
             byte[] bytes = new byte[1024];
@@ -1234,7 +1095,6 @@ public class Service {
             String webpath = url + "/res/" + src;
             InputStream input = new URL(webpath).openConnection().getInputStream();
             is2File(input, src);
-            System.out.println("inputstream: " + webpath);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -1244,7 +1104,6 @@ public class Service {
 
     public static void fetchImage(User user) {
         if (user == null) return;
-        System.out.println("fetch image");
         if (user.profile_fetched) return;
         if (user.profile == null || checkFile(user.profile)) {
             user.profile_fetched = true;
@@ -1308,7 +1167,6 @@ public class Service {
 
     public static void fetchImage(Comment comment) {
         if (comment == null) return;
-        System.out.println("fetch image");
         if (comment.profile_fetched) return;
         if (comment.author_profile == null || checkFile(comment.author_profile)) {
             comment.profile_fetched = true;
@@ -1333,7 +1191,6 @@ public class Service {
 
     public static void fetchMedia(Article article) {
         if (article == null) return;
-        System.out.println("fetch video & audio");
         if (article.video == null || checkFile(article.video)) {
             article.video_fetched = true;
         }
@@ -1350,13 +1207,11 @@ public class Service {
                 if (!article.audio_fetched) {
                     if (fetchResourceFromSrc(article.audio)) {
                         article.audio_fetched = true;
-                        System.out.println("audio got");
                     }
                 }
                 if (!article.video_fetched) {
                     if (fetchResourceFromSrc(article.video)) {
                         article.video_fetched = true;
-                        System.out.println("video got");
                     }
                 }
                 sendMessage(new_handler, NewActivity.ARTICLE_RESOURCE);
@@ -1370,11 +1225,7 @@ public class Service {
 
     public static Bitmap getImageBitmap(String src) {
         try {
-            System.out.println("get image");
             File file = new File(publicPath + "/" + src);
-            System.out.println(publicPath + "/" + src);
-            System.out.println(file.isFile());
-            System.out.println(file.exists());
             InputStream is = new FileInputStream(file);
             return getBitmap(is);
         } catch (Exception e) {
@@ -1405,12 +1256,10 @@ public class Service {
     }
 
     public static void uploadVideo(int what, Handler handler, InputStream input) {
-        // TODO: format
         uploadResource(what, handler, input, "video", "flv");
     }
 
     public static void uploadAudio(int what, Handler handler, InputStream input) {
-        // TODO: format
         uploadResource(what, handler, input, "audio", "aac");
     }
 
@@ -1418,8 +1267,7 @@ public class Service {
                                        String type, String format) {
         Thread thread = new Thread(() -> {
             try {
-                File file = null;
-
+                File file;
                 file = is2File(input, type, format);
 
                 if (file == null) return;
@@ -1432,11 +1280,8 @@ public class Service {
                 List<String> response = multipart.finish();
                 String s = "";
                 for (String line : response) {
-                    System.out.println(line);
                     s = s.concat(line);
                 }
-
-                System.out.println("upload ok");
 
                 if (handler != null) {
                     sendMessage(handler, what, s);
@@ -1495,20 +1340,16 @@ public class Service {
     }
 
     public static void makeComment(int article_id, String content) {
-        System.out.println("start make comment");
         Thread thread = new Thread(() -> {
             try {
                 String params = "content=" + URLEncoder.encode(content, "UTF-8")
                         + "&article_id=" + URLEncoder.encode(String.valueOf(article_id), "UTF-8");
-                System.out.println(params);
                 HttpURLConnection conn = getConnectionWithToken("/article/add_comment", "POST", params);
-                System.out.println("make comment conn established");
 
                 if (conn.getResponseCode() == 200) {
                     sendMessage(handler, COMMENT_FRESH);
                     sendMessage(handler, DEEP_FRESH);
                 }
-                System.out.println("make comment finished");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -1520,15 +1361,12 @@ public class Service {
         Thread thread = new Thread(() -> {
             try {
                 String params = "comment_id=" + URLEncoder.encode(String.valueOf(comment_id), "UTF-8");
-                System.out.println(params);
                 HttpURLConnection conn = getConnectionWithToken("/article/remove_comment", "POST", params);
-                System.out.println("make comment conn established");
 
                 if (conn.getResponseCode() == 200) {
                     sendMessage(handler, COMMENT_DEEP_FRESH);
                     sendMessage(article_handler, ArticleActivity.ARTICLE_FRESH);
                 }
-                System.out.println("make comment finished");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -1562,12 +1400,10 @@ public class Service {
     }
 
     public static void fetchNotification() {
-        // TODO
         noti_manager.fetchNotification();
     }
 
     public static void loopFetchNotification() {
-        // TODO
         if (enableNoti) return;
         Thread thread = new Thread(() -> {
             while (true) {
@@ -1583,18 +1419,12 @@ public class Service {
         Thread thread = new Thread(() -> {
             try {
                 String params = "noti_id=" + URLEncoder.encode(String.valueOf(id), "UTF-8");
-                System.out.println(params);
                 HttpURLConnection conn = getConnectionWithToken("/user/set_notification", "POST", params);
-                System.out.println("set noti conn established");
 
                 if (conn.getResponseCode() == 200) {
-//                    sendMessage(handler, COMMENT_DEEP_FRESH);
-                    //                   sendMessage(article_handler, ArticleActivity.ARTICLE_FRESH);
-                    //TODO
                     Service.freshUncheck();
                     Service.notiGot();
                 }
-                System.out.println("set noti finished");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -1622,7 +1452,6 @@ public class Service {
         if (image) f = f | FILTER_IMAGE;
         if (audio) f = f | FILTER_AUDIO;
         if (video) f = f | FILTER_VIDEO;
-        System.out.println("filter" + f);
         search_manager.setSearchFilter(f);
         search_manager.setSearchType(type);
     }
@@ -1651,7 +1480,9 @@ public class Service {
         search_manager.clear();
     }
 
-    public static void clearPerson() { person_manager.clear(); }
+    public static void clearPerson() {
+        person_manager.clear();
+    }
 
 
 }

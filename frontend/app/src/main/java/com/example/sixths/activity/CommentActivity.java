@@ -41,7 +41,6 @@ public class CommentActivity extends AppCompatActivity {
 
     public void makeComment(View view) {
         String content = content_view.getText().toString();
-        System.out.println(content);
         Service.makeComment(article_id, content);
         this.finish();
     }

@@ -53,12 +53,10 @@ public class LoginActivity extends AppCompatActivity {
         /* 此处应该获取帐号密码 */
         String email = login_email.getText().toString();
         String password = login_password.getText().toString();
-        System.out.println(email + " " + password);
         Service.signIn(email, password);
     }
 
     private void successSignIn() {
-        System.out.println("prepare jump to main: "+ Service.getToken());
         Intent main_intent = new Intent(LoginActivity.this, MainActivity.class);
         main_intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(main_intent);

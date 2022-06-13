@@ -72,7 +72,6 @@ public class ArticleManager {
         draft = true;
     }
 
-    //        @SuppressLint("NotifyDataSetChanged")
     public void setAdapter(PostListAdapter adapter) {
         this.adapter = adapter;
     }
@@ -95,13 +94,10 @@ public class ArticleManager {
     };
 
     public void fetchArticle() {
-        System.out.println("fetch Article");
         Thread thread = new Thread(() -> {
             try {
                 String params = "start=" + URLEncoder.encode(String.valueOf(0), "UTF-8")
                         + "&num=" + URLEncoder.encode(String.valueOf(allowSize), "UTF-8");
-                System.out.println("person userid");
-                System.out.println(person_userid);
 
                 if (Service.enableSort && !draft) params = params.concat("&sort_like=true");
 
@@ -109,10 +105,8 @@ public class ArticleManager {
                     params = params.concat("&userid=" + URLEncoder.encode(String.valueOf(person_userid), "UTF-8"));
                 } else if (follow) {
                     params = params.concat("&follow=true");
-                    System.out.println("follow");
                 } else if (draft) {
                     params = params.concat("&draft=true");
-                    System.out.println("draft");
                 } else if (enableSearch) {
                     if (search_filter != Service.FILTER_ALL) {
                         if ((search_filter & Service.FILTER_TEXT) != 0) {
@@ -129,7 +123,6 @@ public class ArticleManager {
                         }
                     }
                     if (search_text != null && !search_text.equals("")) {
-                        System.out.println(search_type);
                         if (search_type == Service.SEARCH_TYPE.TITLE) {
                             params = params.concat("&search_title=true"
                                     + "&search_text=" + URLEncoder.encode(search_text, "UTF-8"));
@@ -142,17 +135,12 @@ public class ArticleManager {
                         }
                     }
                 }
-                System.out.println(params);
-
                 HttpURLConnection conn =
                         Service.getConnectionWithToken("/article/get_list", "GET", params);
-                System.out.println("fetch Article conn established");
 
                 if (conn.getResponseCode() == 200) {
                     InputStream in = conn.getInputStream();
-
                     String result = Service.is2String(in);
-                    System.out.println(result);
 
                     ArrayList<Article> list = new ArrayList<Article>();
                     JSONArray arr = new JSONArray(result);
@@ -167,35 +155,13 @@ public class ArticleManager {
                     Message msg = new Message();
                     msg.setTarget(handler);
                     msg.sendToTarget();
-                    /*
-                    for (int i = 0; i < arr.length(); i++) {
-                        Service.fetchResourceFromSrc(article_list.get(i).author_profile);
-                        adapter.notifyItemChanged(i);
-                    } */
-                } else {
-                    System.out.println(conn.getResponseCode());
-                    InputStream in = conn.getErrorStream();
-
-                    String result = Service.is2String(in);
-                    System.out.println(result);
                 }
-                System.out.println("notify data set changed");
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
         thread.start();
 
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    public void showMoreArticle(int more) {
-        allowSize += more;
-        fetchArticle();
-        if (adapter != null) {
-            adapter.notifyDataSetChanged(); // TODO
-//                adapter.setIfMore(allowSize < article_list.size());
-        }
     }
 
     public Article getByIndex(int index) {

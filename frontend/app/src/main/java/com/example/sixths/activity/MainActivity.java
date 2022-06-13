@@ -95,7 +95,6 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
-            System.out.println("handler" + msg);
             if (msg.what == NEW_FAIL) {
                 failNewPost();
             } else if (msg.what == NEW_SUCCESS) {
@@ -191,17 +190,11 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
     public void updateTokenFromPref() {
         preferences = getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
         String token = preferences.getString(TOKEN_PREF, null);
-        if (token != null) {
-            System.out.print("update token:");
-            System.out.println(token);
-        }
         if (token != null) Service.setToken(token);
     }
 
     public void saveTokenToPref() {
         SharedPreferences.Editor editor = preferences.edit();
-        System.out.print("save token:");
-        System.out.println(Service.getToken());
         editor.putString(TOKEN_PREF, Service.getToken());
         editor.apply();
     }
@@ -292,7 +285,6 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
 
     private void successNewPost() {
         Toast.makeText(MainActivity.this, "发送成功", Toast.LENGTH_SHORT).show();
-        System.out.println("hi???");
         Service.fetchArticle(Service.POST_LIST_TYPE.ALL);
         Service.fetchArticle(Service.POST_LIST_TYPE.FOLLOW);
     }
@@ -365,7 +357,6 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
 
 
     public void shareArticle(String txt) {
-        System.out.println("share here");
         String mimeType = "text/plain";
         ShareCompat.IntentBuilder builder = new ShareCompat.IntentBuilder(this);
         builder.setType(mimeType).setChooserTitle("选择您要分享的应用").setText(txt).startChooser();

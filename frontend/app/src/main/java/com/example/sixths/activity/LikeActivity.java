@@ -42,7 +42,7 @@ public class LikeActivity extends AppCompatActivity {
         recycler_view = findViewById(R.id.recycler_view);
 
         /* 设计 recycle view 的 adapter */
-        UserListAdapter adapter = new UserListAdapter(this, listener, Service.USER_LIST_TYPE.LIKE); // TODO
+        UserListAdapter adapter = new UserListAdapter(this, listener, Service.USER_LIST_TYPE.LIKE);
         recycler_view.setAdapter(adapter);
         recycler_view.setLayoutManager(new LinearLayoutManager(this));
 

@@ -45,7 +45,6 @@ public class SettingActivity extends AppCompatActivity {
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
             if (msg.what == UPLOAD_IMAGE) {
-                System.out.println("settings upload image ok");
                 successUpload(msg.getData().getString("data"));
             }
         }

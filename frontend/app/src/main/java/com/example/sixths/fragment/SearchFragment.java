@@ -31,9 +31,7 @@ public class SearchFragment extends Fragment {
         this.listener = listener;
     }
 
-    public SearchFragment() {
-//        card_listener = null;
-    }
+    public SearchFragment() { }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,13 +50,11 @@ public class SearchFragment extends Fragment {
         recycler_view = view.findViewById(R.id.search_recycler_view);
 
         /* 设计 recycle view 的 adapter */
-        PostListAdapter adapter = new PostListAdapter(this.getContext(), listener, Service.POST_LIST_TYPE.SEARCH); // TODO
+        PostListAdapter adapter = new PostListAdapter(this.getContext(), listener, Service.POST_LIST_TYPE.SEARCH);
         recycler_view.setAdapter(adapter);
         recycler_view.setLayoutManager(new LinearLayoutManager(this.getContext()));
 
-
         Service.clearSearch();
-        // TODO
         return view;
     }
 

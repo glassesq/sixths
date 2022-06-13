@@ -18,8 +18,6 @@ import com.example.sixths.service.Service;
 public class NotificationActivity extends AppCompatActivity {
     /* https://zhuanlan.zhihu.com/p/22697316 */
 
-    //TODO
-
     private RecyclerView recycler_view;
 
 

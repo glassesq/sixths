@@ -358,19 +358,23 @@ public class ArticleActivity extends AppCompatActivity {
                 Uri u = Service.getResourceUri(article.video);
                 if (u != null) {
 
-                    MediaPlayer media = new MediaPlayer();
-                    media.setDataSource(getContentResolver().openAssetFileDescriptor(u, "r"));
-                    media.prepare();
-                    video_view.setDimensions(media.getVideoWidth(), media.getVideoHeight());
-                    media.release();
 
                     video_controller.setMediaPlayer(video_view);
                     video_controller.setAnchorView(video_view);
                     video_view.setMediaController(video_controller);
 
                     video_view.setVideoURI(u);
+                    try {
+                        MediaPlayer media = new MediaPlayer();
+                        media.setDataSource(getContentResolver().openAssetFileDescriptor(u, "r"));
+                        media.prepare();
+                        video_view.setDimensions(media.getVideoWidth(), media.getVideoHeight());
+                        media.release();
+                    } catch (Exception ignored) {
+                    }
                     video_view.setVisibility(View.VISIBLE);
                     video_tag.setVisibility(View.VISIBLE);
+
                 }
             } else {
                 video_view.setVisibility(View.GONE);

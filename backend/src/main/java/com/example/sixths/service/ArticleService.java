@@ -282,7 +282,10 @@ public class ArticleService {
         }
     }
 
-
-
+    public String deleteArticle(int article_id) {
+        Article article = findById(article_id);
+        articleRepository.delete(article);
+        return "success";
+    }
 
 }

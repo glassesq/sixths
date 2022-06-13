@@ -3,6 +3,7 @@ package com.example.sixths.activity;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -55,6 +56,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.text.DecimalFormat;
 import java.util.List;
 
 
@@ -82,6 +84,10 @@ public class NewActivity extends AppCompatActivity {
     private ImageView video_button;
     private ImageView location_button;
 
+    private ImageView profile_view;
+
+    public ImageView delete_button;
+
     private StretchVideoView video_view;
     private StretchVideoView audio_view;
 
@@ -104,6 +110,10 @@ public class NewActivity extends AppCompatActivity {
     public static int AUDIO = 3;
     public static int ARTICLE_SUCCESS = 4;
     public static int ARTICLE_RESOURCE = 5;
+    public static int ARTICLE_DELETE = 6;
+    public static int DRAFT = 7;
+    public static int SUCCESS_LOCATION = 8;
+    public static int FAIL_LOCATION = 9;
 
     private LocationManager locationManager;
 
@@ -131,6 +141,16 @@ public class NewActivity extends AppCompatActivity {
                 loadArticle(msg.getData().getString("data"));
             } else if (msg.what == ARTICLE_RESOURCE) {
                 loadArticleResource();
+            } else if (msg.what == ARTICLE_DELETE) {
+                successDelete();
+            } else if (msg.what == DRAFT) {
+                Toast.makeText(NewActivity.this.getApplicationContext(),
+                        "草稿暂存成功", Toast.LENGTH_SHORT).show();
+                article_id = Integer.parseInt(msg.getData().getString("data"));
+            } else if (msg.what == SUCCESS_LOCATION) {
+                successLocation();
+            } else if (msg.what == FAIL_LOCATION) {
+                failLocation();
             }
         }
     };
@@ -205,6 +225,15 @@ public class NewActivity extends AppCompatActivity {
         image_view.setVisibility(View.GONE);
         video_view.setVisibility(View.GONE);
         audio_view.setVisibility(View.GONE);
+
+        delete_button = findViewById(R.id.delete_button);
+
+        profile_view = findViewById(R.id.user_profile_view);
+        Uri u = Service.getResourceUri(Service.myself.profile);
+        if (u != null) {
+            profile_view.setImageURI(u);
+            profile_view.setVisibility(View.VISIBLE);
+        }
 
         /* image */
         launcher = registerForActivityResult(
@@ -291,11 +320,13 @@ public class NewActivity extends AppCompatActivity {
         locationManager = (LocationManager) this.getApplicationContext().getSystemService(LOCATION_SERVICE);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
 
-
         article_id = getIntent().getIntExtra("article_id", -1);
         if (article_id != -1) {
             Service.getArticleInfo(article_id);
             System.out.println("article_id got here" + article_id);
+            delete_button.setVisibility(View.VISIBLE);
+        } else {
+            delete_button.setVisibility(View.GONE);
         }
 
         draft_launcher = registerForActivityResult(
@@ -310,7 +341,12 @@ public class NewActivity extends AppCompatActivity {
                             Intent data = result.getData();
                             if (data == null) return;
                             article_id = data.getIntExtra("article_id", -1);
-                            if (article_id != -1) Service.getArticleInfo(article_id);
+                            if (article_id != -1) {
+                                delete_button.setVisibility(View.VISIBLE);
+                                Service.getArticleInfo(article_id);
+                            } else {
+                                delete_button.setVisibility(View.GONE);
+                            }
                         }
                     }
                 });
@@ -462,8 +498,8 @@ public class NewActivity extends AppCompatActivity {
         String audio = audio_src;
 
         System.out.println(content);
-        Service.makeArticle(article_id, content, locationText, title, image, video, audio);
         this.finish();
+        Service.makeArticle(article_id, content, locationText, title, image, video, audio);
     }
 
     public void makeDraft(View view) {
@@ -476,7 +512,7 @@ public class NewActivity extends AppCompatActivity {
 
         System.out.println(content);
         Service.makeDraft(article_id, content, locationText, title, image, video, audio);
-        this.finish();
+        delete_button.setVisibility(View.VISIBLE);
     }
 
     public void switchLocation(View view) {
@@ -486,78 +522,91 @@ public class NewActivity extends AppCompatActivity {
             enableLocation = false;
             locationText = null;
         } else {
+            System.out.println("try get location here");
             location_button.setImageResource(R.drawable.ic_location_red);
-            Location location = getLocation();
-            String address = getAddress(location);
-            locationText = address;
-            if (address != null) {
-                position_view.setVisibility(View.VISIBLE);
-                position_text.setText(address);
-                enableLocation = true;
-                location_button.setImageResource(R.drawable.ic_location_blue);
-            } else {
-                location_button.setImageResource(R.drawable.ic_location);
-                Toast.makeText(this, "获取位置失败", Toast.LENGTH_SHORT).show();
-            }
+            getLocation();
         }
     }
 
-    private Location getLocation() {
-        /* https://blog.csdn.net/ming54ming/article/details/118853081 */
-        Location location = realLocation;
+    private void successLocation() {
+        position_view.setVisibility(View.VISIBLE);
+        position_text.setText(locationText);
+        enableLocation = true;
+        location_button.setImageResource(R.drawable.ic_location_blue);
+    }
 
-        if (locationManager == null) {
-            return null;
-        }
+    private void failLocation() {
+        location_button.setImageResource(R.drawable.ic_location);
+        Toast.makeText(this, "获取位置失败", Toast.LENGTH_SHORT).show();
+    }
 
-        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-                && !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-            Intent intent = new Intent();
-            intent.setAction(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-            return null;
-        }
-        System.out.println("good here");
+    private void getLocation() {
+        Thread thread = new Thread(() -> {
+            /* https://blog.csdn.net/ming54ming/article/details/118853081 */
+            Location location = realLocation;
 
-
-        System.out.println("location manager get");
-        List<String> providers = locationManager.getProviders(true);
-        System.out.println(providers);
-
-        for (String provider : providers) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                System.out.println("it is permission");
-                return null;
+            if (locationManager == null) {
+                return;
             }
-            Location l = locationManager.getLastKnownLocation(provider);
-            System.out.println(provider);
-            System.out.println("location:");
-            System.out.println(l);
-            if (l == null) {
-                continue;
+
+            if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+                    && !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                Intent intent = new Intent();
+                intent.setAction(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                return;
             }
-            if (location == null || l.getAccuracy() < location.getAccuracy()) { // Found best last known location: %s", l);
-                location = l;
+            System.out.println("good here");
+
+            System.out.println("location manager get");
+            List<String> providers = locationManager.getProviders(true);
+            System.out.println(providers);
+
+            for (String provider : providers) {
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+                Location l = locationManager.getLastKnownLocation(provider);
+                if (l == null) {
+                    continue;
+                }
+                if (location == null || l.getAccuracy() < location.getAccuracy()) { // Found best last known location: %s", l);
+                    location = l;
+                }
             }
-        }
-        System.out.println(location);
-        return location;
+            if( location == null ) {
+                Service.sendMessage(handler, FAIL_LOCATION);
+            }
+            DecimalFormat format = new DecimalFormat("0.00");
+            locationText = "经度：" + format.format(location.getLongitude()) +
+                    " 纬度:" + format.format(location.getLatitude());
+            String address = getAddress(location);
+            if (address != null) {
+                locationText = address;
+            }
+            if (locationText != null) {
+                Service.sendMessage(handler, SUCCESS_LOCATION);
+            } else {
+                Service.sendMessage(handler, FAIL_LOCATION);
+            }
+        });
+        thread.start();
     }
 
     public String getAddress(Location location) {
-        List<Address> addressList = null;
-        Geocoder geocoder = new Geocoder(this.getApplicationContext());
         try {
-            System.out.println(location.getLatitude());
-            System.out.println(location.getLongitude());
-            addressList = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 5);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if (addressList != null && addressList.size() >= 1) {
-/*            for (Address address : addressList) {
-                System.out.println(String.format("address: %s", address.toString()));
-            } */
-            return addressList.get(0).getAddressLine(0);
+            List<Address> addressList = null;
+            Geocoder geocoder = new Geocoder(this.getApplicationContext());
+            try {
+                System.out.println(location.getLatitude());
+                System.out.println(location.getLongitude());
+                addressList = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 5);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (addressList != null && addressList.size() >= 1) {
+                return addressList.get(0).getAddressLine(0);
+            }
+        } catch (Exception ignored) {
         }
         return null;
     }
@@ -570,7 +619,6 @@ public class NewActivity extends AppCompatActivity {
             photo_src = null;
             return;
         }
-//        image_view.setImageURI(photo_uri);
         image_view.setVisibility(View.VISIBLE);
 
         camera_button.setImageResource(R.drawable.ic_camera);
@@ -670,6 +718,7 @@ public class NewActivity extends AppCompatActivity {
                 Uri u = Service.getResourceUri(article.image);
                 if (u != null) {
                     photo_uri = u;
+                    image_view.setImageURI(photo_uri);
                     successPhoto(article.image);
                 }
             } else {
@@ -716,6 +765,19 @@ public class NewActivity extends AppCompatActivity {
         }
     }
 
+    public void deleteDraft(View view) {
+        if (article_id <= -1) return;
+        post_made = true;
+        Toast.makeText(NewActivity.this.getApplicationContext(), "删除草稿成功", Toast.LENGTH_SHORT).show();
+        Service.deleteDraft(article_id);
+        this.finish();
+    }
+
+    public void successDelete() {
+        Toast.makeText(this.getApplicationContext(), "删除草稿成功", Toast.LENGTH_SHORT).show();
+        finish();
+    }
+
     public void cancel(View view) {
         this.finish();
     }
@@ -743,6 +805,8 @@ public class NewActivity extends AppCompatActivity {
                 System.out.println("#" + title_view.getText().toString().length() + "#");
                 System.out.println("#" + content_view.getText().toString().length() + "#");
                 makeDraft(null);
+            } else {
+                Toast.makeText(this.getApplicationContext(), "不自动保存空内容草稿", Toast.LENGTH_SHORT).show();
             }
         }
     }

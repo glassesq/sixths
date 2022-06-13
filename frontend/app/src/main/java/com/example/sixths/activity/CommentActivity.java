@@ -3,8 +3,10 @@ package com.example.sixths.activity;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.sixths.R;
@@ -16,6 +18,8 @@ public class CommentActivity extends AppCompatActivity {
 
     private TextView content_view;
 
+    private ImageView profile_view;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,6 +29,13 @@ public class CommentActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         article_id = intent.getIntExtra("article_id", 0);
+
+        profile_view = findViewById(R.id.user_profile_view);
+        Uri u = Service.getResourceUri(Service.myself.profile);
+        if (u != null) {
+            profile_view.setImageURI(u);
+            profile_view.setVisibility(View.VISIBLE);
+        }
     }
 
 

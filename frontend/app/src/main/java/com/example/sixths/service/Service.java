@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
+import android.renderscript.Sampler;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -109,6 +110,7 @@ public class Service {
     private static String token = null;
 
     private static final String url = "http://47.103.11.174:8080";
+//    private static final String url = "http://10.0.2.2:8080";
 
     public static HashSet<Integer> following = new HashSet<>();
     public static HashSet<Integer> liking = new HashSet<>();
@@ -226,7 +228,6 @@ public class Service {
         }
         return token != null;
     }
-
 
     public static void setNewHandler(Handler handler) {
         new_handler = handler;
@@ -1012,8 +1013,32 @@ public class Service {
                 System.out.println("make article draft conn established");
 
                 if (conn.getResponseCode() == 200) {
+                    InputStream in = conn.getInputStream();
+                    String result = is2String(in);
                     System.out.println("draft save");
                     sendMessage(main_handler, MainActivity.DRAFT);
+                    sendMessage(new_handler, NewActivity.DRAFT, result);
+                }
+                System.out.println("make article draft finished");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+    }
+
+
+
+    public static void deleteDraft(int article_id) {
+        Thread thread = new Thread(() -> {
+            try {
+                String params = "&article_id=" +  URLEncoder.encode(String.valueOf(article_id), "UTF-8");
+                System.out.println(params);
+                HttpURLConnection conn = getConnectionWithToken("/article/delete", "POST", params);
+                System.out.println("make article draft conn established");
+
+                if (conn.getResponseCode() == 200) {
+                    sendMessage(new_handler, NewActivity.ARTICLE_DELETE);
                 }
                 System.out.println("make article draft finished");
             } catch (Exception e) {
@@ -1625,6 +1650,8 @@ public class Service {
     public static void clearSearch() {
         search_manager.clear();
     }
+
+    public static void clearPerson() { person_manager.clear(); }
 
 
 }

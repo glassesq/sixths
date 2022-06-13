@@ -8,7 +8,9 @@
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_camera_red.xml" value="0.1" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_comment.xml" value="0.1875" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_comment_red.xml" value="0.1875" />
+        <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_delete.xml" value="0.1" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_edit_red.xml" value="0.1875" />
+        <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_folder.xml" value="0.1" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_like.xml" value="0.1" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_like_blue.xml" value="0.1" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_like_red.xml" value="0.242" />
@@ -20,6 +22,7 @@
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_record.xml" value="0.1875" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_record_red.xml" value="0.1" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_record_white.xml" value="0.1" />
+        <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_save.xml" value="0.1" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_setting.xml" value="0.145" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_share.xml" value="0.1875" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_shock_user.xml" value="0.1" />
@@ -30,14 +33,14 @@
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/ic_video_red.xml" value="0.1" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/drawable/white_corner.xml" value="0.1625" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/activity_article.xml" value="0.264" />
-        <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/activity_comment.xml" value="0.3148148148148148" />
+        <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/activity_comment.xml" value="0.176" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/activity_draft.xml" value="0.1" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/activity_follower.xml" value="0.15925925925925927" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/activity_like.xml" value="0.17291666666666666" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/activity_login.xml" value="0.2" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/activity_main.xml" value="0.15520833333333334" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/activity_mainconfig.xml" value="0.264" />
-        <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/activity_new.xml" value="0.2" />
+        <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/activity_new.xml" value="0.45185995623632386" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/activity_passconfig.xml" value="0.264" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/activity_register.xml" value="0.264" />
         <entry key="..\:/codes/sixths/frontend/app/src/main/res/layout/activity_search.xml" value="0.14375" />

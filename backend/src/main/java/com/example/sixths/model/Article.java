@@ -26,12 +26,12 @@ public class Article {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne // ? fetchType
+    @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "author_id")
     private User author; // the author of the post
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "liking")
+    @ManyToMany(mappedBy = "liking", cascade = CascadeType.DETACH)
     private Set<User> liker;
 
     public boolean draft;
@@ -51,7 +51,7 @@ public class Article {
     public String audio;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "article", fetch = FetchType.LAZY) // TODO: cascade
+    @OneToMany(mappedBy = "article", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE) // TODO: cascade
     private List<Comment> comments;
 
     @JsonIgnore
@@ -78,7 +78,6 @@ public class Article {
     public Article() {
         content = "";
     }
-
 
     @JsonIgnore
     public Date getRealTime() {

@@ -54,6 +54,8 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
     public static final int FRESH_PROFILE = 3;
     public static final int DRAFT = 4;
     public static final int NOTI_GOT = 5;
+    public static final int TOAST_MESSAGE = 6;
+    public static final int DELETE_DRAFT = 7;
 
     String[] permissions = new String[]{Manifest.permission.CAMERA,
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -93,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
+            System.out.println("handler" + msg);
             if (msg.what == NEW_FAIL) {
                 failNewPost();
             } else if (msg.what == NEW_SUCCESS) {
@@ -100,8 +103,7 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
             } else if (msg.what == FRESH) {
                 fresh();
             } else if (msg.what == FRESH_PROFILE) {
-                PersonFragment p = (PersonFragment) person_frag;
-                if (person_frag != null) p.fresh();
+                if (person_frag != null) person_frag.fresh();
             } else if (msg.what == DRAFT) {
                 successDraft();
             } else if (msg.what == NOTI_GOT) {
@@ -151,6 +153,14 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
     @Override
     protected void onResume() {
         super.onResume();
+        /* 从sharedPreference中获取token */
+        if (Service.getToken() == null) updateTokenFromPref();
+
+        /* 跳转欢迎页逻辑 */
+        if (!Service.checkToken()) {
+            gotoWelcome();
+            return;
+        }
         Service.setMainHandler(handler);
         updateTokenFromPref();
         fresh();
@@ -282,6 +292,7 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
 
     private void successNewPost() {
         Toast.makeText(MainActivity.this, "发送成功", Toast.LENGTH_SHORT).show();
+        System.out.println("hi???");
         Service.fetchArticle(Service.POST_LIST_TYPE.ALL);
         Service.fetchArticle(Service.POST_LIST_TYPE.FOLLOW);
     }
@@ -349,7 +360,7 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
     }
 
     private void successDraft() {
-        Toast.makeText(MainActivity.this, "草稿保存成功", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this.getApplicationContext(), "草稿保存成功", Toast.LENGTH_SHORT).show();
     }
 
 
@@ -358,6 +369,10 @@ public class MainActivity extends AppCompatActivity implements PostListAdapter.p
         String mimeType = "text/plain";
         ShareCompat.IntentBuilder builder = new ShareCompat.IntentBuilder(this);
         builder.setType(mimeType).setChooserTitle("选择您要分享的应用").setText(txt).startChooser();
+    }
+
+    public void gotoMyPage(View view) {
+        gotoUserPage(Service.myself_id);
     }
 
     public void shareArticle(Article article) {

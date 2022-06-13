@@ -123,7 +123,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="5dp"
-                                android:text="TextView"
+                                android:text="加载中"
                                 android:textColor="@color/black"
                                 android:textStyle="bold"
                                 tools:text="李白" />
@@ -139,7 +139,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/noto_sans"
-                                android:text="LiBai" />
+                                android:text="加载中" />
 
                             <TextView
                                 android:id="@+id/follow_tag"
@@ -174,7 +174,7 @@
                             android:maxLength="15"
                             android:maxLines="1"
                             android:minLines="1"
-                            android:text="TextView"
+                            android:text="加载中"
                             android:textColor="@color/black"
                             android:textSize="17sp"
                             android:textStyle="bold"
@@ -196,7 +196,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:minLines="1"
-                            android:text="TextView"
+                            android:text="加载中"
                             android:textColor="@color/black"
                             android:textSize="16sp"
                             tools:text="朝辞白帝彩云间，朝辞白帝彩云间,朝辞白帝彩云间,朝辞白帝彩云间,千里江陵一日还。\n两岸猿声啼不住\n轻舟已过万重山。" />

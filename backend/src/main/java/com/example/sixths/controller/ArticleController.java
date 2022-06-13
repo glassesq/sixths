@@ -200,6 +200,17 @@ public class ArticleController {
     }
 
 
+    @PostMapping(path = "/delete")
+    public ResponseEntity<String> deleteArticle(HttpServletRequest req) {
+        int article_id = Integer.parseInt(req.getParameter("article_id"));
+        String ret = articleService.deleteArticle(article_id);
+        if (ret != null) {
+            return ResponseEntity.ok().body(ret);
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+    }
+
+
     @PostMapping(path = "/remove_comment")
     public ResponseEntity<String> removeComment(HttpServletRequest req) {
         int user_id = Integer.parseInt(req.getAttribute(LoginInterceptor.ID_KEY).toString());

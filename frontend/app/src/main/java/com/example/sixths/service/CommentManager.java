@@ -52,7 +52,7 @@ public class CommentManager {
 
     public void fetchComment() {
         System.out.println("fetch Comment");
-        Thread thread = new Thread(() -> {
+        @SuppressLint("NotifyDataSetChanged") Thread thread = new Thread(() -> {
             try {
                 String params = "article_id=" + URLEncoder.encode(String.valueOf(article_id), "UTF-8");
                 HttpURLConnection conn = Service.getConnectionWithToken("/article/get_comments", "GET", params);

@@ -64,6 +64,7 @@
 
                             android:background="@drawable/circle"
                             android:cropToPadding="false"
+                            android:onClick="gotoMyPage"
                             android:scaleType="centerCrop"
                             app:srcCompat="@drawable/default_profile" />
                     </androidx.cardview.widget.CardView>

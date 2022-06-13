@@ -12,6 +12,7 @@ import java.util.Date;
 
 /* ref: https://blog.csdn.net/qq_43948583/article/details/104437752 */
 public class JWTUtils {
+    public static final String secret = "998244353";
     public static String genUserToken(User user) {
         Calendar currentTime = Calendar.getInstance();
         System.out.print("gen user token: ");
@@ -20,13 +21,13 @@ public class JWTUtils {
         return JWT.create().withAudience(user.getId().toString())
                 .withIssuedAt(new Date())
                 .withClaim("name", user.getName())
-                .sign(Algorithm.HMAC256("big-secret"));
+                .sign(Algorithm.HMAC256(secret));
     }
 
     public static boolean verifyUserToken(String token) {
         DecodedJWT jwt = null;
         try {
-            JWTVerifier verifier = JWT.require(Algorithm.HMAC256("big-secret")).build();
+            JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secret)).build();
             jwt = verifier.verify(token);
             return true;
         } catch (Exception e) {
@@ -37,7 +38,7 @@ public class JWTUtils {
     public static int getId(String token) {
         try {
             DecodedJWT jwt = null;
-            JWTVerifier verifier = JWT.require(Algorithm.HMAC256("big-secret")).build();
+            JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secret)).build();
             jwt = verifier.verify(token);
             return Integer.parseInt(jwt.getAudience().get(0));
         } catch (Exception e) {

@@ -164,17 +164,14 @@ public class ArticleManager {
                         }
                     }
                     article_list = list;
-
                     Message msg = new Message();
                     msg.setTarget(handler);
                     msg.sendToTarget();
-
                     /*
                     for (int i = 0; i < arr.length(); i++) {
                         Service.fetchResourceFromSrc(article_list.get(i).author_profile);
                         adapter.notifyItemChanged(i);
                     } */
-
                 } else {
                     System.out.println(conn.getResponseCode());
                     InputStream in = conn.getErrorStream();
@@ -207,7 +204,7 @@ public class ArticleManager {
     }
 
     public int count() {
-        return Math.min(allowSize, article_list.size());
+        return article_list.size();
     }
 
 
@@ -217,6 +214,5 @@ public class ArticleManager {
         msg.setTarget(handler);
         msg.sendToTarget();
     }
-
 
 }

@@ -23,6 +23,7 @@ import com.example.sixths.R;
 import com.example.sixths.adapter.PostListAdapter;
 import com.example.sixths.service.Service;
 import com.example.sixths.service.User;
+import com.example.sixths.view.CustomLayoutManager;
 
 public class UserActivity extends AppCompatActivity {
 
@@ -108,7 +109,6 @@ public class UserActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         super.setContentView(R.layout.user_mainpage);
 
-
         Service.setUserHandler(handler);
 
         /* 获取userid */
@@ -133,12 +133,12 @@ public class UserActivity extends AppCompatActivity {
         following_text = findViewById(R.id.following_view);
 
         /* 设计 recycle view 的 adapter */
-        PostListAdapter adapter = new PostListAdapter(this, listener, Service.POST_LIST_TYPE.PERSON); // TODO
-        recycler_view.setAdapter(adapter);
-        recycler_view.setLayoutManager(new LinearLayoutManager(this));
+//        PostListAdapter adapter = new PostListAdapter(this, listener, Service.POST_LIST_TYPE.PERSON); // TODO
+//        recycler_view.setAdapter(adapter);
+//        recycler_view.setLayoutManager(new LinearLayoutManager(this));
 
         /* 从后端获取信息 */
-        Service.fetchArticle(Service.POST_LIST_TYPE.PERSON);
+//        Service.fetchArticle(Service.POST_LIST_TYPE.PERSON);
     }
 
     public void switchFollow() {
@@ -206,12 +206,15 @@ public class UserActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         Service.setUserHandler(null);
+        Service.clearPerson();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        System.out.println("on resume");
         Service.setUserHandler(handler);
+
         /* 恢复用户信息 */
         Service.setPerson(userid);
         Service.getUserInfo(userid);
@@ -219,7 +222,7 @@ public class UserActivity extends AppCompatActivity {
         /* 设计 recycle view 的 adapter */
         PostListAdapter adapter = new PostListAdapter(this, listener, Service.POST_LIST_TYPE.PERSON); // TODO
         recycler_view.setAdapter(adapter);
-        recycler_view.setLayoutManager(new LinearLayoutManager(this));
+        recycler_view.setLayoutManager(new CustomLayoutManager(this));
 
         /* 从后端获取信息 */
         Service.fetchArticle(Service.POST_LIST_TYPE.PERSON);

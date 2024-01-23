@@ -108,8 +108,7 @@ public class Service {
 
     private static String token = null;
 
-    private static final String url = "http://47.103.11.174:8080";
-//    private static final String url = "http://10.0.2.2:8080";
+    private static final String url = "http://10.0.2.2:8080";
 
     public static HashSet<Integer> following = new HashSet<>();
     public static HashSet<Integer> liking = new HashSet<>();
